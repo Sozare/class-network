@@ -51,7 +51,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
   const handleApprove = async (id: string) => {
     const ok = await memberService.updateMemberStatus(id, 'approved');
     if (ok) {
-      showFeedback('Member profile approved and published to directory.');
+      showFeedback('پروفایل همکلاسی تایید شد و بلافاصله در صفحه اصلی قرار گرفت.');
       await loadData();
     }
   };
@@ -59,7 +59,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
   const handleReject = async (id: string) => {
     const ok = await memberService.updateMemberStatus(id, 'rejected');
     if (ok) {
-      showFeedback('Member profile rejected.');
+      showFeedback('درخواست عضویت رد شد.');
       await loadData();
     }
   };
@@ -67,7 +67,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
   const handleUnpublish = async (id: string) => {
     const ok = await memberService.updateMemberStatus(id, 'pending');
     if (ok) {
-      showFeedback('Member profile returned to pending queue.');
+      showFeedback('پروفایل از حالت انتشار خارج شد و به صف بررسی بازگشت.');
       await loadData();
     }
   };
@@ -75,7 +75,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
   const handleToggleFeatured = async (id: string, current: boolean) => {
     const ok = await memberService.toggleFeatured(id, !current);
     if (ok) {
-      showFeedback(!current ? 'Member marked as featured.' : 'Featured badge removed.');
+      showFeedback(!current ? 'کاربر به عنوان عضو منتخب ثبت شد.' : 'نشان منتخب برداشته شد.');
       await loadData();
     }
   };
@@ -83,7 +83,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
   const handleDelete = async (id: string) => {
     const ok = await memberService.deleteMember(id);
     if (ok) {
-      showFeedback('Profile deleted permanently.');
+      showFeedback('پروفایل برای همیشه حذف گردید.');
       setDeleteConfirmationId(null);
       await loadData();
     }
@@ -91,20 +91,20 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
 
   const handleSaveEdit = async (id: string, updates: Partial<Member>) => {
     await memberService.updateMember(id, updates);
-    showFeedback('Member profile updated.');
+    showFeedback('اطلاعات پروفایل به‌روزرسانی شد.');
     await loadData();
   };
 
   const handleSeedDemoData = () => {
     memberService.resetToDemoData();
-    showFeedback('Reset and populated sample demo members.');
+    showFeedback('پروفایل‌های نمونه با موفقیت بازگردانی شدند.');
     loadData();
   };
 
   const handleClearDemoData = () => {
-    if (window.confirm('Are you sure you want to remove all DEMO profiles? Only real submissions will remain.')) {
+    if (window.confirm('آیا از حذف تمام پروفایل‌های نمونه (DEMO) اطمینان دارید؟ با این کار فقط ثبت‌نام‌های واقعی افراد در سایت باقی خواهد ماند.')) {
       memberService.clearDemoData();
-      showFeedback('All sample demo profiles removed.');
+      showFeedback('تمامی پروفایل‌های نمونه حذف شدند. سایت آماده شروع واقعی است!');
       loadData();
     }
   };
@@ -113,7 +113,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
     const dataStr = 'data:text/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(members, null, 2));
     const downloadAnchor = document.createElement('a');
     downloadAnchor.setAttribute('href', dataStr);
-    downloadAnchor.setAttribute('download', `class-network-directory-backup-${new Date().toISOString().slice(0, 10)}.json`);
+    downloadAnchor.setAttribute('download', `class-network-backup-${new Date().toISOString().slice(0, 10)}.json`);
     document.body.appendChild(downloadAnchor);
     downloadAnchor.click();
     downloadAnchor.remove();
@@ -150,23 +150,23 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
   const demoCount = members.filter(m => m.is_demo).length;
 
   return (
-    <div className="min-h-screen bg-slate-50 py-8 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-slate-50 py-8 px-4 sm:px-6 lg:px-8 text-right font-sans">
       <div className="max-w-7xl mx-auto space-y-6">
         {/* Admin Header */}
         <div className="bg-white rounded-2xl border border-slate-200/80 p-5 shadow-sm flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <div className="flex items-center gap-3">
-            <div className="h-10 w-10 rounded-xl bg-slate-900 text-white flex items-center justify-center">
+            <div className="h-10 w-10 rounded-xl bg-slate-900 text-white flex items-center justify-center shrink-0">
               <Shield className="w-5 h-5 text-sky-400" />
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <h1 className="text-xl font-bold text-slate-900">Directory Moderation Portal</h1>
-                <span className="text-[11px] font-semibold px-2 py-0.5 rounded-full bg-slate-100 text-slate-700 border border-slate-200">
-                  Admin
+                <h1 className="text-xl font-black text-slate-900">پرتال مدیریت و تایید اعضا</h1>
+                <span className="text-[11px] font-bold px-2 py-0.5 rounded-full bg-slate-100 text-slate-700 border border-slate-200">
+                  مدیر دوره
                 </span>
               </div>
-              <p className="text-xs text-slate-500">
-                Logged in as <strong className="text-slate-800">{authService.getCurrentUserEmail()}</strong>
+              <p className="text-xs text-slate-500 font-medium">
+                ورود با حساب: <strong className="text-slate-800" dir="ltr">{authService.getCurrentUserEmail()}</strong>
               </p>
             </div>
           </div>
@@ -174,36 +174,36 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
           <div className="flex flex-wrap items-center gap-2">
             <button
               onClick={loadData}
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-slate-200 bg-white text-xs font-semibold text-slate-700 hover:bg-slate-50 transition-colors"
-              title="Refresh submissions"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-slate-200 bg-white text-xs font-bold text-slate-700 hover:bg-slate-50 transition-colors"
+              title="بروزرسانی لیست درخواست‌ها"
             >
               <RefreshCw className={`w-3.5 h-3.5 ${isLoading ? 'animate-spin' : ''}`} />
-              <span>Refresh</span>
+              <span>تازه‌سازی</span>
             </button>
 
             <button
               onClick={handleExportJSON}
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-slate-200 bg-white text-xs font-semibold text-slate-700 hover:bg-slate-50 transition-colors"
-              title="Export backup as JSON"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-slate-200 bg-white text-xs font-bold text-slate-700 hover:bg-slate-50 transition-colors"
+              title="دریافت نسخه پشتیبان به فرمت JSON"
             >
               <Download className="w-3.5 h-3.5 text-slate-500" />
-              <span>Export JSON</span>
+              <span>خروجی بکاپ JSON</span>
             </button>
 
             <button
               onClick={onLogout}
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-rose-200 bg-rose-50 text-xs font-semibold text-rose-700 hover:bg-rose-100 transition-colors"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-rose-200 bg-rose-50 text-xs font-bold text-rose-700 hover:bg-rose-100 transition-colors"
             >
-              <LogOut className="w-3.5 h-3.5" />
-              <span>Exit Admin</span>
+              <LogOut className="w-3.5 h-3.5 rotate-180" />
+              <span>خروج از پنل</span>
             </button>
           </div>
         </div>
 
         {/* Action Feedback Banner */}
         {actionFeedback && (
-          <div className="rounded-xl bg-emerald-50 border border-emerald-200 p-3 text-xs font-semibold text-emerald-800 flex items-center gap-2 animate-in fade-in duration-150">
-            <Check className="w-4 h-4 text-emerald-600" />
+          <div className="rounded-xl bg-emerald-50 border border-emerald-200 p-3 text-xs font-bold text-emerald-800 flex items-center gap-2 animate-in fade-in duration-150">
+            <Check className="w-4 h-4 text-emerald-600 shrink-0" />
             <span>{actionFeedback}</span>
           </div>
         )}
@@ -212,41 +212,41 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
           <div className="bg-white rounded-xl border border-slate-200 p-4 shadow-xs">
             <div className="flex items-center justify-between text-amber-600 mb-1">
-              <span className="text-xs font-bold uppercase tracking-wider text-slate-500">Pending Review</span>
+              <span className="text-xs font-bold text-slate-500">در انتظار بررسی</span>
               <Clock className="w-4 h-4" />
             </div>
-            <div className="text-2xl font-extrabold text-slate-900">{pendingCount}</div>
-            <p className="text-[11px] text-slate-400">Waiting for approval</p>
+            <div className="text-2xl font-black text-slate-900">{pendingCount}</div>
+            <p className="text-[11px] text-slate-400 font-medium">نیاز به تایید ادمین</p>
           </div>
 
           <div className="bg-white rounded-xl border border-slate-200 p-4 shadow-xs">
             <div className="flex items-center justify-between text-emerald-600 mb-1">
-              <span className="text-xs font-bold uppercase tracking-wider text-slate-500">Published Active</span>
+              <span className="text-xs font-bold text-slate-500">منتشر شده در سایت</span>
               <Users className="w-4 h-4" />
             </div>
-            <div className="text-2xl font-extrabold text-slate-900">{approvedCount}</div>
-            <p className="text-[11px] text-slate-400">Visible on homepage</p>
+            <div className="text-2xl font-black text-slate-900">{approvedCount}</div>
+            <p className="text-[11px] text-slate-400 font-medium">قابل مشاهده در صفحه اصلی</p>
           </div>
 
           <div className="bg-white rounded-xl border border-slate-200 p-4 shadow-xs">
             <div className="flex items-center justify-between text-sky-600 mb-1">
-              <span className="text-xs font-bold uppercase tracking-wider text-slate-500">Demo Profiles</span>
+              <span className="text-xs font-bold text-slate-500">پروفایل‌های تستی (دمو)</span>
               <Sparkles className="w-4 h-4" />
             </div>
-            <div className="text-2xl font-extrabold text-slate-900">{demoCount}</div>
-            <p className="text-[11px] text-slate-400">Sample development cards</p>
+            <div className="text-2xl font-black text-slate-900">{demoCount}</div>
+            <p className="text-[11px] text-slate-400 font-medium">کارت‌های نمونه اولیه</p>
           </div>
 
           <div className="bg-white rounded-xl border border-slate-200 p-4 shadow-xs">
             <div className="flex items-center justify-between text-purple-600 mb-1">
-              <span className="text-xs font-bold uppercase tracking-wider text-slate-500">Storage Backend</span>
+              <span className="text-xs font-bold text-slate-500">محل ذخیره‌سازی داده‌ها</span>
               <Database className="w-4 h-4" />
             </div>
-            <div className="text-sm font-extrabold text-slate-900 truncate">
-              {isSupabaseConfigured ? 'Supabase Live' : 'Local / Demo Mode'}
+            <div className="text-sm font-black text-slate-900 truncate">
+              {isSupabaseConfigured ? 'دیتابیس آنلاین Supabase' : 'حافظه مرورگر (LocalStorage)'}
             </div>
-            <p className="text-[11px] text-slate-400">
-              {isSupabaseConfigured ? 'PostgreSQL Database' : 'LocalStorage active'}
+            <p className="text-[11px] text-slate-400 font-medium">
+              {isSupabaseConfigured ? 'پایگاه داده PostgreSQL فعال' : 'حالت لوکال فعال'}
             </p>
           </div>
         </div>
@@ -263,9 +263,9 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
               }`}
             >
               <Clock className="w-3.5 h-3.5" />
-              <span>Pending Reviews</span>
+              <span>در انتظار بررسی</span>
               {pendingCount > 0 && (
-                <span className={`px-1.5 py-0.2 rounded-full text-[10px] font-extrabold ${activeTab === 'pending' ? 'bg-amber-700 text-white' : 'bg-amber-100 text-amber-800'}`}>
+                <span className={`px-1.5 py-0.2 rounded-full text-[10px] font-black ${activeTab === 'pending' ? 'bg-amber-700 text-white' : 'bg-amber-100 text-amber-800'}`}>
                   {pendingCount}
                 </span>
               )}
@@ -280,8 +280,8 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
               }`}
             >
               <Users className="w-3.5 h-3.5" />
-              <span>Approved Directory</span>
-              <span className={`px-1.5 py-0.2 rounded-full text-[10px] font-extrabold ${activeTab === 'approved' ? 'bg-slate-700 text-white' : 'bg-slate-100 text-slate-700'}`}>
+              <span>اعضای تایید شده</span>
+              <span className={`px-1.5 py-0.2 rounded-full text-[10px] font-black ${activeTab === 'approved' ? 'bg-slate-700 text-white' : 'bg-slate-100 text-slate-700'}`}>
                 {approvedCount}
               </span>
             </button>
@@ -295,7 +295,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
               }`}
             >
               <X className="w-3.5 h-3.5" />
-              <span>Rejected Submissions</span>
+              <span>درخواست‌های رد شده</span>
             </button>
 
             <button
@@ -307,7 +307,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
               }`}
             >
               <BarChart3 className="w-3.5 h-3.5" />
-              <span>Analytics</span>
+              <span>آمار و نمودارها</span>
             </button>
 
             <button
@@ -319,20 +319,20 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
               }`}
             >
               <Database className="w-3.5 h-3.5" />
-              <span>Database Setup</span>
+              <span>تنظیمات و پاکسازی</span>
             </button>
           </div>
 
           {/* Search box within table */}
           {activeTab !== 'stats' && activeTab !== 'database' && (
             <div className="relative w-full sm:w-64">
-              <Search className="w-3.5 h-3.5 text-slate-400 absolute left-3 top-2.5" />
+              <Search className="w-3.5 h-3.5 text-slate-400 absolute right-3 top-2.5" />
               <input
                 type="text"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Filter by name, role..."
-                className="w-full rounded-lg border border-slate-200 py-1.5 pl-8 pr-3 text-xs text-slate-800 focus:border-sky-500 focus:outline-none"
+                placeholder="جستجو بر اساس نام، تخصص..."
+                className="w-full rounded-lg border border-slate-200 py-1.5 pr-8 pl-3 text-xs text-slate-800 focus:border-sky-500 focus:outline-none"
               />
             </div>
           )}
@@ -342,15 +342,15 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
         {(activeTab === 'pending' || activeTab === 'approved' || activeTab === 'rejected') && (
           <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden">
             {filteredMembers.length === 0 ? (
-              <div className="p-12 text-center text-slate-400 text-sm">
-                No profiles found in the <strong className="text-slate-700 capitalize">{activeTab}</strong> queue.
+              <div className="p-12 text-center text-slate-400 text-sm font-semibold">
+                هیچ درخواستی در این بخش وجود ندارد.
               </div>
             ) : (
               <div className="divide-y divide-slate-100">
                 {filteredMembers.map((member) => (
                   <div
                     key={member.id}
-                    className="p-5 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 hover:bg-slate-50/70 transition-colors"
+                    className="p-5 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 hover:bg-slate-50/70 transition-colors text-right"
                   >
                     {/* Left: Avatar & Info */}
                     <div className="flex items-start gap-4 min-w-0 flex-1">
@@ -358,63 +358,63 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                         src={member.profile_photo_url}
                         name={member.full_name}
                         size="lg"
-                        className="border border-slate-200"
+                        className="border border-slate-200 shrink-0"
                       />
                       <div className="min-w-0 flex-1 space-y-1">
                         <div className="flex flex-wrap items-center gap-2">
-                          <span className="font-bold text-slate-900 text-sm sm:text-base">
+                          <span className="font-black text-slate-900 text-sm sm:text-base">
                             {member.full_name}
                           </span>
                           <Badge variant="primary">{member.category}</Badge>
                           {member.featured && (
                             <span className="inline-flex items-center gap-0.5 text-[10px] font-bold text-amber-700 bg-amber-50 px-2 py-0.5 rounded border border-amber-200">
-                              <Star className="w-3 h-3 fill-amber-400 text-amber-500" /> Featured
+                              <Star className="w-3 h-3 fill-amber-400 text-amber-500" /> منتخب
                             </span>
                           )}
                           {member.is_demo && (
                             <span className="text-[10px] font-bold text-slate-500 bg-slate-100 px-1.5 py-0.5 rounded border border-slate-200">
-                              DEMO
+                              آزمایشی
                             </span>
                           )}
-                          <span className={`text-[10px] font-bold uppercase px-2 py-0.5 rounded ${
+                          <span className={`text-[10px] font-bold px-2 py-0.5 rounded ${
                             member.publication_status === 'approved'
                               ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
                               : member.publication_status === 'pending'
                               ? 'bg-amber-50 text-amber-700 border border-amber-200'
                               : 'bg-rose-50 text-rose-700 border border-rose-200'
                           }`}>
-                            {member.publication_status}
+                            {member.publication_status === 'approved' ? 'تایید شده' : member.publication_status === 'pending' ? 'در انتظار تایید' : 'رد شده'}
                           </span>
                         </div>
 
-                        <p className="text-xs font-semibold text-slate-600 truncate">
+                        <p className="text-xs font-bold text-slate-600 truncate">
                           {member.professional_title} {member.location ? `· ${member.location}` : ''}
                         </p>
 
-                        <p className="text-xs text-slate-500 line-clamp-1 max-w-2xl">
+                        <p className="text-xs text-slate-500 line-clamp-1 max-w-2xl font-normal">
                           {member.bio}
                         </p>
 
                         {/* Contact details row */}
-                        <div className="flex flex-wrap items-center gap-3 text-[11px] text-slate-500 pt-1">
+                        <div className="flex flex-wrap items-center gap-3 text-[11px] text-slate-500 pt-1 font-medium">
                           {member.telegram_username && (
                             <a
                               href={`https://t.me/${member.telegram_username}`}
                               target="_blank"
                               rel="noreferrer"
-                              className="inline-flex items-center gap-1 text-sky-600 hover:underline font-medium"
+                              className="inline-flex items-center gap-1 text-sky-600 hover:underline font-bold"
                             >
-                              <Send className="w-3 h-3 -rotate-12" />
-                              <span>@{member.telegram_username}</span>
+                              <Send className="w-3 h-3 rotate-180" />
+                              <span dir="ltr">@{member.telegram_username}</span>
                             </a>
                           )}
                           {member.private_email && (
                             <span className="text-slate-400">
-                              Private email: <strong className="text-slate-600">{member.private_email}</strong>
+                              ایمیل خصوصی: <strong className="text-slate-600" dir="ltr">{member.private_email}</strong>
                             </span>
                           )}
                           <span className="text-slate-400">
-                            Submitted: {new Date(member.created_at).toLocaleDateString()}
+                            ثبت در: {new Date(member.created_at).toLocaleDateString('fa-IR')}
                           </span>
                         </div>
                       </div>
@@ -429,7 +429,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                           className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold shadow-xs transition-colors"
                         >
                           <Check className="w-3.5 h-3.5" />
-                          <span>Approve & Publish</span>
+                          <span>تایید و انتشار</span>
                         </button>
                       )}
 
@@ -440,7 +440,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                           className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 text-xs font-bold transition-colors"
                         >
                           <X className="w-3.5 h-3.5" />
-                          <span>Reject</span>
+                          <span>رد درخواست</span>
                         </button>
                       )}
 
@@ -448,11 +448,11 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                       {member.publication_status === 'approved' && (
                         <button
                           onClick={() => handleUnpublish(member.id)}
-                          className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-medium transition-colors"
-                          title="Move back to pending review"
+                          className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold transition-colors"
+                          title="خروج از انتشار و بازگشت به صف بررسی"
                         >
                           <Clock className="w-3.5 h-3.5" />
-                          <span>Unpublish</span>
+                          <span>لغو انتشار</span>
                         </button>
                       )}
 
@@ -465,7 +465,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                               ? 'bg-amber-50 text-amber-700 border-amber-300'
                               : 'bg-white text-slate-400 border-slate-200 hover:text-amber-500'
                           }`}
-                          title={member.featured ? 'Remove featured badge' : 'Mark as featured'}
+                          title={member.featured ? 'حذف از اعضای منتخب' : 'نشان‌دار کردن به عنوان عضو منتخب'}
                         >
                           <Star className={`w-4 h-4 ${member.featured ? 'fill-amber-400' : ''}`} />
                         </button>
@@ -475,7 +475,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                       <button
                         onClick={() => setSelectedMemberToEdit(member)}
                         className="p-1.5 rounded-lg bg-white border border-slate-200 text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition-colors"
-                        title="Edit profile information"
+                        title="ویرایش مشخصات"
                       >
                         <Edit className="w-4 h-4" />
                       </button>
@@ -487,20 +487,20 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                             onClick={() => handleDelete(member.id)}
                             className="px-2 py-1 bg-rose-600 text-white text-[11px] font-bold rounded"
                           >
-                            Confirm Delete
+                            تایید حذف
                           </button>
                           <button
                             onClick={() => setDeleteConfirmationId(null)}
                             className="px-2 py-1 bg-slate-200 text-slate-700 text-[11px] font-bold rounded"
                           >
-                            Cancel
+                            انصراف
                           </button>
                         </div>
                       ) : (
                         <button
                           onClick={() => setDeleteConfirmationId(member.id)}
                           className="p-1.5 rounded-lg bg-white border border-slate-200 text-slate-400 hover:text-rose-600 hover:border-rose-200 transition-colors"
-                          title="Delete profile"
+                          title="حذف پروفایل"
                         >
                           <Trash2 className="w-4 h-4" />
                         </button>
@@ -519,7 +519,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
             <div className="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm space-y-4">
               <h3 className="text-base font-bold text-slate-900 flex items-center gap-2">
                 <BarChart3 className="w-4 h-4 text-sky-600" />
-                Distribution by Professional Category
+                توزیع اعضا بر اساس دسته‌بندی شغلی
               </h3>
               <div className="space-y-3 pt-2">
                 {Object.entries(stats.categoriesCount).map(([cat, count]) => {
@@ -528,9 +528,9 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                     : 0;
                   return (
                     <div key={cat} className="space-y-1">
-                      <div className="flex justify-between text-xs font-semibold text-slate-700">
+                      <div className="flex justify-between text-xs font-bold text-slate-700">
                         <span>{cat}</span>
-                        <span>{count} ({pct}%)</span>
+                        <span>{count} نفر ({pct}٪)</span>
                       </div>
                       <div className="h-2 rounded-full bg-slate-100 overflow-hidden">
                         <div
@@ -547,27 +547,27 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
             <div className="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm space-y-4">
               <h3 className="text-base font-bold text-slate-900 flex items-center gap-2">
                 <Shield className="w-4 h-4 text-emerald-600" />
-                Community Health & Moderation
+                سلامت کامیونیتی و آمار تاییدها
               </h3>
-              <ul className="space-y-3 text-xs text-slate-600">
+              <ul className="space-y-3 text-xs text-slate-600 font-semibold">
                 <li className="flex justify-between py-2 border-b border-slate-100">
-                  <span className="font-medium text-slate-500">Total Submissions Processed</span>
-                  <strong className="text-slate-900 font-bold">{members.length}</strong>
+                  <span className="text-slate-500">کل درخواست‌های دریافت شده</span>
+                  <strong className="text-slate-900 font-black">{members.length}</strong>
                 </li>
                 <li className="flex justify-between py-2 border-b border-slate-100">
-                  <span className="font-medium text-slate-500">Approval Rate</span>
-                  <strong className="text-emerald-700 font-bold">
-                    {members.length > 0 ? Math.round((approvedCount / members.length) * 100) : 0}%
+                  <span className="text-slate-500">درصد تایید اعضا</span>
+                  <strong className="text-emerald-700 font-black">
+                    {members.length > 0 ? Math.round((approvedCount / members.length) * 100) : 0}٪
                   </strong>
                 </li>
                 <li className="flex justify-between py-2 border-b border-slate-100">
-                  <span className="font-medium text-slate-500">Unique Skills Represented</span>
-                  <strong className="text-slate-900 font-bold">{stats.totalSkillsCount}</strong>
+                  <span className="text-slate-500">تنوع مهارت‌های ثبت‌شده</span>
+                  <strong className="text-slate-900 font-black">{stats.totalSkillsCount} مهارت</strong>
                 </li>
                 <li className="flex justify-between py-2 border-b border-slate-100">
-                  <span className="font-medium text-slate-500">Members with Direct Telegram</span>
-                  <strong className="text-sky-700 font-bold">
-                    {members.filter(m => Boolean(m.telegram_username)).length}
+                  <span className="text-slate-500">اعضای با آیدی تلگرام مستقیم</span>
+                  <strong className="text-sky-700 font-black">
+                    {members.filter(m => Boolean(m.telegram_username)).length} نفر
                   </strong>
                 </li>
               </ul>
@@ -581,25 +581,25 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
             {/* Demo Data Management Alert */}
             <div className="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm space-y-4">
               <div className="flex items-center gap-3">
-                <div className="h-10 w-10 rounded-xl bg-amber-100 text-amber-700 flex items-center justify-center">
+                <div className="h-10 w-10 rounded-xl bg-amber-100 text-amber-700 flex items-center justify-center shrink-0">
                   <AlertTriangle className="w-5 h-5" />
                 </div>
                 <div>
-                  <h3 className="text-base font-bold text-slate-900">
-                    Production Launch & Demo Profiles Management
+                  <h3 className="text-base font-black text-slate-900">
+                    آماده‌سازی برای شروع عمومی و حذف داده‌های تستی
                   </h3>
                   <p className="text-xs text-slate-500">
-                    Remove development sample profiles before opening the directory to your actual Telegram class.
+                    قبل از انتشار آدرس سایت در گروه تلگرام، می‌توانید پروفایل‌های آزمایشی را با یک کلیک پاک کنید.
                   </p>
                 </div>
               </div>
 
               <div className="p-4 rounded-xl bg-slate-50 border border-slate-200 text-xs text-slate-600 space-y-2">
                 <p>
-                  Current demo profiles loaded: <strong className="text-slate-900">{demoCount} sample profiles</strong>.
+                  تعداد پروفایل‌های تستی فعال در سیستم: <strong className="text-slate-900 font-bold">{demoCount} پروفایل نمونه</strong>.
                 </p>
                 <p>
-                  When you are ready to invite actual cohort members, click below to purge all demo data. Real submissions will always be preserved.
+                  با کلیک بر روی دکمه زیر، تنها پروفایل‌های نمونه حذف خواهند شد و هر پروفایلی که همکلاسی‌های واقعی ثبت کرده باشند کاملاً دست‌نخورده باقی می‌ماند.
                 </p>
               </div>
 
@@ -608,13 +608,13 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                   onClick={handleClearDemoData}
                   className="px-4 py-2 rounded-xl bg-rose-600 text-white text-xs font-bold hover:bg-rose-700 transition-colors shadow-xs"
                 >
-                  Clear All Demo Profiles for Production Launch
+                  حذف تمامی پروفایل‌های تستی جهت انتشار نهایی
                 </button>
                 <button
                   onClick={handleSeedDemoData}
                   className="px-4 py-2 rounded-xl bg-slate-100 text-slate-700 text-xs font-bold hover:bg-slate-200 transition-colors"
                 >
-                  Restore Sample Demo Profiles
+                  بازگردانی پروفایل‌های نمونه تستی
                 </button>
               </div>
             </div>
@@ -624,19 +624,19 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <Database className="w-5 h-5 text-sky-600" />
-                  <h3 className="text-base font-bold text-slate-900">Connecting to Free Supabase</h3>
+                  <h3 className="text-base font-black text-slate-900">اتصال به دیتابیس آنلاین رایگان (Supabase)</h3>
                 </div>
                 <span className={`text-xs px-2.5 py-1 rounded-full font-bold ${
                   isSupabaseConfigured
                     ? 'bg-emerald-100 text-emerald-800'
                     : 'bg-amber-100 text-amber-800'
                 }`}>
-                  {isSupabaseConfigured ? '🟢 Connected to Live Supabase' : '🟡 Local Storage Fallback Mode'}
+                  {isSupabaseConfigured ? '🟢 متصل به دیتابیس آنلاین' : '🟡 حالت ذخیره‌سازی محلی (LocalStorage)'}
                 </span>
               </div>
 
-              <p className="text-xs text-slate-600 leading-relaxed">
-                Supabase offers a permanently free tier with 500MB PostgreSQL database, 1GB file storage, 50,000 monthly active users, and full Row Level Security (RLS). Follow the steps in the setup guide or copy the schema migration script below.
+              <p className="text-xs text-slate-600 leading-relaxed font-normal">
+                سرویس Supabase یک پلن رایگان مادام‌العمر شامل ۵۰۰ مگابایت دیتابیس PostgreSQL، ۱ گیگابایت فضای آپلود تصاویر و ۵۰ هزار کاربر فعال در ماه بدون نیاز به کارت بانکی ارائه می‌دهد. اسکریپت ساخت جدول و قوانین امنیتی برای شما آماده است.
               </p>
 
               <button
@@ -644,7 +644,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                 className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-sky-600 text-white text-xs font-bold hover:bg-sky-700 transition-colors shadow-xs"
               >
                 <ExternalLink className="w-3.5 h-3.5" />
-                <span>View Full Supabase Migration Script & Guide</span>
+                <span>مشاهده راهنمای گام‌به‌گام و اسکریپت SQL</span>
               </button>
             </div>
           </div>

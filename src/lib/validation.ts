@@ -3,70 +3,70 @@ import { z } from 'zod';
 export const memberRegistrationSchema = z.object({
   full_name: z
     .string()
-    .min(2, 'Name must be at least 2 characters')
-    .max(60, 'Name must not exceed 60 characters'),
+    .min(2, 'نام و نام خانوادگی باید حداقل ۲ حرف باشد')
+    .max(60, 'نام و نام خانوادگی نمی‌تواند بیش از ۶۰ حرف باشد'),
   professional_title: z
     .string()
-    .min(3, 'Professional title must be at least 3 characters')
-    .max(80, 'Professional title must not exceed 80 characters'),
+    .min(3, 'عنوان حرفه‌ای باید حداقل ۳ حرف باشد')
+    .max(80, 'عنوان حرفه‌ای نمی‌تواند بیش از ۸۰ حرف باشد'),
   category: z
     .string()
-    .min(1, 'Please select a professional category'),
+    .min(1, 'لطفاً دسته‌بندی حرفه‌ای خود را انتخاب کنید'),
   bio: z
     .string()
-    .min(15, 'Please provide a short intro of at least 15 characters')
-    .max(600, 'Intro must not exceed 600 characters'),
+    .min(15, 'لطفاً معرفی کوتاهی حداقل در ۱۵ حرف بنویسید')
+    .max(600, 'متن معرفی نمی‌تواند بیش از ۶۰۰ حرف باشد'),
   profile_photo_url: z
     .string()
-    .min(1, 'A profile photo is required'),
+    .min(1, 'آپلود تصویر پروفایل الزامی است'),
   skills: z
     .array(z.string())
-    .min(1, 'Please add at least one skill')
-    .max(12, 'Maximum of 12 skills allowed'),
+    .min(1, 'لطفاً حداقل ۱ مهارت یا تخصص اضافه کنید')
+    .max(12, 'حداکثر ۱۲ مهارت مجاز است'),
   consent_to_publish: z
     .boolean()
     .refine((val) => val === true, {
-      message: 'You must consent to publish your profile information',
+      message: 'تایید رضایت انتشار عمومی اطلاعات الزامی است',
     }),
   telegram_username: z
     .string()
     .optional()
     .refine(
       (val) => !val || /^[a-zA-Z0-9_]{3,32}$/.test(val.replace(/^@/, '').replace(/.*t\.me\//, '')),
-      { message: 'Enter a valid Telegram username (letters, numbers, underscore)' }
+      { message: 'آیدی تلگرام معتبر نیست (شامل حروف انگلیسی، اعداد یا خط زیرین)' }
     ),
   linkedin_url: z
     .string()
     .optional()
     .refine(
       (val) => !val || val === '' || /^https?:\/\/(www\.)?linkedin\.com\/.*$/i.test(val),
-      { message: 'Must be a valid LinkedIn URL (https://linkedin.com/...)' }
+      { message: 'آدرس لینکدین معتبر نیست (باید با https://linkedin.com شروع شود)' }
     ),
   website_url: z
     .string()
     .optional()
     .refine(
       (val) => !val || val === '' || /^https?:\/\/.+/i.test(val),
-      { message: 'Must be a valid web URL starting with https:// or http://' }
+      { message: 'آدرس وبسایت باید با http:// یا https:// شروع شود' }
     ),
   location: z
     .string()
-    .max(70, 'Location must not exceed 70 characters')
+    .max(70, 'موقعیت مکانی نباید بیش از ۷۰ حرف باشد')
     .optional(),
   private_email: z
     .string()
     .optional()
     .refine(
       (val) => !val || val === '' || /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val),
-      { message: 'Please enter a valid email address' }
+      { message: 'لطفاً یک ایمیل معتبر وارد کنید' }
     ),
   collaboration_goals: z
     .string()
-    .max(500, 'Collaboration goals must not exceed 500 characters')
+    .max(500, 'توضیحات همکاری نباید بیش از ۵۰۰ حرف باشد')
     .optional(),
   can_help_with: z
     .string()
-    .max(500, 'Help description must not exceed 500 characters')
+    .max(500, 'توضیحات کمک به دیگران نباید بیش از ۵۰۰ حرف باشد')
     .optional(),
   interests: z
     .array(z.string())

@@ -22,18 +22,18 @@ export const Hero: React.FC<HeroProps> = ({
 
       <div className="relative mx-auto max-w-5xl px-4 sm:px-6 text-center">
         {/* Pill badge */}
-        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-sky-100/80 border border-sky-200/70 text-sky-800 text-xs font-semibold mb-6 shadow-sm">
-          <Send className="w-3.5 h-3.5 text-sky-600 -rotate-12" />
-          <span>{APP_CONFIG.courseName} Community</span>
+        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-sky-100/80 border border-sky-200/70 text-sky-800 text-xs font-bold mb-6 shadow-sm">
+          <Send className="w-3.5 h-3.5 text-sky-600 rotate-180" />
+          <span>کامیونیتی {APP_CONFIG.courseName}</span>
           <span className="w-1 h-1 rounded-full bg-sky-500" />
-          <span className="text-sky-700 font-normal">Official Peer Directory</span>
+          <span className="text-sky-700 font-medium">دایرکتوری رسمی شبکه‌سازی</span>
         </div>
 
         {/* Main Headline */}
-        <h1 className="text-3xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-slate-900 leading-[1.15]">
-          Learn Together. <br className="hidden sm:inline" />
+        <h1 className="text-3xl sm:text-5xl lg:text-6xl font-black tracking-tight text-slate-900 leading-[1.25]">
+          با هم یاد بگیریم. <br className="hidden sm:inline" />
           <span className="bg-gradient-to-r from-sky-600 via-blue-600 to-indigo-600 bg-clip-text text-transparent">
-            Connect Beyond the Classroom.
+            فراتر از کلاس متصل شویم.
           </span>
         </h1>
 
@@ -46,18 +46,18 @@ export const Hero: React.FC<HeroProps> = ({
         <div className="mt-8 flex flex-wrap items-center justify-center gap-3 sm:gap-4">
           <button
             onClick={onOpenRegister}
-            className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-sky-600 to-telegram-brand px-6 py-3.5 text-sm sm:text-base font-semibold text-white shadow-lg shadow-sky-500/25 hover:from-sky-500 hover:to-sky-600 active:scale-95 transition-all"
+            className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-l from-sky-600 to-telegram-brand px-6 py-3.5 text-sm sm:text-base font-bold text-white shadow-lg shadow-sky-500/25 hover:from-sky-500 hover:to-sky-600 active:scale-95 transition-all"
           >
             <PlusCircle className="w-5 h-5" />
-            <span>Join the Network</span>
+            <span>عضویت در شبکه</span>
           </button>
 
           <button
             onClick={onScrollToDirectory}
-            className="inline-flex items-center gap-2 rounded-xl bg-white border border-slate-200 px-6 py-3.5 text-sm sm:text-base font-semibold text-slate-700 hover:bg-slate-50 hover:text-slate-900 hover:border-slate-300 active:scale-95 transition-all shadow-sm"
+            className="inline-flex items-center gap-2 rounded-xl bg-white border border-slate-200 px-6 py-3.5 text-sm sm:text-base font-bold text-slate-700 hover:bg-slate-50 hover:text-slate-900 hover:border-slate-300 active:scale-95 transition-all shadow-sm"
           >
             <Search className="w-4 h-4 text-slate-400" />
-            <span>Explore Directory</span>
+            <span>مشاهده همکلاسی‌ها</span>
           </button>
         </div>
 
@@ -66,25 +66,25 @@ export const Hero: React.FC<HeroProps> = ({
           <div className="p-3 rounded-xl bg-white/70 border border-slate-100 shadow-sm text-center">
             <div className="flex items-center justify-center gap-1.5 text-sky-600 mb-1">
               <Users className="w-4 h-4" />
-              <span className="text-xl sm:text-2xl font-extrabold text-slate-900">{memberCount}</span>
+              <span className="text-xl sm:text-2xl font-black text-slate-900">{memberCount}</span>
             </div>
-            <p className="text-xs font-medium text-slate-500">Joined Members</p>
+            <p className="text-xs font-semibold text-slate-500">همکلاسی ثبت‌شده</p>
           </div>
 
           <div className="p-3 rounded-xl bg-white/70 border border-slate-100 shadow-sm text-center">
             <div className="flex items-center justify-center gap-1.5 text-blue-600 mb-1">
               <Sparkles className="w-4 h-4" />
-              <span className="text-xl sm:text-2xl font-extrabold text-slate-900">{skillsCount}+</span>
+              <span className="text-xl sm:text-2xl font-black text-slate-900">{skillsCount}+</span>
             </div>
-            <p className="text-xs font-medium text-slate-500">Skills & Tools</p>
+            <p className="text-xs font-semibold text-slate-500">مهارت و تخصص</p>
           </div>
 
           <div className="p-3 rounded-xl bg-white/70 border border-slate-100 shadow-sm text-center col-span-2 sm:col-span-1">
             <div className="flex items-center justify-center gap-1.5 text-emerald-600 mb-1">
               <ShieldCheck className="w-4 h-4" />
-              <span className="text-xl sm:text-2xl font-extrabold text-slate-900">100%</span>
+              <span className="text-xl sm:text-2xl font-black text-slate-900">۱۰۰٪</span>
             </div>
-            <p className="text-xs font-medium text-slate-500">Moderated & Verified</p>
+            <p className="text-xs font-semibold text-slate-500">تایید شده توسط ادمین</p>
           </div>
         </div>
       </div>

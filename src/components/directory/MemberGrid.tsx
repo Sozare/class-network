@@ -37,7 +37,7 @@ export const MemberGrid: React.FC<MemberGridProps> = ({
             className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm animate-pulse space-y-4"
           >
             <div className="flex items-start gap-4">
-              <div className="w-16 h-16 rounded-full bg-slate-200" />
+              <div className="w-16 h-16 rounded-full bg-slate-200 shrink-0" />
               <div className="flex-1 space-y-2">
                 <div className="h-4 w-20 bg-slate-200 rounded" />
                 <div className="h-5 w-36 bg-slate-200 rounded" />
@@ -65,23 +65,23 @@ export const MemberGrid: React.FC<MemberGridProps> = ({
         <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-slate-100 text-slate-400 mb-4">
           <SearchX className="h-8 w-8" />
         </div>
-        <h3 className="text-lg font-bold text-slate-900 mb-1">No members found</h3>
-        <p className="text-sm text-slate-500 max-w-md mx-auto mb-6">
-          We couldn&apos;t find any published profiles matching your current search criteria or category filter.
+        <h3 className="text-lg font-black text-slate-900 mb-1">همکلاسی‌ای با این مشخصات یافت نشد</h3>
+        <p className="text-sm text-slate-500 max-w-md mx-auto mb-6 leading-relaxed">
+          هیچ پروفایل تایید‌شده‌ای متناسب با عبارت جستجو یا دسته‌بندی انتخاب‌شده پیدا نشد. می‌توانید فیلترها را پاک کنید یا اولین نفری باشید که پروفایلش را ثبت می‌کند!
         </p>
         <div className="flex items-center justify-center gap-3">
           <button
             onClick={onResetFilters}
-            className="px-4 py-2 text-xs sm:text-sm font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-xl transition-colors"
+            className="px-4 py-2 text-xs sm:text-sm font-bold text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-xl transition-colors"
           >
-            Clear all filters
+            حذف فیلترها
           </button>
           <button
             onClick={onOpenRegister}
-            className="inline-flex items-center gap-1.5 px-4 py-2 text-xs sm:text-sm font-semibold text-white bg-sky-600 hover:bg-sky-700 rounded-xl transition-colors shadow-sm"
+            className="inline-flex items-center gap-1.5 px-4 py-2 text-xs sm:text-sm font-bold text-white bg-sky-600 hover:bg-sky-700 rounded-xl transition-colors shadow-sm"
           >
             <PlusCircle className="w-4 h-4" />
-            <span>Join Directory</span>
+            <span>عضویت در شبکه</span>
           </button>
         </div>
       </div>
@@ -109,10 +109,10 @@ export const MemberGrid: React.FC<MemberGridProps> = ({
         <div className="text-center pt-4">
           <button
             onClick={handleLoadMore}
-            className="inline-flex items-center gap-2 px-6 py-3 rounded-xl border border-slate-200 bg-white text-sm font-semibold text-slate-700 hover:bg-slate-50 hover:border-slate-300 shadow-sm active:scale-95 transition-all"
+            className="inline-flex items-center gap-2 px-6 py-3 rounded-xl border border-slate-200 bg-white text-sm font-bold text-slate-700 hover:bg-slate-50 hover:border-slate-300 shadow-sm active:scale-95 transition-all"
           >
             <ArrowDown className="w-4 h-4 text-slate-400" />
-            <span>Load more members ({members.length - visibleCount} remaining)</span>
+            <span>مشاهده اعضای بیشتر ({members.length - visibleCount} همکلاسی دیگر)</span>
           </button>
         </div>
       )}

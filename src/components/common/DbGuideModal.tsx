@@ -33,14 +33,16 @@ CREATE TABLE IF NOT EXISTS public.members (
     publication_status TEXT NOT NULL DEFAULT 'pending' CHECK (publication_status IN ('pending', 'approved', 'rejected', 'archived')),
     featured BOOLEAN NOT NULL DEFAULT FALSE,
     consent_to_publish BOOLEAN NOT NULL DEFAULT TRUE CHECK (consent_to_publish = TRUE),
+    is_demo BOOLEAN NOT NULL DEFAULT FALSE,
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
--- 2. Performance Indexes
-CREATE INDEX IF NOT EXISTS idx_members_status ON public.members (publication_status);
+-- 2. Indexes for Query Performance & Scalability
+CREATE INDEX IF NOT EXISTS idx_members_publication_status ON public.members (publication_status);
 CREATE INDEX IF NOT EXISTS idx_members_category ON public.members (category);
 CREATE INDEX IF NOT EXISTS idx_members_featured ON public.members (featured);
+CREATE INDEX IF NOT EXISTS idx_members_created_at ON public.members (created_at DESC);
 CREATE INDEX IF NOT EXISTS idx_members_skills ON public.members USING GIN (skills);
 
 -- 3. Automatic updated_at Trigger
@@ -61,18 +63,17 @@ CREATE TRIGGER trigger_members_updated_at
 -- 4. Enable Row Level Security (RLS)
 ALTER TABLE public.members ENABLE ROW LEVEL SECURITY;
 
--- Policy A: Anyone (public anon visitors) can ONLY view APPROVED profiles
--- (Note: private_email is excluded at the query level or via view)
-DROP POLICY IF EXISTS "Public can only read approved profiles" ON public.members;
-CREATE POLICY "Public can only read approved profiles"
+-- Policy 1: Public visitors (anon) can ONLY select APPROVED profiles
+DROP POLICY IF EXISTS "Public can view approved members" ON public.members;
+CREATE POLICY "Public can view approved members"
     ON public.members
     FOR SELECT
     TO anon, authenticated
     USING (publication_status = 'approved');
 
--- Policy B: Anyone (anon) can submit a new registration profile with 'pending' status
-DROP POLICY IF EXISTS "Public can submit registration" ON public.members;
-CREATE POLICY "Public can submit registration"
+-- Policy 2: Public visitors (anon) can submit a new registration profile with 'pending' status
+DROP POLICY IF EXISTS "Anyone can submit registration" ON public.members;
+CREATE POLICY "Anyone can submit registration"
     ON public.members
     FOR INSERT
     TO anon, authenticated
@@ -82,7 +83,7 @@ CREATE POLICY "Public can submit registration"
         featured = FALSE
     );
 
--- Policy C: Authenticated admin users have full access to moderate, edit, and delete
+-- Policy 3: Authenticated administrators have full CRUD access
 DROP POLICY IF EXISTS "Admins have full access" ON public.members;
 CREATE POLICY "Admins have full access"
     ON public.members
@@ -91,21 +92,20 @@ CREATE POLICY "Admins have full access"
     USING (TRUE)
     WITH CHECK (TRUE);
 
--- 5. Storage Bucket Configuration for Member Photos
--- In Supabase dashboard -> Storage, create a public bucket named 'member-photos'
+-- 5. Storage Bucket for Member Profile Photos
 INSERT INTO storage.buckets (id, name, public)
 VALUES ('member-photos', 'member-photos', true)
 ON CONFLICT (id) DO NOTHING;
 
--- Storage Bucket Policies
-DROP POLICY IF EXISTS "Public can view member photos" ON storage.objects;
-CREATE POLICY "Public can view member photos"
+-- Storage RLS Policies
+DROP POLICY IF EXISTS "Public can view avatar images" ON storage.objects;
+CREATE POLICY "Public can view avatar images"
     ON storage.objects FOR SELECT
     TO public
     USING (bucket_id = 'member-photos');
 
-DROP POLICY IF EXISTS "Anyone can upload member photo" ON storage.objects;
-CREATE POLICY "Anyone can upload member photo"
+DROP POLICY IF EXISTS "Public can upload avatar images" ON storage.objects;
+CREATE POLICY "Public can upload avatar images"
     ON storage.objects FOR INSERT
     TO public
     WITH CHECK (bucket_id = 'member-photos');
@@ -127,13 +127,13 @@ export const DbGuideModal: React.FC<DbGuideModalProps> = ({ isOpen, onClose }) =
       title={
         <span className="flex items-center gap-2 text-slate-900">
           <Database className="w-5 h-5 text-sky-600" />
-          Supabase Free Tier Setup & SQL Script
+          راهنمای راه‌اندازی دیتابیس آنلاین رایگان (Supabase)
         </span>
       }
-      subtitle="Complete instructions to connect your free production database."
+      subtitle="۳ مرحله ساده برای ذخیره دائم اطلاعات کاربران در پایگاه داده ابری PostgreSQL"
       maxWidth="3xl"
     >
-      <div className="space-y-6 pt-1 text-sm text-slate-700">
+      <div className="space-y-6 pt-1 text-sm text-slate-700 text-right">
         {/* Status card */}
         <div className={`p-4 rounded-xl border flex items-center justify-between ${
           isSupabaseConfigured
@@ -143,12 +143,12 @@ export const DbGuideModal: React.FC<DbGuideModalProps> = ({ isOpen, onClose }) =
           <div>
             <div className="font-bold flex items-center gap-1.5">
               <span className={`w-2.5 h-2.5 rounded-full ${isSupabaseConfigured ? 'bg-emerald-500' : 'bg-amber-500 animate-pulse'}`} />
-              <span>Current Status: {isSupabaseConfigured ? 'Connected to live Supabase database' : 'Running in Local Storage / Demo Mode'}</span>
+              <span>وضعیت کنونی: {isSupabaseConfigured ? 'متصل به دیتابیس زنده Supabase' : 'در حال استفاده از حافظه مرورگر (حالت دمو)'}</span>
             </div>
             <p className="text-xs mt-0.5 opacity-90">
               {isSupabaseConfigured
-                ? 'All member submissions and photo uploads are persisting directly to your PostgreSQL database.'
-                : 'The application is fully functional right now using browser storage. Follow the 3 steps below to connect a live database.'}
+                ? 'ثبت‌نام‌ها و تصاویر اعضا مستقیماً در دیتابیس ابری ذخیره می‌شوند.'
+                : 'برنامه در حال حاضر کاملاً فعال و قابل تست است. برای آنلاین‌سازی سراسری، ۳ مرحله زیر را انجام دهید.'}
             </p>
           </div>
         </div>
@@ -156,46 +156,47 @@ export const DbGuideModal: React.FC<DbGuideModalProps> = ({ isOpen, onClose }) =
         {/* 3 Step Guide */}
         <div className="space-y-4">
           <h4 className="text-xs font-bold uppercase tracking-wider text-slate-400">
-            Quick 3-Step Setup
+            مراحل سه‌گانه راه‌اندازی (کمتر از ۳ دقیقه)
           </h4>
 
           {/* Step 1 */}
           <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-200/80 space-y-1">
             <div className="font-bold text-slate-800 flex items-center justify-between">
-              <span>Step 1: Create a Free Supabase Project</span>
+              <span>گام اول: ایجاد پروژه رایگان در Supabase</span>
               <a
                 href="https://supabase.com"
                 target="_blank"
                 rel="noreferrer"
                 className="text-xs text-sky-600 hover:underline inline-flex items-center gap-1"
+                dir="ltr"
               >
                 <span>supabase.com</span>
                 <ExternalLink className="w-3 h-3" />
               </a>
             </div>
-            <p className="text-xs text-slate-500">
-              Go to supabase.com and click &ldquo;Start your project&rdquo;. The free tier includes 500MB PostgreSQL, 1GB Storage, and 50,000 MAUs forever with no credit card required.
+            <p className="text-xs text-slate-500 leading-relaxed">
+              وارد سایت supabase.com شوید و روی <strong>Start your project</strong> کلیک کنید (کاملاً رایگان و بدون نیاز به کارت بانکی). یک نام برای پروژه انتخاب نمایید.
             </p>
           </div>
 
           {/* Step 2 */}
           <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-200/80 space-y-2">
             <div className="flex items-center justify-between">
-              <span className="font-bold text-slate-800">Step 2: Run the SQL Migration Script</span>
+              <span className="font-bold text-slate-800">گام دوم: اجرای اسکریپت ساخت جداول (SQL Editor)</span>
               <button
                 type="button"
                 onClick={handleCopy}
-                className="inline-flex items-center gap-1 text-xs px-2.5 py-1 rounded bg-slate-900 text-white hover:bg-slate-800 font-semibold transition-colors"
+                className="inline-flex items-center gap-1 text-xs px-2.5 py-1 rounded-lg bg-slate-900 text-white hover:bg-slate-800 font-bold transition-colors"
               >
                 {copied ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
-                <span>{copied ? 'Copied SQL!' : 'Copy SQL Script'}</span>
+                <span>{copied ? 'کپی شد!' : 'کپی اسکریپت SQL'}</span>
               </button>
             </div>
-            <p className="text-xs text-slate-500">
-              In your Supabase project dashboard, open the <strong>SQL Editor</strong> tab on the left, paste the SQL script below, and click <strong>Run</strong>.
+            <p className="text-xs text-slate-500 leading-relaxed">
+              در پنل Supabase از منوی سمت چپ به بخش <strong>SQL Editor</strong> بروید، کد زیر را جای‌گذاری کرده و دکمه <strong>Run</strong> را بزنید:
             </p>
             <div className="relative">
-              <pre className="max-h-48 overflow-y-auto rounded-lg bg-slate-900 p-3 text-[11px] font-mono text-slate-200 leading-relaxed scrollbar-none">
+              <pre className="max-h-44 overflow-y-auto rounded-lg bg-slate-900 p-3 text-[11px] font-mono text-slate-200 leading-relaxed scrollbar-none text-left" dir="ltr">
                 {SQL_SCHEMA_SCRIPT}
               </pre>
             </div>
@@ -205,12 +206,12 @@ export const DbGuideModal: React.FC<DbGuideModalProps> = ({ isOpen, onClose }) =
           <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-200/80 space-y-2">
             <div className="font-bold text-slate-800 flex items-center gap-1.5">
               <Key className="w-4 h-4 text-sky-600" />
-              <span>Step 3: Add API Keys to .env</span>
+              <span>گام سوم: قرار دادن کلیدها در فایل .env</span>
             </div>
-            <p className="text-xs text-slate-500">
-              In your Supabase dashboard, go to <strong>Project Settings → API</strong>. Copy the Project URL and anon public key, then add them to your local <code className="bg-slate-200 px-1 py-0.5 rounded text-slate-800">.env</code> file:
+            <p className="text-xs text-slate-500 leading-relaxed">
+              در پنل Supabase به مسیر <strong>Project Settings → API</strong> بروید. آدرس Project URL و کلید anon public را کپی کنید و در فایل <code className="bg-slate-200 px-1 py-0.5 rounded text-slate-800 font-mono">.env</code> قرار دهید:
             </p>
-            <pre className="rounded-lg bg-slate-900 p-3 text-[11px] font-mono text-emerald-400">
+            <pre className="rounded-lg bg-slate-900 p-3 text-[11px] font-mono text-emerald-400 text-left" dir="ltr">
 VITE_SUPABASE_URL=https://xxxxxxxxxxxxxxxxxxxx.supabase.co
 VITE_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
             </pre>
@@ -221,9 +222,9 @@ VITE_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
           <button
             type="button"
             onClick={onClose}
-            className="px-5 py-2 rounded-xl bg-slate-900 text-white font-semibold text-xs hover:bg-slate-800 transition-colors"
+            className="px-5 py-2 rounded-xl bg-slate-900 text-white font-bold text-xs hover:bg-slate-800 transition-colors"
           >
-            Done
+            متوجه شدم
           </button>
         </div>
       </div>

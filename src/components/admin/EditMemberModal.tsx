@@ -71,14 +71,14 @@ export const EditMemberModal: React.FC<EditMemberModalProps> = ({
     <Modal
       isOpen={isOpen}
       onClose={onClose}
-      title="Edit Member Information"
-      subtitle={`Moderating profile for ${member.full_name}`}
+      title="ویرایش مشخصات همکلاسی"
+      subtitle={`مدیریت اطلاعات و بازبینی پروفایل ${member.full_name}`}
       maxWidth="2xl"
     >
-      <form onSubmit={handleSubmit} className="space-y-4 pt-2">
+      <form onSubmit={handleSubmit} className="space-y-4 pt-2 text-right">
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
-            <label className="block text-xs font-bold text-slate-700 mb-1">Full Name</label>
+            <label className="block text-xs font-bold text-slate-700 mb-1">نام و نام خانوادگی</label>
             <input
               type="text"
               required
@@ -89,7 +89,7 @@ export const EditMemberModal: React.FC<EditMemberModalProps> = ({
           </div>
 
           <div>
-            <label className="block text-xs font-bold text-slate-700 mb-1">Professional Title</label>
+            <label className="block text-xs font-bold text-slate-700 mb-1">عنوان حرفه‌ای</label>
             <input
               type="text"
               required
@@ -102,11 +102,11 @@ export const EditMemberModal: React.FC<EditMemberModalProps> = ({
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
-            <label className="block text-xs font-bold text-slate-700 mb-1">Category</label>
+            <label className="block text-xs font-bold text-slate-700 mb-1">دسته‌بندی تخصصی</label>
             <select
               value={formData.category || ''}
               onChange={(e) => setFormData({ ...formData, category: e.target.value })}
-              className="w-full rounded-xl border border-slate-200 py-2 px-3 text-sm text-slate-800 bg-white"
+              className="w-full rounded-xl border border-slate-200 py-2 px-3 text-sm text-slate-800 bg-white font-medium"
             >
               {DEFAULT_CATEGORIES.filter(c => c.id !== 'all').map(c => (
                 <option key={c.id} value={c.name}>{c.name}</option>
@@ -115,7 +115,7 @@ export const EditMemberModal: React.FC<EditMemberModalProps> = ({
           </div>
 
           <div>
-            <label className="block text-xs font-bold text-slate-700 mb-1">Location</label>
+            <label className="block text-xs font-bold text-slate-700 mb-1">شهر / موقعیت مکانی</label>
             <input
               type="text"
               value={formData.location || ''}
@@ -126,7 +126,7 @@ export const EditMemberModal: React.FC<EditMemberModalProps> = ({
         </div>
 
         <div>
-          <label className="block text-xs font-bold text-slate-700 mb-1">Bio / Intro</label>
+          <label className="block text-xs font-bold text-slate-700 mb-1">معرفی کوتاه / بایو</label>
           <textarea
             rows={3}
             value={formData.bio || ''}
@@ -137,26 +137,26 @@ export const EditMemberModal: React.FC<EditMemberModalProps> = ({
 
         {/* Skills Tag Edit */}
         <div>
-          <label className="block text-xs font-bold text-slate-700 mb-1">Skills</label>
+          <label className="block text-xs font-bold text-slate-700 mb-1">مهارت‌ها</label>
           <div className="flex gap-2 mb-2">
             <input
               type="text"
               value={skillInput}
               onChange={(e) => setSkillInput(e.target.value)}
-              placeholder="Add skill..."
+              placeholder="مهارت جدید..."
               className="flex-1 rounded-xl border border-slate-200 py-1.5 px-3 text-sm text-slate-800"
             />
             <button
               type="button"
               onClick={handleAddSkill}
-              className="px-3 py-1.5 rounded-xl bg-slate-100 text-slate-700 text-xs font-semibold"
+              className="px-4 py-1.5 rounded-xl bg-slate-100 text-slate-700 text-xs font-bold"
             >
-              Add
+              افزودن
             </button>
           </div>
           <div className="flex flex-wrap gap-1.5">
             {formData.skills?.map(s => (
-              <span key={s} className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md text-xs bg-slate-100 text-slate-700 border border-slate-200">
+              <span key={s} className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md text-xs font-bold bg-slate-100 text-slate-700 border border-slate-200">
                 {s}
                 <button type="button" onClick={() => handleRemoveSkill(s)}>
                   <X className="w-3 h-3 text-slate-400 hover:text-rose-600" />
@@ -169,44 +169,47 @@ export const EditMemberModal: React.FC<EditMemberModalProps> = ({
         {/* Telegram, LinkedIn, Website */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
           <div>
-            <label className="block text-xs font-bold text-slate-700 mb-1">Telegram Username</label>
+            <label className="block text-xs font-bold text-slate-700 mb-1">آیدی تلگرام</label>
             <input
               type="text"
+              dir="ltr"
               value={formData.telegram_username || ''}
               onChange={(e) => setFormData({ ...formData, telegram_username: e.target.value.replace('@', '') })}
-              className="w-full rounded-xl border border-slate-200 py-2 px-3 text-sm text-slate-800"
+              className="w-full rounded-xl border border-slate-200 py-2 px-3 text-sm text-slate-800 text-left"
             />
           </div>
           <div>
-            <label className="block text-xs font-bold text-slate-700 mb-1">LinkedIn URL</label>
+            <label className="block text-xs font-bold text-slate-700 mb-1">لینکدین</label>
             <input
               type="url"
+              dir="ltr"
               value={formData.linkedin_url || ''}
               onChange={(e) => setFormData({ ...formData, linkedin_url: e.target.value })}
-              className="w-full rounded-xl border border-slate-200 py-2 px-3 text-sm text-slate-800"
+              className="w-full rounded-xl border border-slate-200 py-2 px-3 text-sm text-slate-800 text-left"
             />
           </div>
           <div>
-            <label className="block text-xs font-bold text-slate-700 mb-1">Website URL</label>
+            <label className="block text-xs font-bold text-slate-700 mb-1">وبسایت</label>
             <input
               type="url"
+              dir="ltr"
               value={formData.website_url || ''}
               onChange={(e) => setFormData({ ...formData, website_url: e.target.value })}
-              className="w-full rounded-xl border border-slate-200 py-2 px-3 text-sm text-slate-800"
+              className="w-full rounded-xl border border-slate-200 py-2 px-3 text-sm text-slate-800 text-left"
             />
           </div>
         </div>
 
         {/* Featured Toggle */}
         <div className="pt-2">
-          <label className="flex items-center gap-2 cursor-pointer select-none text-xs font-semibold text-slate-800">
+          <label className="flex items-center gap-2 cursor-pointer select-none text-xs font-bold text-slate-800">
             <input
               type="checkbox"
               checked={formData.featured || false}
               onChange={(e) => setFormData({ ...formData, featured: e.target.checked })}
               className="rounded border-slate-300 text-sky-600 focus:ring-sky-500 w-4 h-4 cursor-pointer"
             />
-            <span>Feature this member on the homepage</span>
+            <span>نمایش این کاربر به عنوان عضو منتخب در بالای صفحه</span>
           </label>
         </div>
 
@@ -215,16 +218,16 @@ export const EditMemberModal: React.FC<EditMemberModalProps> = ({
           <button
             type="button"
             onClick={onClose}
-            className="px-4 py-2 text-xs font-semibold text-slate-600 hover:text-slate-800"
+            className="px-4 py-2 text-xs font-bold text-slate-600 hover:text-slate-800"
           >
-            Cancel
+            انصراف
           </button>
           <button
             type="submit"
             disabled={isSaving}
-            className="px-5 py-2.5 rounded-xl bg-sky-600 text-white text-xs font-semibold hover:bg-sky-700 transition-colors shadow-sm disabled:opacity-50"
+            className="px-5 py-2.5 rounded-xl bg-sky-600 text-white text-xs font-bold hover:bg-sky-700 transition-colors shadow-sm disabled:opacity-50"
           >
-            {isSaving ? 'Saving...' : 'Save Changes'}
+            {isSaving ? 'در حال ذخیره...' : 'ذخیره تغییرات'}
           </button>
         </div>
       </form>

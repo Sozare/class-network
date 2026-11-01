@@ -2,7 +2,7 @@ import { supabase, isSupabaseConfigured } from '../lib/supabase';
 import type { Member, PublicationStatus, RegistrationFormData, FilterState, DirectoryStats } from '../types';
 import { DEMO_MEMBERS } from '../lib/constants';
 
-const LOCAL_STORAGE_KEY = 'class_network_members_v1';
+const LOCAL_STORAGE_KEY = 'class_network_members_fa_v1';
 
 function getStoredMembers(): Member[] {
   try {

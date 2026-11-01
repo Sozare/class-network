@@ -7,7 +7,7 @@ export default {
   theme: {
     extend: {
       fontFamily: {
-        sans: ['Inter', 'Vazirmatn', 'system-ui', '-apple-system', 'sans-serif'],
+        sans: ['Vazirmatn', 'Inter', 'system-ui', '-apple-system', 'sans-serif'],
       },
       colors: {
         telegram: {

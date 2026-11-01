@@ -34,30 +34,30 @@ export const MemberDetailModal: React.FC<MemberDetailModalProps> = ({
     setTimeout(() => setCopiedLink(false), 2500);
   };
 
-  const formattedDate = new Date(member.created_at).toLocaleDateString('en-US', {
-    month: 'short',
+  const formattedDate = new Date(member.created_at).toLocaleDateString('fa-IR', {
+    month: 'long',
     year: 'numeric',
   });
 
   return (
     <Modal isOpen={isOpen} onClose={onClose} maxWidth="2xl">
-      <div className="-m-6">
+      <div className="-m-6 text-right">
         {/* Banner header gradient */}
-        <div className="h-32 bg-gradient-to-r from-sky-500 via-blue-600 to-indigo-600 relative rounded-t-2xl p-6 flex items-end justify-end">
+        <div className="h-32 bg-gradient-to-l from-sky-500 via-blue-600 to-indigo-600 relative rounded-t-2xl p-6 flex items-end justify-start">
           <button
             onClick={handleCopyProfile}
-            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/90 hover:bg-white text-xs font-semibold text-slate-700 shadow-sm backdrop-blur-sm transition-all"
-            title="Copy profile link"
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/95 hover:bg-white text-xs font-bold text-slate-700 shadow-sm backdrop-blur-sm transition-all"
+            title="کپی لینک اختصاصی این پروفایل"
           >
             {copiedLink ? (
               <>
                 <Check className="w-3.5 h-3.5 text-emerald-600" />
-                <span className="text-emerald-700 font-bold">Link Copied!</span>
+                <span className="text-emerald-700 font-bold">لینک کپی شد!</span>
               </>
             ) : (
               <>
                 <Copy className="w-3.5 h-3.5" />
-                <span>Share Profile</span>
+                <span>اشتراک‌گذاری پروفایل</span>
               </>
             )}
           </button>
@@ -72,19 +72,19 @@ export const MemberDetailModal: React.FC<MemberDetailModalProps> = ({
                 src={member.profile_photo_url}
                 name={member.full_name}
                 size="2xl"
-                className="border-4 border-white shadow-md ring-0"
+                className="border-4 border-white shadow-md ring-0 shrink-0"
               />
               <div className="mb-1">
                 <div className="flex items-center gap-2">
-                  <h2 className="text-xl sm:text-2xl font-extrabold text-slate-900 leading-tight">
+                  <h2 className="text-xl sm:text-2xl font-black text-slate-900 leading-tight">
                     {member.full_name}
                   </h2>
-                  <span title="Verified Cohort Member">
+                  <span title="عضو تایید‌شده دوره تلگرام">
                     <ShieldCheck className="w-5 h-5 text-sky-500 shrink-0" />
                   </span>
                 </div>
-                <p className="text-sm font-semibold text-slate-600">{member.professional_title}</p>
-                <div className="flex flex-wrap items-center gap-3 mt-1 text-xs text-slate-500">
+                <p className="text-sm font-bold text-slate-600 mt-0.5">{member.professional_title}</p>
+                <div className="flex flex-wrap items-center gap-2.5 mt-2 text-xs text-slate-500 font-semibold">
                   <Badge variant="primary">{member.category}</Badge>
                   {member.location && (
                     <span className="flex items-center gap-1">
@@ -94,7 +94,7 @@ export const MemberDetailModal: React.FC<MemberDetailModalProps> = ({
                   )}
                   <span className="flex items-center gap-1">
                     <Calendar className="w-3.5 h-3.5 text-slate-400" />
-                    Joined {formattedDate}
+                    عضویت از {formattedDate}
                   </span>
                 </div>
               </div>
@@ -102,17 +102,17 @@ export const MemberDetailModal: React.FC<MemberDetailModalProps> = ({
           </div>
 
           {/* Contact Action Bar */}
-          <div className="p-3 rounded-xl bg-slate-50 border border-slate-200/80 flex flex-wrap items-center justify-between gap-3 mb-6">
+          <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-200/80 flex flex-wrap items-center justify-between gap-3 mb-6">
             <div className="flex flex-wrap items-center gap-2">
               {telegramUrl && (
                 <a
                   href={telegramUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-telegram-brand hover:bg-sky-600 text-white text-xs sm:text-sm font-semibold shadow-sm transition-all active:scale-95"
+                  className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-telegram-brand hover:bg-sky-600 text-white text-xs sm:text-sm font-bold shadow-sm transition-all active:scale-95"
                 >
-                  <Send className="w-4 h-4 -rotate-12 translate-x-0.5" />
-                  <span>Message on Telegram (@{member.telegram_username})</span>
+                  <Send className="w-4 h-4 rotate-180 -translate-x-0.5" />
+                  <span>ارسال پیام در تلگرام ({member.telegram_username}@)</span>
                 </a>
               )}
 
@@ -121,10 +121,10 @@ export const MemberDetailModal: React.FC<MemberDetailModalProps> = ({
                   href={member.linkedin_url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg bg-white border border-slate-200 text-slate-700 hover:text-blue-700 hover:border-blue-300 text-xs sm:text-sm font-semibold shadow-xs transition-colors"
+                  className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg bg-white border border-slate-200 text-slate-700 hover:text-blue-700 hover:border-blue-300 text-xs sm:text-sm font-bold shadow-xs transition-colors"
                 >
                   <LinkedInIcon className="w-4 h-4 text-[#0077b5]" />
-                  <span>LinkedIn</span>
+                  <span>لینکدین</span>
                 </a>
               )}
 
@@ -133,25 +133,25 @@ export const MemberDetailModal: React.FC<MemberDetailModalProps> = ({
                   href={member.website_url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg bg-white border border-slate-200 text-slate-700 hover:text-slate-900 hover:border-slate-300 text-xs sm:text-sm font-semibold shadow-xs transition-colors"
+                  className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg bg-white border border-slate-200 text-slate-700 hover:text-slate-900 hover:border-slate-300 text-xs sm:text-sm font-bold shadow-xs transition-colors"
                 >
                   <Globe className="w-4 h-4 text-slate-500" />
-                  <span>Portfolio / Web</span>
+                  <span>وبسایت / پورتفولیو</span>
                 </a>
               )}
             </div>
 
-            <div className="text-[11px] text-slate-400 font-medium">
-              Verified Class Member
+            <div className="text-[11px] text-emerald-700 font-bold bg-emerald-50 border border-emerald-200 px-2.5 py-1 rounded-md">
+              عضو رسمی دوره
             </div>
           </div>
 
           {/* Profile Sections */}
-          <div className="space-y-6 text-left">
+          <div className="space-y-6 text-right">
             {/* About */}
             <div>
               <h4 className="text-xs font-bold uppercase tracking-wider text-slate-400 mb-2">
-                About
+                درباره من
               </h4>
               <p className="text-sm text-slate-700 leading-relaxed whitespace-pre-line">
                 {member.bio}
@@ -161,7 +161,7 @@ export const MemberDetailModal: React.FC<MemberDetailModalProps> = ({
             {/* Skills & Expertise */}
             <div>
               <h4 className="text-xs font-bold uppercase tracking-wider text-slate-400 mb-2">
-                Skills & Technologies
+                مهارت‌ها و فناوری‌ها
               </h4>
               <div className="flex flex-wrap gap-2">
                 {member.skills?.map((skill) => (
@@ -171,7 +171,7 @@ export const MemberDetailModal: React.FC<MemberDetailModalProps> = ({
                       onFilterSkill?.(skill);
                       onClose();
                     }}
-                    className="inline-flex items-center px-3 py-1 rounded-lg text-xs font-medium bg-slate-100 text-slate-800 hover:bg-sky-50 hover:text-sky-700 hover:border-sky-200 border border-slate-200/60 cursor-pointer transition-colors"
+                    className="inline-flex items-center px-3 py-1 rounded-lg text-xs font-bold bg-slate-100 text-slate-800 hover:bg-sky-50 hover:text-sky-700 hover:border-sky-200 border border-slate-200/60 cursor-pointer transition-colors"
                   >
                     {skill}
                   </span>
@@ -183,13 +183,13 @@ export const MemberDetailModal: React.FC<MemberDetailModalProps> = ({
             {member.interests && member.interests.length > 0 && (
               <div>
                 <h4 className="text-xs font-bold uppercase tracking-wider text-slate-400 mb-2">
-                  Current Professional Interests
+                  علاقه‌مندی‌های حرفه‌ای
                 </h4>
                 <div className="flex flex-wrap gap-1.5">
                   {member.interests.map((interest) => (
                     <span
                       key={interest}
-                      className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md text-xs font-medium bg-sky-50 text-sky-700 border border-sky-100"
+                      className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md text-xs font-bold bg-sky-50 text-sky-700 border border-sky-100"
                     >
                       <Sparkles className="w-3 h-3 text-sky-500" />
                       {interest}
@@ -203,10 +203,10 @@ export const MemberDetailModal: React.FC<MemberDetailModalProps> = ({
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
               {/* Can Help With */}
               {member.can_help_with && (
-                <div className="rounded-xl border border-emerald-200 bg-emerald-50/50 p-4">
+                <div className="rounded-xl border border-emerald-200 bg-emerald-50/50 p-4 text-right">
                   <div className="flex items-center gap-2 text-emerald-800 font-bold text-xs uppercase tracking-wider mb-2">
-                    <Lightbulb className="w-4 h-4 text-emerald-600" />
-                    <span>How I Can Help Others</span>
+                    <Lightbulb className="w-4 h-4 text-emerald-600 shrink-0" />
+                    <span>چگونه می‌توانم به دیگران کمک کنم؟</span>
                   </div>
                   <p className="text-xs sm:text-sm text-emerald-950 leading-relaxed">
                     {member.can_help_with}
@@ -216,10 +216,10 @@ export const MemberDetailModal: React.FC<MemberDetailModalProps> = ({
 
               {/* Collaboration Goals */}
               {member.collaboration_goals && (
-                <div className="rounded-xl border border-blue-200 bg-blue-50/50 p-4">
+                <div className="rounded-xl border border-blue-200 bg-blue-50/50 p-4 text-right">
                   <div className="flex items-center gap-2 text-blue-800 font-bold text-xs uppercase tracking-wider mb-2">
-                    <HeartHandshake className="w-4 h-4 text-blue-600" />
-                    <span>Looking For / Collaboration</span>
+                    <HeartHandshake className="w-4 h-4 text-blue-600 shrink-0" />
+                    <span>به دنبال چه نوع همکاری هستم؟</span>
                   </div>
                   <p className="text-xs sm:text-sm text-blue-950 leading-relaxed">
                     {member.collaboration_goals}

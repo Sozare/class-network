@@ -28,7 +28,7 @@ export const RegistrationModal: React.FC<RegistrationModalProps> = ({
   const [formData, setFormData] = useState<RegistrationFormData>({
     full_name: '',
     professional_title: '',
-    category: DEFAULT_CATEGORIES[1]?.name || 'Software Engineering',
+    category: DEFAULT_CATEGORIES[1]?.name || 'مهندسی نرم‌افزار و برنامه‌نویسی',
     bio: '',
     skills: [],
     interests: [],
@@ -158,7 +158,7 @@ export const RegistrationModal: React.FC<RegistrationModalProps> = ({
       }
       onSuccess();
     } else {
-      setFieldErrors({ form: res.error || 'Submission failed. Please try again.' });
+      setFieldErrors({ form: res.error || 'خطایی در ثبت اطلاعات رخ داد. لطفاً دوباره تلاش کنید.' });
     }
   };
 
@@ -171,19 +171,19 @@ export const RegistrationModal: React.FC<RegistrationModalProps> = ({
   // Virtual member object for the Live Card Preview
   const previewMember: Member = {
     id: 'preview-id',
-    full_name: formData.full_name || 'Your Full Name',
-    professional_title: formData.professional_title || 'Your Professional Title',
-    bio: formData.bio || 'Your short introduction and background will be presented here.',
+    full_name: formData.full_name || 'نام و نام خانوادگی شما',
+    professional_title: formData.professional_title || 'عنوان و موقعیت شغلی شما',
+    bio: formData.bio || 'معرفی کوتاه، سوابق و حوزه‌های کاری شما در این قسمت نمایش داده خواهد شد.',
     category: formData.category,
     profile_photo_url: formData.profile_photo_url || '',
-    skills: formData.skills.length > 0 ? formData.skills : ['Your Skill 1', 'Your Skill 2'],
+    skills: formData.skills.length > 0 ? formData.skills : ['مهارت اول', 'مهارت دوم'],
     interests: formData.interests,
     collaboration_goals: formData.collaboration_goals,
     can_help_with: formData.can_help_with,
     telegram_username: formData.telegram_username,
     linkedin_url: formData.linkedin_url,
     website_url: formData.website_url,
-    location: formData.location || 'Remote',
+    location: formData.location || 'ریموت',
     publication_status: 'pending',
     featured: false,
     consent_to_publish: true,
@@ -199,89 +199,89 @@ export const RegistrationModal: React.FC<RegistrationModalProps> = ({
         isSubmittedSuccess ? (
           <span className="flex items-center gap-2 text-emerald-600">
             <CheckCircle2 className="w-6 h-6" />
-            Submission Received
+            درخواست عضویت شما دریافت شد
           </span>
         ) : (
-          'Join the Class Network'
+          'عضویت در شبکه همکلاسی‌ها'
         )
       }
       subtitle={
         isSubmittedSuccess
-          ? 'Your profile is currently under review by our cohort moderators.'
-          : 'Introduce yourself to your classmates and discover peers to collaborate with.'
+          ? 'پروفایل شما در حال حاضر در صف بررسی ادمین‌های دوره است.'
+          : 'خود را به همکلاسی‌های دوره معرفی کنید و با افراد مستعد کلاس ارتباط کاری برقرار کنید.'
       }
       maxWidth="3xl"
     >
       {/* Success State */}
       {isSubmittedSuccess ? (
-        <div className="py-6 text-center space-y-5">
+        <div className="py-6 text-center space-y-5 text-right">
           <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-emerald-100 text-emerald-600">
             <Sparkles className="w-8 h-8" />
           </div>
 
-          <div className="space-y-2 max-w-lg mx-auto">
-            <h3 className="text-xl font-extrabold text-slate-900">
-              Thank you for joining the network!
+          <div className="space-y-2 max-w-lg mx-auto text-center">
+            <h3 className="text-xl font-black text-slate-900">
+              از پیوستن شما به شبکه همکلاسی‌ها متشکریم!
             </h3>
             <p className="text-sm text-slate-600 leading-relaxed">
-              Your profile has been submitted and will appear in the directory after review by our cohort moderator.
-              We verify all submissions to maintain a safe, high-trust networking space.
+              پروفایل شما با موفقیت ثبت شد و پس از بررسی و تایید توسط ادمین‌های دوره، در صفحه اصلی دایرکتوری منتشر خواهد شد.
+              این فرآیند به منظور حفظ کیفیت و امنیت کامیونیتی کلاس انجام می‌شود.
             </p>
           </div>
 
-          <div className="p-4 rounded-xl bg-slate-50 border border-slate-200/80 max-w-md mx-auto text-left text-xs text-slate-500 space-y-1.5">
-            <div className="flex items-center gap-1.5 font-semibold text-slate-700">
+          <div className="p-4 rounded-xl bg-slate-50 border border-slate-200/80 max-w-md mx-auto text-right text-xs text-slate-600 space-y-2">
+            <div className="flex items-center gap-1.5 font-bold text-slate-800">
               <Shield className="w-4 h-4 text-sky-500" />
-              <span>What happens next?</span>
+              <span>مراحل بعدی چیست؟</span>
             </div>
-            <p>1. Moderators review submissions to prevent spam and verify details.</p>
-            <p>2. Once approved, your card will immediately go live on the homepage.</p>
-            <p>3. Classmates can view your skills and message you directly on Telegram.</p>
+            <p>۱. مدیران دوره درخواست‌ها را بررسی و اعتبارسنجی می‌کنند.</p>
+            <p>۲. به محض تایید، کارت شما بلافاصله در صفحه اول قرار می‌گیرد.</p>
+            <p>۳. همکلاسی‌ها می‌توانند مهارت‌های شما را ببینند و مستقیماً در تلگرام پیام دهند.</p>
           </div>
 
-          <div className="pt-4">
+          <div className="pt-4 text-center">
             <button
               onClick={resetFormAndClose}
-              className="px-6 py-2.5 rounded-xl bg-slate-900 text-white font-semibold text-sm hover:bg-slate-800 transition-colors shadow-sm"
+              className="px-6 py-2.5 rounded-xl bg-slate-900 text-white font-bold text-sm hover:bg-slate-800 transition-colors shadow-sm"
             >
-              Back to Member Directory
+              بازگشت به دایرکتوری همکلاسی‌ها
             </button>
           </div>
         </div>
       ) : (
-        <div>
+        <div className="text-right">
           {/* Tabs: Edit Form vs Live Preview */}
           <div className="flex items-center justify-between border-b border-slate-100 pb-3 mb-5">
             <div className="flex gap-2">
               <button
                 type="button"
                 onClick={() => setActiveTab('form')}
-                className={`inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg text-xs font-semibold transition-colors ${
+                className={`inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg text-xs font-bold transition-colors ${
                   activeTab === 'form'
                     ? 'bg-sky-50 text-sky-700 border border-sky-200'
                     : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
                 }`}
               >
                 <Edit3 className="w-3.5 h-3.5" />
-                <span>Fill Details</span>
+                <span>تکمیل مشخصات</span>
               </button>
 
               <button
                 type="button"
                 onClick={() => setActiveTab('preview')}
-                className={`inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg text-xs font-semibold transition-colors ${
+                className={`inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg text-xs font-bold transition-colors ${
                   activeTab === 'preview'
                     ? 'bg-sky-50 text-sky-700 border border-sky-200'
                     : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
                 }`}
               >
                 <Eye className="w-3.5 h-3.5" />
-                <span>Live Card Preview</span>
+                <span>پیش‌نمایش زنده کارت</span>
               </button>
             </div>
 
-            <span className="text-[11px] text-slate-400 font-medium hidden sm:inline">
-              * Required fields
+            <span className="text-[11px] text-slate-400 font-bold hidden sm:inline">
+              * فیلدهای دارای ستاره الزامی هستند
             </span>
           </div>
 
@@ -296,8 +296,8 @@ export const RegistrationModal: React.FC<RegistrationModalProps> = ({
           {/* Live Preview Tab */}
           {activeTab === 'preview' && (
             <div className="py-4 space-y-4">
-              <div className="p-3 bg-sky-50 border border-sky-100 rounded-xl text-xs text-sky-800">
-                This is a live preview of how your card will appear to other classmates in the directory.
+              <div className="p-3 bg-sky-50 border border-sky-100 rounded-xl text-xs text-sky-800 font-medium">
+                این یک پیش‌نمایش زنده است از کارتی که سایر همکلاسی‌ها در صفحه اصلی مشاهده خواهند کرد.
               </div>
               <div className="max-w-sm mx-auto">
                 <MemberCard member={previewMember} onSelect={() => {}} />
@@ -306,9 +306,9 @@ export const RegistrationModal: React.FC<RegistrationModalProps> = ({
                 <button
                   type="button"
                   onClick={() => setActiveTab('form')}
-                  className="text-xs font-semibold text-sky-600 hover:underline"
+                  className="text-xs font-bold text-sky-600 hover:underline"
                 >
-                  ← Continue editing details
+                  ← ادامه ویرایش مشخصات
                 </button>
               </div>
             </div>
@@ -332,25 +332,25 @@ export const RegistrationModal: React.FC<RegistrationModalProps> = ({
 
             {/* Section 1: Photo & Basic Identity */}
             <div className="space-y-4">
-              <h4 className="text-xs font-bold uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
+              <h4 className="text-xs font-bold uppercase tracking-wider text-slate-500 flex items-center gap-1.5">
                 <User className="w-3.5 h-3.5" />
-                <span>1. Identity & Role</span>
+                <span>۱. هویت و تخصص اصلی</span>
               </h4>
 
               {/* Photo Upload Row */}
               <div className="flex flex-col sm:flex-row items-center gap-4 p-4 rounded-xl bg-slate-50 border border-slate-200/80">
                 <Avatar
                   src={formData.profile_photo_url}
-                  name={formData.full_name || 'New Member'}
+                  name={formData.full_name || 'همکلاسی'}
                   size="xl"
-                  className="ring-2 ring-white shadow-sm"
+                  className="ring-2 ring-white shadow-sm shrink-0"
                 />
-                <div className="flex-1 text-center sm:text-left space-y-1.5">
+                <div className="flex-1 text-center sm:text-right space-y-1.5">
                   <div className="text-xs font-bold text-slate-800">
-                    Profile Photo *
+                    تصویر چهره / پروفایل *
                   </div>
                   <p className="text-xs text-slate-500">
-                    Upload a clear headshot (JPG, PNG or WebP under 2MB).
+                    لطفاً یک تصویر باکیفیت و واضح (فرمت‌های JPG، PNG یا WebP تا سقف ۲ مگابایت) انتخاب کنید.
                   </p>
                   <div className="flex flex-wrap items-center justify-center sm:justify-start gap-2 pt-1">
                     <input
@@ -364,22 +364,22 @@ export const RegistrationModal: React.FC<RegistrationModalProps> = ({
                       type="button"
                       disabled={isUploadingPhoto}
                       onClick={() => fileInputRef.current?.click()}
-                      className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white border border-slate-200 text-xs font-semibold text-slate-700 hover:bg-slate-100 hover:border-slate-300 transition-colors shadow-xs"
+                      className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white border border-slate-200 text-xs font-bold text-slate-700 hover:bg-slate-100 hover:border-slate-300 transition-colors shadow-xs"
                     >
                       <Upload className="w-3.5 h-3.5 text-slate-500" />
-                      <span>{isUploadingPhoto ? 'Uploading...' : 'Upload Image'}</span>
+                      <span>{isUploadingPhoto ? 'در حال پردازش...' : 'انتخاب تصویر'}</span>
                     </button>
                     {formData.profile_photo_url && (
-                      <span className="text-[11px] text-emerald-600 font-semibold inline-flex items-center gap-1">
-                        <Check className="w-3.5 h-3.5" /> Photo uploaded
+                      <span className="text-[11px] text-emerald-600 font-bold inline-flex items-center gap-1">
+                        <Check className="w-3.5 h-3.5" /> تصویر با موفقیت بارگذاری شد
                       </span>
                     )}
                   </div>
                   {uploadError && (
-                    <p className="text-xs text-rose-600">{uploadError}</p>
+                    <p className="text-xs text-rose-600 font-semibold">{uploadError}</p>
                   )}
                   {fieldErrors.profile_photo_url && (
-                    <p className="text-xs text-rose-600">{fieldErrors.profile_photo_url}</p>
+                    <p className="text-xs text-rose-600 font-semibold">{fieldErrors.profile_photo_url}</p>
                   )}
                 </div>
               </div>
@@ -388,14 +388,14 @@ export const RegistrationModal: React.FC<RegistrationModalProps> = ({
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-xs font-bold text-slate-700 mb-1">
-                    Full Name *
+                    نام و نام خانوادگی *
                   </label>
                   <input
                     type="text"
                     required
                     value={formData.full_name}
                     onChange={(e) => setFormData({ ...formData, full_name: e.target.value })}
-                    placeholder="e.g. Alex Rivera"
+                    placeholder="مثال: علی احمدی"
                     className={`w-full rounded-xl border py-2.5 px-3 text-sm text-slate-800 focus:outline-none focus:ring-2 transition-all ${
                       fieldErrors.full_name
                         ? 'border-rose-300 focus:ring-rose-500/20'
@@ -403,20 +403,20 @@ export const RegistrationModal: React.FC<RegistrationModalProps> = ({
                     }`}
                   />
                   {fieldErrors.full_name && (
-                    <p className="mt-1 text-xs text-rose-600">{fieldErrors.full_name}</p>
+                    <p className="mt-1 text-xs text-rose-600 font-semibold">{fieldErrors.full_name}</p>
                   )}
                 </div>
 
                 <div>
                   <label className="block text-xs font-bold text-slate-700 mb-1">
-                    Professional Title *
+                    عنوان شغلی / حرفه‌ای *
                   </label>
                   <input
                     type="text"
                     required
                     value={formData.professional_title}
                     onChange={(e) => setFormData({ ...formData, professional_title: e.target.value })}
-                    placeholder="e.g. Full Stack Developer, AI Engineer"
+                    placeholder="مثال: برنامه‌نویس فول‌استک، طراح محصول"
                     className={`w-full rounded-xl border py-2.5 px-3 text-sm text-slate-800 focus:outline-none focus:ring-2 transition-all ${
                       fieldErrors.professional_title
                         ? 'border-rose-300 focus:ring-rose-500/20'
@@ -424,7 +424,7 @@ export const RegistrationModal: React.FC<RegistrationModalProps> = ({
                     }`}
                   />
                   {fieldErrors.professional_title && (
-                    <p className="mt-1 text-xs text-rose-600">{fieldErrors.professional_title}</p>
+                    <p className="mt-1 text-xs text-rose-600 font-semibold">{fieldErrors.professional_title}</p>
                   )}
                 </div>
               </div>
@@ -433,12 +433,12 @@ export const RegistrationModal: React.FC<RegistrationModalProps> = ({
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-xs font-bold text-slate-700 mb-1">
-                    Professional Category *
+                    دسته‌بندی تخصصی *
                   </label>
                   <select
                     value={formData.category}
                     onChange={(e) => setFormData({ ...formData, category: e.target.value })}
-                    className="w-full rounded-xl border border-slate-200 py-2.5 px-3 text-sm text-slate-800 focus:border-sky-500 focus:outline-none focus:ring-2 focus:ring-sky-500/20 bg-white"
+                    className="w-full rounded-xl border border-slate-200 py-2.5 px-3 text-sm text-slate-800 focus:border-sky-500 focus:outline-none focus:ring-2 focus:ring-sky-500/20 bg-white font-medium"
                   >
                     {DEFAULT_CATEGORIES.filter(c => c.id !== 'all').map((cat) => (
                       <option key={cat.id} value={cat.name}>
@@ -450,16 +450,16 @@ export const RegistrationModal: React.FC<RegistrationModalProps> = ({
 
                 <div>
                   <label className="block text-xs font-bold text-slate-700 mb-1">
-                    Location / Timezone (Optional)
+                    شهر / موقعیت مکانی (اختیاری)
                   </label>
                   <div className="relative">
-                    <MapPin className="w-4 h-4 text-slate-400 absolute left-3 top-3" />
+                    <MapPin className="w-4 h-4 text-slate-400 absolute right-3 top-3" />
                     <input
                       type="text"
                       value={formData.location || ''}
                       onChange={(e) => setFormData({ ...formData, location: e.target.value })}
-                      placeholder="e.g. Berlin, Germany or Remote (UTC+2)"
-                      className="w-full rounded-xl border border-slate-200 py-2.5 pl-9 pr-3 text-sm text-slate-800 focus:border-sky-500 focus:outline-none focus:ring-2 focus:ring-sky-500/20"
+                      placeholder="مثال: تهران یا ریموت"
+                      className="w-full rounded-xl border border-slate-200 py-2.5 pr-9 pl-3 text-sm text-slate-800 focus:border-sky-500 focus:outline-none focus:ring-2 focus:ring-sky-500/20"
                     />
                   </div>
                 </div>
@@ -468,14 +468,14 @@ export const RegistrationModal: React.FC<RegistrationModalProps> = ({
               {/* Bio */}
               <div>
                 <label className="block text-xs font-bold text-slate-700 mb-1">
-                  Short Introduction / Bio *
+                  معرفی کوتاه / بایو *
                 </label>
                 <textarea
                   rows={3}
                   required
                   value={formData.bio}
                   onChange={(e) => setFormData({ ...formData, bio: e.target.value })}
-                  placeholder="Share a brief overview of your background, what you work on, and what drives you..."
+                  placeholder="خلاصه‌ای از تجربیات، کارهایی که انجام می‌دهید و موضوعاتی که برایتان هیجان‌انگیز است بنویسید..."
                   className={`w-full rounded-xl border py-2.5 px-3 text-sm text-slate-800 focus:outline-none focus:ring-2 transition-all ${
                     fieldErrors.bio
                       ? 'border-rose-300 focus:ring-rose-500/20'
@@ -483,23 +483,23 @@ export const RegistrationModal: React.FC<RegistrationModalProps> = ({
                   }`}
                 />
                 <div className="flex items-center justify-between text-[11px] text-slate-400 mt-1">
-                  <span>{formData.bio.length} / 600 characters</span>
-                  {fieldErrors.bio && <span className="text-rose-600">{fieldErrors.bio}</span>}
+                  <span>{formData.bio.length} از ۶۰۰ حرف</span>
+                  {fieldErrors.bio && <span className="text-rose-600 font-semibold">{fieldErrors.bio}</span>}
                 </div>
               </div>
             </div>
 
             {/* Section 2: Skills & Collaboration */}
             <div className="space-y-4 pt-2 border-t border-slate-100">
-              <h4 className="text-xs font-bold uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
+              <h4 className="text-xs font-bold uppercase tracking-wider text-slate-500 flex items-center gap-1.5">
                 <Briefcase className="w-3.5 h-3.5" />
-                <span>2. Skills & Collaboration</span>
+                <span>۲. مهارت‌ها و اهداف همکاری</span>
               </h4>
 
               {/* Skills Tag Input */}
               <div>
                 <label className="block text-xs font-bold text-slate-700 mb-1">
-                  Skills & Tools * (At least 1 required)
+                  مهارت‌ها و ابزارها * (حداقل ۱ مهارت)
                 </label>
                 <div className="flex items-center gap-2 mb-2">
                   <input
@@ -512,15 +512,15 @@ export const RegistrationModal: React.FC<RegistrationModalProps> = ({
                         handleAddSkill(skillInput);
                       }
                     }}
-                    placeholder="Type a skill and press Enter (e.g. React, Python, Figma)..."
+                    placeholder="مهارت را تایپ کنید و Enter یا دکمه افزودن را بزنید..."
                     className="flex-1 rounded-xl border border-slate-200 py-2 px-3 text-sm text-slate-800 focus:border-sky-500 focus:outline-none focus:ring-2 focus:ring-sky-500/20"
                   />
                   <button
                     type="button"
                     onClick={() => handleAddSkill(skillInput)}
-                    className="px-3.5 py-2 rounded-xl bg-slate-100 text-slate-700 hover:bg-slate-200 text-xs font-bold transition-colors"
+                    className="px-4 py-2 rounded-xl bg-slate-100 text-slate-700 hover:bg-slate-200 text-xs font-bold transition-colors"
                   >
-                    Add
+                    افزودن
                   </button>
                 </div>
 
@@ -530,7 +530,7 @@ export const RegistrationModal: React.FC<RegistrationModalProps> = ({
                     {formData.skills.map((skill) => (
                       <span
                         key={skill}
-                        className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-medium bg-sky-50 text-sky-800 border border-sky-200"
+                        className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-bold bg-sky-50 text-sky-800 border border-sky-200"
                       >
                         {skill}
                         <button
@@ -546,8 +546,8 @@ export const RegistrationModal: React.FC<RegistrationModalProps> = ({
                 )}
 
                 {/* Skill Suggestions */}
-                <div className="text-[11px] text-slate-400 mb-1">
-                  Suggestions:
+                <div className="text-[11px] text-slate-400 mb-1 font-semibold">
+                  مهارت‌های پرطرفدار (با کلیک اضافه می‌شوند):
                 </div>
                 <div className="flex flex-wrap gap-1">
                   {POPULAR_SKILLS.slice(0, 10).map((skill) => {
@@ -558,7 +558,7 @@ export const RegistrationModal: React.FC<RegistrationModalProps> = ({
                         key={skill}
                         type="button"
                         onClick={() => handleAddSkill(skill)}
-                        className="text-[11px] px-2 py-0.5 rounded-md bg-slate-100 text-slate-600 hover:bg-slate-200 transition-colors"
+                        className="text-[11px] px-2 py-0.5 rounded-md bg-slate-100 text-slate-600 hover:bg-slate-200 transition-colors font-medium"
                       >
                         + {skill}
                       </button>
@@ -566,14 +566,14 @@ export const RegistrationModal: React.FC<RegistrationModalProps> = ({
                   })}
                 </div>
                 {fieldErrors.skills && (
-                  <p className="mt-1 text-xs text-rose-600">{fieldErrors.skills}</p>
+                  <p className="mt-1 text-xs text-rose-600 font-semibold">{fieldErrors.skills}</p>
                 )}
               </div>
 
               {/* Professional Interests */}
               <div>
                 <label className="block text-xs font-bold text-slate-700 mb-1">
-                  Current Professional Interests (Optional)
+                  علاقه‌مندی‌های حرفه‌ای (اختیاری)
                 </label>
                 <div className="flex items-center gap-2 mb-2">
                   <input
@@ -586,15 +586,15 @@ export const RegistrationModal: React.FC<RegistrationModalProps> = ({
                         handleAddInterest(interestInput);
                       }
                     }}
-                    placeholder="e.g. LLM Agents, Telegram Mini Apps, Design Systems..."
+                    placeholder="مثال: بات‌های تلگرام، استارتاپ‌های هوش مصنوعی، فین‌تک..."
                     className="flex-1 rounded-xl border border-slate-200 py-2 px-3 text-sm text-slate-800 focus:border-sky-500 focus:outline-none focus:ring-2 focus:ring-sky-500/20"
                   />
                   <button
                     type="button"
                     onClick={() => handleAddInterest(interestInput)}
-                    className="px-3.5 py-2 rounded-xl bg-slate-100 text-slate-700 hover:bg-slate-200 text-xs font-bold transition-colors"
+                    className="px-4 py-2 rounded-xl bg-slate-100 text-slate-700 hover:bg-slate-200 text-xs font-bold transition-colors"
                   >
-                    Add
+                    افزودن
                   </button>
                 </div>
                 {formData.interests && formData.interests.length > 0 && (
@@ -602,7 +602,7 @@ export const RegistrationModal: React.FC<RegistrationModalProps> = ({
                     {formData.interests.map((interest) => (
                       <span
                         key={interest}
-                        className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-medium bg-slate-100 text-slate-700 border border-slate-200"
+                        className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-bold bg-slate-100 text-slate-700 border border-slate-200"
                       >
                         {interest}
                         <button
@@ -621,13 +621,13 @@ export const RegistrationModal: React.FC<RegistrationModalProps> = ({
               {/* What I can help with */}
               <div>
                 <label className="block text-xs font-bold text-slate-700 mb-1">
-                  What I Can Help Others With (Optional)
+                  چگونه می‌توانم به دیگر همکلاسی‌ها کمک کنم؟ (اختیاری)
                 </label>
                 <textarea
                   rows={2}
                   value={formData.can_help_with || ''}
                   onChange={(e) => setFormData({ ...formData, can_help_with: e.target.value })}
-                  placeholder="e.g. React code reviews, architecture discussions, Telegram bot API tips..."
+                  placeholder="مثال: بازبینی کدهای فرانت‌اند، مشاوره طراحی رابط، اشتراک منابع یادگیری..."
                   className="w-full rounded-xl border border-slate-200 py-2.5 px-3 text-sm text-slate-800 focus:border-sky-500 focus:outline-none focus:ring-2 focus:ring-sky-500/20"
                 />
               </div>
@@ -635,13 +635,13 @@ export const RegistrationModal: React.FC<RegistrationModalProps> = ({
               {/* Collaboration goals */}
               <div>
                 <label className="block text-xs font-bold text-slate-700 mb-1">
-                  What Collaboration I&apos;m Looking For (Optional)
+                  به دنبال چه نوع همکاری یا تیمی هستم؟ (اختیاری)
                 </label>
                 <textarea
                   rows={2}
                   value={formData.collaboration_goals || ''}
                   onChange={(e) => setFormData({ ...formData, collaboration_goals: e.target.value })}
-                  placeholder="e.g. Looking for a designer co-founder for a Telegram Mini App project..."
+                  placeholder="مثال: مشتاق پیوستن به تیمی برای ساخت یک پروژه کلاسی مشترک یا استارتاپ مینی‌اپ..."
                   className="w-full rounded-xl border border-slate-200 py-2.5 px-3 text-sm text-slate-800 focus:border-sky-500 focus:outline-none focus:ring-2 focus:ring-sky-500/20"
                 />
               </div>
@@ -649,25 +649,26 @@ export const RegistrationModal: React.FC<RegistrationModalProps> = ({
 
             {/* Section 3: Contact & Links */}
             <div className="space-y-4 pt-2 border-t border-slate-100">
-              <h4 className="text-xs font-bold uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
+              <h4 className="text-xs font-bold uppercase tracking-wider text-slate-500 flex items-center gap-1.5">
                 <Globe className="w-3.5 h-3.5" />
-                <span>3. Contact & Social Links</span>
+                <span>۳. راه‌های ارتباطی و شبکه‌های اجتماعی</span>
               </h4>
 
               {/* Telegram Username */}
               <div>
                 <label className="block text-xs font-bold text-slate-700 mb-1">
-                  Telegram Username (Optional but recommended)
+                  آیدی تلگرام (اختیاری اما بسیار توصیه می‌شود)
                 </label>
                 <div className="relative">
-                  <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400 text-sm font-semibold">
+                  <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400 text-sm font-bold">
                     @
                   </div>
                   <input
                     type="text"
+                    dir="ltr"
                     value={formData.telegram_username || ''}
                     onChange={(e) => setFormData({ ...formData, telegram_username: e.target.value })}
-                    placeholder="username (without @)"
+                    placeholder="username"
                     className={`w-full rounded-xl border py-2.5 pl-8 pr-3 text-sm text-slate-800 focus:outline-none focus:ring-2 transition-all ${
                       fieldErrors.telegram_username
                         ? 'border-rose-300 focus:ring-rose-500/20'
@@ -675,11 +676,11 @@ export const RegistrationModal: React.FC<RegistrationModalProps> = ({
                     }`}
                   />
                 </div>
-                <p className="mt-1 text-[11px] text-slate-400">
-                  Allows classmates to start a direct Telegram chat with you with a single click.
+                <p className="mt-1 text-[11px] text-slate-500">
+                  به همکلاسی‌ها اجازه می‌دهد با یک کلیک ساده، چت تلگرامی با شما را آغاز کنند.
                 </p>
                 {fieldErrors.telegram_username && (
-                  <p className="mt-1 text-xs text-rose-600">{fieldErrors.telegram_username}</p>
+                  <p className="mt-1 text-xs text-rose-600 font-semibold">{fieldErrors.telegram_username}</p>
                 )}
               </div>
 
@@ -687,12 +688,13 @@ export const RegistrationModal: React.FC<RegistrationModalProps> = ({
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-xs font-bold text-slate-700 mb-1">
-                    LinkedIn Profile URL (Optional)
+                    آدرس لینکدین (اختیاری)
                   </label>
                   <div className="relative">
                     <LinkedInIcon className="w-4 h-4 text-slate-400 absolute left-3 top-3" />
                     <input
                       type="url"
+                      dir="ltr"
                       value={formData.linkedin_url || ''}
                       onChange={(e) => setFormData({ ...formData, linkedin_url: e.target.value })}
                       placeholder="https://linkedin.com/in/..."
@@ -704,22 +706,22 @@ export const RegistrationModal: React.FC<RegistrationModalProps> = ({
                     />
                   </div>
                   {fieldErrors.linkedin_url && (
-                    <p className="mt-1 text-xs text-rose-600">{fieldErrors.linkedin_url}</p>
+                    <p className="mt-1 text-xs text-rose-600 font-semibold">{fieldErrors.linkedin_url}</p>
                   )}
                 </div>
 
                 <div>
                   <label className="block text-xs font-bold text-slate-700 mb-1">
-                    Website / Portfolio (Optional)
+                    وبسایت / پورتفولیو / گیت‌هاب (اختیاری)
                   </label>
                   <div className="relative">
-                    <Globe className="w-4 h-4 text-slate-400 absolute left-3 top-3" />
                     <input
                       type="url"
+                      dir="ltr"
                       value={formData.website_url || ''}
                       onChange={(e) => setFormData({ ...formData, website_url: e.target.value })}
-                      placeholder="https://yourwebsite.com"
-                      className={`w-full rounded-xl border py-2.5 pl-9 pr-3 text-sm text-slate-800 focus:outline-none focus:ring-2 transition-all ${
+                      placeholder="https://yourwebsite.ir"
+                      className={`w-full rounded-xl border py-2.5 px-3 text-sm text-slate-800 focus:outline-none focus:ring-2 transition-all ${
                         fieldErrors.website_url
                           ? 'border-rose-300 focus:ring-rose-500/20'
                           : 'border-slate-200 focus:border-sky-500 focus:ring-sky-500/20'
@@ -727,7 +729,7 @@ export const RegistrationModal: React.FC<RegistrationModalProps> = ({
                     />
                   </div>
                   {fieldErrors.website_url && (
-                    <p className="mt-1 text-xs text-rose-600">{fieldErrors.website_url}</p>
+                    <p className="mt-1 text-xs text-rose-600 font-semibold">{fieldErrors.website_url}</p>
                   )}
                 </div>
               </div>
@@ -735,26 +737,27 @@ export const RegistrationModal: React.FC<RegistrationModalProps> = ({
               {/* Private Email */}
               <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-200/80 space-y-1.5">
                 <label className="block text-xs font-bold text-slate-700">
-                  Private Email Address (Optional)
+                  آدرس ایمیل خصوصی (اختیاری)
                 </label>
                 <div className="relative">
-                  <Mail className="w-4 h-4 text-slate-400 absolute left-3 top-3" />
+                  <Mail className="w-4 h-4 text-slate-400 absolute right-3 top-3" />
                   <input
                     type="email"
+                    dir="ltr"
                     value={formData.private_email || ''}
                     onChange={(e) => setFormData({ ...formData, private_email: e.target.value })}
                     placeholder="email@example.com"
-                    className="w-full rounded-xl border border-slate-200 bg-white py-2 pl-9 pr-3 text-sm text-slate-800 focus:border-sky-500 focus:outline-none focus:ring-2 focus:ring-sky-500/20"
+                    className="w-full rounded-xl border border-slate-200 bg-white py-2 pr-9 pl-3 text-sm text-slate-800 focus:border-sky-500 focus:outline-none focus:ring-2 focus:ring-sky-500/20 text-left"
                   />
                 </div>
-                <p className="text-[11px] text-slate-500 flex items-center gap-1">
+                <p className="text-[11px] text-slate-500 flex items-center gap-1 font-medium">
                   <Shield className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
                   <span>
-                    <strong>Strictly Private:</strong> Never shown publicly on the directory. Only used by community managers for moderation notifications.
+                    <strong>کاملاً محرمانه:</strong> این ایمیل هرگز در دایرکتوری به عموم نمایش داده نمی‌شود و فقط برای اطلاع‌رسانی‌های ضروری ادمین دوره است.
                   </span>
                 </p>
                 {fieldErrors.private_email && (
-                  <p className="mt-1 text-xs text-rose-600">{fieldErrors.private_email}</p>
+                  <p className="mt-1 text-xs text-rose-600 font-semibold">{fieldErrors.private_email}</p>
                 )}
               </div>
             </div>
@@ -767,14 +770,14 @@ export const RegistrationModal: React.FC<RegistrationModalProps> = ({
                   required
                   checked={formData.consent_to_publish}
                   onChange={(e) => setFormData({ ...formData, consent_to_publish: e.target.checked })}
-                  className="rounded border-slate-300 text-sky-600 focus:ring-sky-500 w-4 h-4 mt-0.5 cursor-pointer"
+                  className="rounded border-slate-300 text-sky-600 focus:ring-sky-500 w-4 h-4 mt-1 cursor-pointer shrink-0"
                 />
-                <span className="text-xs text-slate-700 leading-relaxed">
-                  <strong>Consent to Publish:</strong> I confirm that I am a member of this Telegram learning cohort and explicitly agree to publish my selected profile information on the Class Network directory for classmates to discover and connect with me.
+                <span className="text-xs text-slate-700 leading-relaxed font-semibold">
+                  <strong>رضایت انتشار عمومی:</strong> اینجانب تایید می‌کنم که عضو این دوره آموزشی تلگرام هستم و رضایت کامل دارم که اطلاعات فوق جهت شبکه‌سازی و ارتباط با سایر همکلاسی‌ها در این دایرکتوری منتشر شود.
                 </span>
               </label>
               {fieldErrors.consent_to_publish && (
-                <p className="text-xs text-rose-600 font-semibold">{fieldErrors.consent_to_publish}</p>
+                <p className="text-xs text-rose-600 font-bold">{fieldErrors.consent_to_publish}</p>
               )}
             </div>
 
@@ -783,31 +786,31 @@ export const RegistrationModal: React.FC<RegistrationModalProps> = ({
               <button
                 type="button"
                 onClick={() => setActiveTab('preview')}
-                className="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-600 hover:text-slate-900"
+                className="inline-flex items-center gap-1.5 text-xs font-bold text-slate-600 hover:text-slate-900"
               >
                 <Eye className="w-3.5 h-3.5" />
-                <span>Preview before submitting</span>
+                <span>مشاهده پیش‌نمایش کارت قبل از ارسال</span>
               </button>
 
               <div className="flex items-center gap-3">
                 <button
                   type="button"
                   onClick={onClose}
-                  className="px-4 py-2 text-xs font-semibold text-slate-600 hover:text-slate-800"
+                  className="px-4 py-2 text-xs font-bold text-slate-600 hover:text-slate-800"
                 >
-                  Cancel
+                  انصراف
                 </button>
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-sky-600 to-telegram-brand px-6 py-2.5 text-xs sm:text-sm font-bold text-white shadow-md shadow-sky-500/20 hover:from-sky-500 hover:to-sky-600 active:scale-95 transition-all disabled:opacity-50"
+                  className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-l from-sky-600 to-telegram-brand px-6 py-2.5 text-xs sm:text-sm font-bold text-white shadow-md shadow-sky-500/20 hover:from-sky-500 hover:to-sky-600 active:scale-95 transition-all disabled:opacity-50"
                 >
                   {isSubmitting ? (
-                    <span>Submitting...</span>
+                    <span>در حال ارسال...</span>
                   ) : (
                     <>
-                      <span>Submit Profile for Review</span>
-                      <Send className="w-3.5 h-3.5 -rotate-12 translate-x-0.5" />
+                      <span>ارسال پروفایل جهت تایید</span>
+                      <Send className="w-3.5 h-3.5 rotate-180 -translate-x-0.5" />
                     </>
                   )}
                 </button>

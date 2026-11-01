@@ -21,41 +21,41 @@ export const Footer: React.FC<FooterProps> = ({
           <div className="md:col-span-2 space-y-4">
             <div className="flex items-center gap-2">
               <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-telegram-brand text-white">
-                <Send className="h-4 w-4 -rotate-12 translate-x-0.5" />
+                <Send className="h-4 w-4 rotate-180 -translate-x-0.5" />
               </div>
               <span className="font-extrabold text-slate-900 tracking-tight text-lg">
                 {APP_CONFIG.name}
               </span>
             </div>
             <p className="text-sm text-slate-600 max-w-md leading-relaxed">
-              A private peer directory for members of our online Telegram learning cohort.
-              Connecting classmates, fostering collaborations, and helping everyone build with complementary skills.
+              دایرکتوری ارتباطی و شبکه‌سازی ویژه اعضا و هم‌دوره‌ای‌های کلاس تلگرام.
+              بستری برای شناخت تخصص‌ها، شکل‌گیری همکاری‌های تیمی و ساخت پروژه‌های مشترک.
             </p>
             <div className="flex items-center gap-2 text-xs text-slate-500">
-              <Shield className="w-3.5 h-3.5 text-emerald-600" />
-              <span>Moderated directory. Private contact details are never exposed without consent.</span>
+              <Shield className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+              <span>دایرکتوری مدیریت‌شده: اطلاعات تماس محرمانه هرگز بدون اجازه منتشر نمی‌شود.</span>
             </div>
           </div>
 
           {/* Col 2: Navigation */}
           <div>
-            <h4 className="text-xs font-semibold uppercase tracking-wider text-slate-400 mb-3">
-              Explore
+            <h4 className="text-xs font-bold uppercase tracking-wider text-slate-400 mb-3">
+              دسترسی سریع
             </h4>
-            <ul className="space-y-2 text-sm text-slate-600">
+            <ul className="space-y-2 text-sm text-slate-600 font-medium">
               <li>
                 <a href="#directory" className="hover:text-sky-600 transition-colors">
-                  Browse Members
+                  مشاهده اعضای شبکه
                 </a>
               </li>
               <li>
-                <button onClick={onOpenRegister} className="hover:text-sky-600 transition-colors text-left">
-                  Submit Your Profile
+                <button onClick={onOpenRegister} className="hover:text-sky-600 transition-colors text-right">
+                  ثبت‌نام و ارسال پروفایل
                 </button>
               </li>
               <li>
-                <a href="#categories" className="hover:text-sky-600 transition-colors">
-                  Professional Categories
+                <a href="#directory" className="hover:text-sky-600 transition-colors">
+                  دسته‌بندی‌های تخصصی
                 </a>
               </li>
             </ul>
@@ -63,17 +63,17 @@ export const Footer: React.FC<FooterProps> = ({
 
           {/* Col 3: Community & Admin */}
           <div>
-            <h4 className="text-xs font-semibold uppercase tracking-wider text-slate-400 mb-3">
-              Administration
+            <h4 className="text-xs font-bold uppercase tracking-wider text-slate-400 mb-3">
+              مدیریت و پشتیبانی
             </h4>
-            <ul className="space-y-2 text-sm text-slate-600">
+            <ul className="space-y-2 text-sm text-slate-600 font-medium">
               <li>
                 <button
                   onClick={onOpenAdmin}
                   className="hover:text-sky-600 transition-colors inline-flex items-center gap-1.5"
                 >
                   <Users className="w-3.5 h-3.5" />
-                  <span>Admin Moderation</span>
+                  <span>ورود مدیر (بررسی و تایید اعضا)</span>
                 </button>
               </li>
               <li>
@@ -81,7 +81,7 @@ export const Footer: React.FC<FooterProps> = ({
                   onClick={onOpenDbGuide}
                   className="hover:text-sky-600 transition-colors"
                 >
-                  Supabase Setup Guide
+                  راهنمای اتصال به دیتابیس رایگان
                 </button>
               </li>
             </ul>
@@ -90,9 +90,9 @@ export const Footer: React.FC<FooterProps> = ({
 
         {/* Bottom bar */}
         <div className="border-t border-slate-100 pt-6 flex flex-col sm:flex-row items-center justify-between text-xs text-slate-500 gap-4">
-          <p>© {new Date().getFullYear()} {APP_CONFIG.name}. Built for the Telegram educational community.</p>
+          <p>© {new Date().getFullYear()} {APP_CONFIG.name}. طراحی و آماده‌سازی شده برای اعضای دوره تلگرام.</p>
           <p className="flex items-center gap-1">
-            <span>Built with care for peer learning</span>
+            <span>ساخته‌شده با عشق برای یادگیری اشتراکی</span>
             <Heart className="w-3.5 h-3.5 text-rose-500 fill-rose-500 inline" />
           </p>
         </div>
