@@ -3,38 +3,36 @@ import { z } from 'zod';
 export const memberRegistrationSchema = z.object({
   full_name: z
     .string()
-    .min(2, 'نام و نام خانوادگی باید حداقل ۲ حرف باشد')
+    .min(2, 'لطفاً نام و نام خانوادگی خود را بنویسید (حداقل ۲ حرف)')
     .max(60, 'نام و نام خانوادگی نمی‌تواند بیش از ۶۰ حرف باشد'),
   professional_title: z
     .string()
-    .min(3, 'عنوان حرفه‌ای باید حداقل ۳ حرف باشد')
-    .max(80, 'عنوان حرفه‌ای نمی‌تواند بیش از ۸۰ حرف باشد'),
+    .min(2, 'لطفاً عنوان یا زمینه فعالیت خود را مشخص کنید (مثلاً: برنامه‌نویس، طراح، کارشناس فروش)')
+    .max(80, 'عنوان نمی‌تواند بیش از ۸۰ حرف باشد'),
   category: z
     .string()
-    .min(1, 'لطفاً دسته‌بندی حرفه‌ای خود را انتخاب کنید'),
-  bio: z
-    .string()
-    .min(15, 'لطفاً معرفی کوتاهی حداقل در ۱۵ حرف بنویسید')
-    .max(600, 'متن معرفی نمی‌تواند بیش از ۶۰۰ حرف باشد'),
-  profile_photo_url: z
-    .string()
-    .min(1, 'آپلود تصویر پروفایل الزامی است'),
-  skills: z
-    .array(z.string())
-    .min(1, 'لطفاً حداقل ۱ مهارت یا تخصص اضافه کنید')
-    .max(12, 'حداکثر ۱۲ مهارت مجاز است'),
-  consent_to_publish: z
-    .boolean()
-    .refine((val) => val === true, {
-      message: 'تایید رضایت انتشار عمومی اطلاعات الزامی است',
-    }),
+    .min(1, 'لطفاً دسته‌بندی تخصصی خود را انتخاب کنید'),
   telegram_username: z
     .string()
-    .optional()
+    .min(1, 'آیدی تلگرام برای ارتباط همکلاسی‌ها الزامی است')
     .refine(
-      (val) => !val || /^[a-zA-Z0-9_]{3,32}$/.test(val.replace(/^@/, '').replace(/.*t\.me\//, '')),
-      { message: 'آیدی تلگرام معتبر نیست (شامل حروف انگلیسی، اعداد یا خط زیرین)' }
+      (val) => /^[a-zA-Z0-9_]{3,32}$/.test(val.replace(/^@/, '').replace(/.*t\.me\//, '')),
+      { message: 'آیدی تلگرام نامعتبر است (لطفاً به انگلیسی بنویسید، مانند: my_username)' }
     ),
+  bio: z
+    .string()
+    .max(600, 'متن معرفی نمی‌تواند بیش از ۶۰۰ حرف باشد')
+    .optional(),
+  profile_photo_url: z
+    .string()
+    .optional(),
+  skills: z
+    .array(z.string())
+    .max(12, 'حداکثر ۱۲ مهارت مجاز است')
+    .optional(),
+  consent_to_publish: z
+    .boolean()
+    .optional(),
   linkedin_url: z
     .string()
     .optional()

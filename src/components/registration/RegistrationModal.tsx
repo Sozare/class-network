@@ -1,8 +1,9 @@
 import React, { useState, useRef } from 'react';
 import confetti from 'canvas-confetti';
 import {
-  Upload, X, Check, AlertCircle, Send, Eye, Edit3, Shield,
-  CheckCircle2, Sparkles, User, Briefcase, Globe, MapPin, Mail
+  Upload, X, AlertCircle, Send, Eye, Edit3, Shield,
+  CheckCircle2, Sparkles, MapPin,
+  ChevronDown, ChevronUp, Clock, Lock, Smile, Trash2
 } from 'lucide-react';
 import { Modal } from '../common/Modal';
 import { Avatar } from '../common/Avatar';
@@ -19,6 +20,17 @@ interface RegistrationModalProps {
   onClose: () => void;
   onSuccess: () => void;
 }
+
+const QUICK_TITLES = [
+  'برنامه‌نویس فرانت‌اند',
+  'برنامه‌نویس پایتون / بک‌اند',
+  'طراح رابط کاربری (UI/UX)',
+  'کارشناس تولید محتوا',
+  'دیجیتال مارکتر',
+  'مدیر محصول / پروژه',
+  'تحلیلگر دیتا و هوش مصنوعی',
+  'دانشجو و پژوهشگر',
+];
 
 export const RegistrationModal: React.FC<RegistrationModalProps> = ({
   isOpen,
@@ -40,12 +52,12 @@ export const RegistrationModal: React.FC<RegistrationModalProps> = ({
     location: '',
     private_email: '',
     profile_photo_url: '',
-    consent_to_publish: false,
-    website_trap: '', // Anti-spam honeypot
+    consent_to_publish: true,
+    website_trap: '',
   });
 
+  const [showAdvanced, setShowAdvanced] = useState(false);
   const [skillInput, setSkillInput] = useState('');
-  const [interestInput, setInterestInput] = useState('');
   const [isUploadingPhoto, setIsUploadingPhoto] = useState(false);
   const [uploadError, setUploadError] = useState<string | null>(null);
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
@@ -79,12 +91,16 @@ export const RegistrationModal: React.FC<RegistrationModalProps> = ({
     }
   };
 
+  const handleRemovePhoto = () => {
+    setFormData(prev => ({ ...prev, profile_photo_url: '' }));
+  };
+
   // Add skill tag
   const handleAddSkill = (skill: string) => {
     const clean = skill.trim();
     if (!clean) return;
     if (formData.skills.includes(clean)) return;
-    if (formData.skills.length >= 12) return;
+    if (formData.skills.length >= 10) return;
 
     setFormData(prev => ({ ...prev, skills: [...prev.skills, clean] }));
     setSkillInput('');
@@ -99,25 +115,6 @@ export const RegistrationModal: React.FC<RegistrationModalProps> = ({
 
   const handleRemoveSkill = (skill: string) => {
     setFormData(prev => ({ ...prev, skills: prev.skills.filter(s => s !== skill) }));
-  };
-
-  // Add interest tag
-  const handleAddInterest = (interest: string) => {
-    const clean = interest.trim();
-    if (!clean) return;
-    if (formData.interests?.includes(clean)) return;
-    setFormData(prev => ({
-      ...prev,
-      interests: [...(prev.interests || []), clean],
-    }));
-    setInterestInput('');
-  };
-
-  const handleRemoveInterest = (interest: string) => {
-    setFormData(prev => ({
-      ...prev,
-      interests: prev.interests?.filter(i => i !== interest),
-    }));
   };
 
   // Handle Form Submission
@@ -168,22 +165,25 @@ export const RegistrationModal: React.FC<RegistrationModalProps> = ({
     onClose();
   };
 
+  // Clean Telegram ID for preview
+  const cleanTg = (formData.telegram_username || '').replace(/^@/, '').replace(/.*t\.me\//, '').trim();
+
   // Virtual member object for the Live Card Preview
   const previewMember: Member = {
     id: 'preview-id',
-    full_name: formData.full_name || 'نام و نام خانوادگی شما',
-    professional_title: formData.professional_title || 'عنوان و موقعیت شغلی شما',
-    bio: formData.bio || 'معرفی کوتاه، سوابق و حوزه‌های کاری شما در این قسمت نمایش داده خواهد شد.',
+    full_name: formData.full_name || 'نام شما',
+    professional_title: formData.professional_title || 'عنوان و حوزه فعالیت شما',
+    bio: formData.bio || 'عضو دوره آموزشی • آماده گفتگو و همکاری با همکلاسی‌های عزیز',
     category: formData.category,
     profile_photo_url: formData.profile_photo_url || '',
-    skills: formData.skills.length > 0 ? formData.skills : ['مهارت اول', 'مهارت دوم'],
+    skills: formData.skills.length > 0 ? formData.skills : [formData.category],
     interests: formData.interests,
     collaboration_goals: formData.collaboration_goals,
     can_help_with: formData.can_help_with,
-    telegram_username: formData.telegram_username,
+    telegram_username: cleanTg || undefined,
     linkedin_url: formData.linkedin_url,
     website_url: formData.website_url,
-    location: formData.location || 'ریموت',
+    location: formData.location || 'ایران',
     publication_status: 'pending',
     featured: false,
     consent_to_publish: true,
@@ -199,89 +199,105 @@ export const RegistrationModal: React.FC<RegistrationModalProps> = ({
         isSubmittedSuccess ? (
           <span className="flex items-center gap-2 text-emerald-600">
             <CheckCircle2 className="w-6 h-6" />
-            درخواست عضویت شما دریافت شد
+            اطلاعات شما با موفقیت ثبت شد!
           </span>
         ) : (
-          'عضویت در شبکه همکلاسی‌ها'
+          <div className="flex items-center gap-2 text-slate-900">
+            <Sparkles className="w-5 h-5 text-sky-600" />
+            <span>معرفی و عضویت در شبکه همکلاسی‌ها</span>
+          </div>
         )
       }
       subtitle={
         isSubmittedSuccess
-          ? 'پروفایل شما در حال حاضر در صف بررسی ادمین‌های دوره است.'
-          : 'خود را به همکلاسی‌های دوره معرفی کنید و با افراد مستعد کلاس ارتباط کاری برقرار کنید.'
+          ? 'پروفایل شما در صف بررسی مدیر کلاس قرار گرفت.'
+          : 'خودت رو در کمتر از ۱ دقیقه به بچه‌های دوره معرفی کن تا بتونید با هم لینک بشید.'
       }
-      maxWidth="3xl"
+      maxWidth="2xl"
     >
       {/* Success State */}
       {isSubmittedSuccess ? (
         <div className="py-6 text-center space-y-5 text-right">
           <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-emerald-100 text-emerald-600">
-            <Sparkles className="w-8 h-8" />
+            <CheckCircle2 className="w-8 h-8" />
           </div>
 
           <div className="space-y-2 max-w-lg mx-auto text-center">
             <h3 className="text-xl font-black text-slate-900">
-              از پیوستن شما به شبکه همکلاسی‌ها متشکریم!
+              خوش آمدید! کار شما تمام شد 🎉
             </h3>
             <p className="text-sm text-slate-600 leading-relaxed">
-              پروفایل شما با موفقیت ثبت شد و پس از بررسی و تایید توسط ادمین‌های دوره، در صفحه اصلی دایرکتوری منتشر خواهد شد.
-              این فرآیند به منظور حفظ کیفیت و امنیت کامیونیتی کلاس انجام می‌شود.
+              اطلاعات شما ثبت شد و به زودی پس از تایید توسط مدیر دوره، در صفحه اصلی برای همه همکلاسی‌ها نمایش داده می‌شود.
             </p>
           </div>
 
           <div className="p-4 rounded-xl bg-slate-50 border border-slate-200/80 max-w-md mx-auto text-right text-xs text-slate-600 space-y-2">
             <div className="flex items-center gap-1.5 font-bold text-slate-800">
               <Shield className="w-4 h-4 text-sky-500" />
-              <span>مراحل بعدی چیست؟</span>
+              <span>چرا تایید ادمین وجود دارد؟</span>
             </div>
-            <p>۱. مدیران دوره درخواست‌ها را بررسی و اعتبارسنجی می‌کنند.</p>
-            <p>۲. به محض تایید، کارت شما بلافاصله در صفحه اول قرار می‌گیرد.</p>
-            <p>۳. همکلاسی‌ها می‌توانند مهارت‌های شما را ببینند و مستقیماً در تلگرام پیام دهند.</p>
+            <p>این بررسی صرفاً برای این است که مطمئن شویم فقط اعضای واقعی دوره در دایرکتوری حضور دارند و امنیت و صمیمیت جمع حفظ شود.</p>
           </div>
 
-          <div className="pt-4 text-center">
+          <div className="pt-2 text-center">
             <button
               onClick={resetFormAndClose}
               className="px-6 py-2.5 rounded-xl bg-slate-900 text-white font-bold text-sm hover:bg-slate-800 transition-colors shadow-sm"
             >
-              بازگشت به دایرکتوری همکلاسی‌ها
+              مشاهده دایرکتوری همکلاسی‌ها
             </button>
           </div>
         </div>
       ) : (
         <div className="text-right">
-          {/* Tabs: Edit Form vs Live Preview */}
-          <div className="flex items-center justify-between border-b border-slate-100 pb-3 mb-5">
+          {/* Trust & Ease Banner */}
+          <div className="mb-4 p-3 rounded-2xl bg-gradient-to-r from-sky-50 via-indigo-50/40 to-white border border-sky-100/80 text-xs text-slate-700 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
+            <div className="flex items-center gap-2">
+              <div className="w-7 h-7 rounded-lg bg-sky-100 text-sky-700 flex items-center justify-center shrink-0">
+                <Lock className="w-3.5 h-3.5" />
+              </div>
+              <span className="font-semibold text-slate-700 leading-tight">
+                <strong>حریم خصوصی تضمین‌شده:</strong> بدون نیاز به شماره تماس یا اطلاعات حساس؛ فقط نام و تخصص شما جهت شبکه‌سازی همکلاسی‌ها نمایش داده می‌شود.
+              </span>
+            </div>
+            <div className="inline-flex items-center gap-1 shrink-0 px-2.5 py-1 rounded-full bg-white text-slate-600 border border-slate-200 text-[11px] font-bold self-start sm:self-auto">
+              <Clock className="w-3 h-3 text-emerald-600" />
+              <span>تکمیل در ۱ دقیقه</span>
+            </div>
+          </div>
+
+          {/* Form Tabs */}
+          <div className="flex items-center justify-between border-b border-slate-100 pb-3 mb-4">
             <div className="flex gap-2">
               <button
                 type="button"
                 onClick={() => setActiveTab('form')}
-                className={`inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg text-xs font-bold transition-colors ${
+                className={`inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all ${
                   activeTab === 'form'
-                    ? 'bg-sky-50 text-sky-700 border border-sky-200'
-                    : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
+                    ? 'bg-slate-900 text-white shadow-xs'
+                    : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
                 }`}
               >
                 <Edit3 className="w-3.5 h-3.5" />
-                <span>تکمیل مشخصات</span>
+                <span>فرم سریع ثبت‌نام</span>
               </button>
 
               <button
                 type="button"
                 onClick={() => setActiveTab('preview')}
-                className={`inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg text-xs font-bold transition-colors ${
+                className={`inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all ${
                   activeTab === 'preview'
-                    ? 'bg-sky-50 text-sky-700 border border-sky-200'
-                    : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
+                    ? 'bg-slate-900 text-white shadow-xs'
+                    : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
                 }`}
               >
                 <Eye className="w-3.5 h-3.5" />
-                <span>پیش‌نمایش زنده کارت</span>
+                <span>پیش‌نمایش کارت من</span>
               </button>
             </div>
 
-            <span className="text-[11px] text-slate-400 font-bold hidden sm:inline">
-              * فیلدهای دارای ستاره الزامی هستند
+            <span className="text-[11px] text-slate-400 font-medium hidden sm:inline">
+              فقط ۴ فیلد اصلی الزامی است
             </span>
           </div>
 
@@ -295,9 +311,9 @@ export const RegistrationModal: React.FC<RegistrationModalProps> = ({
 
           {/* Live Preview Tab */}
           {activeTab === 'preview' && (
-            <div className="py-4 space-y-4">
-              <div className="p-3 bg-sky-50 border border-sky-100 rounded-xl text-xs text-sky-800 font-medium">
-                این یک پیش‌نمایش زنده است از کارتی که سایر همکلاسی‌ها در صفحه اصلی مشاهده خواهند کرد.
+            <div className="py-2 space-y-4">
+              <div className="p-3 bg-slate-50 border border-slate-200/80 rounded-xl text-xs text-slate-600 text-center font-medium">
+                کارت شما پس از تایید مدیر، با این شکل و شمایل در صفحه اصلی دایرکتوری دوره نمایش داده می‌شود:
               </div>
               <div className="max-w-sm mx-auto">
                 <MemberCard member={previewMember} onSelect={() => {}} />
@@ -306,9 +322,9 @@ export const RegistrationModal: React.FC<RegistrationModalProps> = ({
                 <button
                   type="button"
                   onClick={() => setActiveTab('form')}
-                  className="text-xs font-bold text-sky-600 hover:underline"
+                  className="px-4 py-2 rounded-xl bg-sky-50 text-sky-700 text-xs font-bold hover:bg-sky-100 transition-colors"
                 >
-                  ← ادامه ویرایش مشخصات
+                  ← بازگشت به فرم و نهایی کردن ثبت‌نام
                 </button>
               </div>
             </div>
@@ -317,7 +333,7 @@ export const RegistrationModal: React.FC<RegistrationModalProps> = ({
           {/* Form Tab */}
           <form
             onSubmit={handleSubmit}
-            className={`space-y-6 ${activeTab === 'preview' ? 'hidden' : 'block'}`}
+            className={`space-y-4 ${activeTab === 'preview' ? 'hidden' : 'block'}`}
           >
             {/* Honeypot hidden input */}
             <input
@@ -330,72 +346,20 @@ export const RegistrationModal: React.FC<RegistrationModalProps> = ({
               autoComplete="off"
             />
 
-            {/* Section 1: Photo & Basic Identity */}
-            <div className="space-y-4">
-              <h4 className="text-xs font-bold uppercase tracking-wider text-slate-500 flex items-center gap-1.5">
-                <User className="w-3.5 h-3.5" />
-                <span>۱. هویت و تخصص اصلی</span>
-              </h4>
-
-              {/* Photo Upload Row */}
-              <div className="flex flex-col sm:flex-row items-center gap-4 p-4 rounded-xl bg-slate-50 border border-slate-200/80">
-                <Avatar
-                  src={formData.profile_photo_url}
-                  name={formData.full_name || 'همکلاسی'}
-                  size="xl"
-                  className="ring-2 ring-white shadow-sm shrink-0"
-                />
-                <div className="flex-1 text-center sm:text-right space-y-1.5">
-                  <div className="text-xs font-bold text-slate-800">
-                    تصویر چهره / پروفایل *
-                  </div>
-                  <p className="text-xs text-slate-500">
-                    لطفاً یک تصویر باکیفیت و واضح (فرمت‌های JPG، PNG یا WebP تا سقف ۲ مگابایت) انتخاب کنید.
-                  </p>
-                  <div className="flex flex-wrap items-center justify-center sm:justify-start gap-2 pt-1">
-                    <input
-                      type="file"
-                      ref={fileInputRef}
-                      onChange={handlePhotoSelect}
-                      accept="image/jpeg,image/png,image/webp"
-                      className="hidden"
-                    />
-                    <button
-                      type="button"
-                      disabled={isUploadingPhoto}
-                      onClick={() => fileInputRef.current?.click()}
-                      className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white border border-slate-200 text-xs font-bold text-slate-700 hover:bg-slate-100 hover:border-slate-300 transition-colors shadow-xs"
-                    >
-                      <Upload className="w-3.5 h-3.5 text-slate-500" />
-                      <span>{isUploadingPhoto ? 'در حال پردازش...' : 'انتخاب تصویر'}</span>
-                    </button>
-                    {formData.profile_photo_url && (
-                      <span className="text-[11px] text-emerald-600 font-bold inline-flex items-center gap-1">
-                        <Check className="w-3.5 h-3.5" /> تصویر با موفقیت بارگذاری شد
-                      </span>
-                    )}
-                  </div>
-                  {uploadError && (
-                    <p className="text-xs text-rose-600 font-semibold">{uploadError}</p>
-                  )}
-                  {fieldErrors.profile_photo_url && (
-                    <p className="text-xs text-rose-600 font-semibold">{fieldErrors.profile_photo_url}</p>
-                  )}
-                </div>
-              </div>
-
-              {/* Full Name & Title */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            {/* Step 1: Main Core Fields (Clean & Fast) */}
+            <div className="space-y-3.5">
+              {/* Row 1: Full Name & Professional Title */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
                 <div>
-                  <label className="block text-xs font-bold text-slate-700 mb-1">
-                    نام و نام خانوادگی *
+                  <label className="block text-xs font-bold text-slate-800 mb-1">
+                    نام و نام خانوادگی <span className="text-rose-500">*</span>
                   </label>
                   <input
                     type="text"
                     required
                     value={formData.full_name}
                     onChange={(e) => setFormData({ ...formData, full_name: e.target.value })}
-                    placeholder="مثال: علی احمدی"
+                    placeholder="مثال: سهراب احمدی"
                     className={`w-full rounded-xl border py-2.5 px-3 text-sm text-slate-800 focus:outline-none focus:ring-2 transition-all ${
                       fieldErrors.full_name
                         ? 'border-rose-300 focus:ring-rose-500/20'
@@ -408,15 +372,15 @@ export const RegistrationModal: React.FC<RegistrationModalProps> = ({
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold text-slate-700 mb-1">
-                    عنوان شغلی / حرفه‌ای *
+                  <label className="block text-xs font-bold text-slate-800 mb-1">
+                    عنوان یا تخصص اصلی شما <span className="text-rose-500">*</span>
                   </label>
                   <input
                     type="text"
                     required
                     value={formData.professional_title}
                     onChange={(e) => setFormData({ ...formData, professional_title: e.target.value })}
-                    placeholder="مثال: برنامه‌نویس فول‌استک، طراح محصول"
+                    placeholder="مثال: طراح رابط کاربری، برنامه‌نویس، تریدر..."
                     className={`w-full rounded-xl border py-2.5 px-3 text-sm text-slate-800 focus:outline-none focus:ring-2 transition-all ${
                       fieldErrors.professional_title
                         ? 'border-rose-300 focus:ring-rose-500/20'
@@ -429,11 +393,26 @@ export const RegistrationModal: React.FC<RegistrationModalProps> = ({
                 </div>
               </div>
 
-              {/* Category & Location */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              {/* Quick Titles Suggestions */}
+              <div className="flex flex-wrap items-center gap-1.5 pt-0.5">
+                <span className="text-[11px] text-slate-400 font-medium">عناوین آماده:</span>
+                {QUICK_TITLES.slice(0, 4).map((t) => (
+                  <button
+                    key={t}
+                    type="button"
+                    onClick={() => setFormData(prev => ({ ...prev, professional_title: t }))}
+                    className="text-[11px] px-2 py-0.5 rounded-lg bg-slate-100 text-slate-600 hover:bg-sky-50 hover:text-sky-700 transition-colors font-medium"
+                  >
+                    + {t}
+                  </button>
+                ))}
+              </div>
+
+              {/* Row 2: Category & Telegram ID */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5 pt-1">
                 <div>
-                  <label className="block text-xs font-bold text-slate-700 mb-1">
-                    دسته‌بندی تخصصی *
+                  <label className="block text-xs font-bold text-slate-800 mb-1">
+                    دسته‌بندی اصلی <span className="text-rose-500">*</span>
                   </label>
                   <select
                     value={formData.category}
@@ -449,371 +428,291 @@ export const RegistrationModal: React.FC<RegistrationModalProps> = ({
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold text-slate-700 mb-1">
-                    شهر / موقعیت مکانی (اختیاری)
+                  <label className="block text-xs font-bold text-slate-800 mb-1">
+                    آیدی تلگرام برای ارتباط <span className="text-rose-500">*</span>
                   </label>
                   <div className="relative">
-                    <MapPin className="w-4 h-4 text-slate-400 absolute right-3 top-3" />
+                    <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 text-sky-600 font-bold text-sm">
+                      @
+                    </div>
                     <input
                       type="text"
-                      value={formData.location || ''}
-                      onChange={(e) => setFormData({ ...formData, location: e.target.value })}
-                      placeholder="مثال: تهران یا ریموت"
-                      className="w-full rounded-xl border border-slate-200 py-2.5 pr-9 pl-3 text-sm text-slate-800 focus:border-sky-500 focus:outline-none focus:ring-2 focus:ring-sky-500/20"
-                    />
-                  </div>
-                </div>
-              </div>
-
-              {/* Bio */}
-              <div>
-                <label className="block text-xs font-bold text-slate-700 mb-1">
-                  معرفی کوتاه / بایو *
-                </label>
-                <textarea
-                  rows={3}
-                  required
-                  value={formData.bio}
-                  onChange={(e) => setFormData({ ...formData, bio: e.target.value })}
-                  placeholder="خلاصه‌ای از تجربیات، کارهایی که انجام می‌دهید و موضوعاتی که برایتان هیجان‌انگیز است بنویسید..."
-                  className={`w-full rounded-xl border py-2.5 px-3 text-sm text-slate-800 focus:outline-none focus:ring-2 transition-all ${
-                    fieldErrors.bio
-                      ? 'border-rose-300 focus:ring-rose-500/20'
-                      : 'border-slate-200 focus:border-sky-500 focus:ring-sky-500/20'
-                  }`}
-                />
-                <div className="flex items-center justify-between text-[11px] text-slate-400 mt-1">
-                  <span>{formData.bio.length} از ۶۰۰ حرف</span>
-                  {fieldErrors.bio && <span className="text-rose-600 font-semibold">{fieldErrors.bio}</span>}
-                </div>
-              </div>
-            </div>
-
-            {/* Section 2: Skills & Collaboration */}
-            <div className="space-y-4 pt-2 border-t border-slate-100">
-              <h4 className="text-xs font-bold uppercase tracking-wider text-slate-500 flex items-center gap-1.5">
-                <Briefcase className="w-3.5 h-3.5" />
-                <span>۲. مهارت‌ها و اهداف همکاری</span>
-              </h4>
-
-              {/* Skills Tag Input */}
-              <div>
-                <label className="block text-xs font-bold text-slate-700 mb-1">
-                  مهارت‌ها و ابزارها * (حداقل ۱ مهارت)
-                </label>
-                <div className="flex items-center gap-2 mb-2">
-                  <input
-                    type="text"
-                    value={skillInput}
-                    onChange={(e) => setSkillInput(e.target.value)}
-                    onKeyDown={(e) => {
-                      if (e.key === 'Enter') {
-                        e.preventDefault();
-                        handleAddSkill(skillInput);
-                      }
-                    }}
-                    placeholder="مهارت را تایپ کنید و Enter یا دکمه افزودن را بزنید..."
-                    className="flex-1 rounded-xl border border-slate-200 py-2 px-3 text-sm text-slate-800 focus:border-sky-500 focus:outline-none focus:ring-2 focus:ring-sky-500/20"
-                  />
-                  <button
-                    type="button"
-                    onClick={() => handleAddSkill(skillInput)}
-                    className="px-4 py-2 rounded-xl bg-slate-100 text-slate-700 hover:bg-slate-200 text-xs font-bold transition-colors"
-                  >
-                    افزودن
-                  </button>
-                </div>
-
-                {/* Selected Skills Chips */}
-                {formData.skills.length > 0 && (
-                  <div className="flex flex-wrap gap-1.5 mb-2.5">
-                    {formData.skills.map((skill) => (
-                      <span
-                        key={skill}
-                        className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-bold bg-sky-50 text-sky-800 border border-sky-200"
-                      >
-                        {skill}
-                        <button
-                          type="button"
-                          onClick={() => handleRemoveSkill(skill)}
-                          className="hover:text-rose-600 transition-colors"
-                        >
-                          <X className="w-3 h-3" />
-                        </button>
-                      </span>
-                    ))}
-                  </div>
-                )}
-
-                {/* Skill Suggestions */}
-                <div className="text-[11px] text-slate-400 mb-1 font-semibold">
-                  مهارت‌های پرطرفدار (با کلیک اضافه می‌شوند):
-                </div>
-                <div className="flex flex-wrap gap-1">
-                  {POPULAR_SKILLS.slice(0, 10).map((skill) => {
-                    const isAdded = formData.skills.includes(skill);
-                    if (isAdded) return null;
-                    return (
-                      <button
-                        key={skill}
-                        type="button"
-                        onClick={() => handleAddSkill(skill)}
-                        className="text-[11px] px-2 py-0.5 rounded-md bg-slate-100 text-slate-600 hover:bg-slate-200 transition-colors font-medium"
-                      >
-                        + {skill}
-                      </button>
-                    );
-                  })}
-                </div>
-                {fieldErrors.skills && (
-                  <p className="mt-1 text-xs text-rose-600 font-semibold">{fieldErrors.skills}</p>
-                )}
-              </div>
-
-              {/* Professional Interests */}
-              <div>
-                <label className="block text-xs font-bold text-slate-700 mb-1">
-                  علاقه‌مندی‌های حرفه‌ای (اختیاری)
-                </label>
-                <div className="flex items-center gap-2 mb-2">
-                  <input
-                    type="text"
-                    value={interestInput}
-                    onChange={(e) => setInterestInput(e.target.value)}
-                    onKeyDown={(e) => {
-                      if (e.key === 'Enter') {
-                        e.preventDefault();
-                        handleAddInterest(interestInput);
-                      }
-                    }}
-                    placeholder="مثال: بات‌های تلگرام، استارتاپ‌های هوش مصنوعی، فین‌تک..."
-                    className="flex-1 rounded-xl border border-slate-200 py-2 px-3 text-sm text-slate-800 focus:border-sky-500 focus:outline-none focus:ring-2 focus:ring-sky-500/20"
-                  />
-                  <button
-                    type="button"
-                    onClick={() => handleAddInterest(interestInput)}
-                    className="px-4 py-2 rounded-xl bg-slate-100 text-slate-700 hover:bg-slate-200 text-xs font-bold transition-colors"
-                  >
-                    افزودن
-                  </button>
-                </div>
-                {formData.interests && formData.interests.length > 0 && (
-                  <div className="flex flex-wrap gap-1.5">
-                    {formData.interests.map((interest) => (
-                      <span
-                        key={interest}
-                        className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-bold bg-slate-100 text-slate-700 border border-slate-200"
-                      >
-                        {interest}
-                        <button
-                          type="button"
-                          onClick={() => handleRemoveInterest(interest)}
-                          className="hover:text-rose-600 transition-colors"
-                        >
-                          <X className="w-3 h-3" />
-                        </button>
-                      </span>
-                    ))}
-                  </div>
-                )}
-              </div>
-
-              {/* What I can help with */}
-              <div>
-                <label className="block text-xs font-bold text-slate-700 mb-1">
-                  چگونه می‌توانم به دیگر همکلاسی‌ها کمک کنم؟ (اختیاری)
-                </label>
-                <textarea
-                  rows={2}
-                  value={formData.can_help_with || ''}
-                  onChange={(e) => setFormData({ ...formData, can_help_with: e.target.value })}
-                  placeholder="مثال: بازبینی کدهای فرانت‌اند، مشاوره طراحی رابط، اشتراک منابع یادگیری..."
-                  className="w-full rounded-xl border border-slate-200 py-2.5 px-3 text-sm text-slate-800 focus:border-sky-500 focus:outline-none focus:ring-2 focus:ring-sky-500/20"
-                />
-              </div>
-
-              {/* Collaboration goals */}
-              <div>
-                <label className="block text-xs font-bold text-slate-700 mb-1">
-                  به دنبال چه نوع همکاری یا تیمی هستم؟ (اختیاری)
-                </label>
-                <textarea
-                  rows={2}
-                  value={formData.collaboration_goals || ''}
-                  onChange={(e) => setFormData({ ...formData, collaboration_goals: e.target.value })}
-                  placeholder="مثال: مشتاق پیوستن به تیمی برای ساخت یک پروژه کلاسی مشترک یا استارتاپ مینی‌اپ..."
-                  className="w-full rounded-xl border border-slate-200 py-2.5 px-3 text-sm text-slate-800 focus:border-sky-500 focus:outline-none focus:ring-2 focus:ring-sky-500/20"
-                />
-              </div>
-            </div>
-
-            {/* Section 3: Contact & Links */}
-            <div className="space-y-4 pt-2 border-t border-slate-100">
-              <h4 className="text-xs font-bold uppercase tracking-wider text-slate-500 flex items-center gap-1.5">
-                <Globe className="w-3.5 h-3.5" />
-                <span>۳. راه‌های ارتباطی و شبکه‌های اجتماعی</span>
-              </h4>
-
-              {/* Telegram Username */}
-              <div>
-                <label className="block text-xs font-bold text-slate-700 mb-1">
-                  آیدی تلگرام (اختیاری اما بسیار توصیه می‌شود)
-                </label>
-                <div className="relative">
-                  <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400 text-sm font-bold">
-                    @
-                  </div>
-                  <input
-                    type="text"
-                    dir="ltr"
-                    value={formData.telegram_username || ''}
-                    onChange={(e) => setFormData({ ...formData, telegram_username: e.target.value })}
-                    placeholder="username"
-                    className={`w-full rounded-xl border py-2.5 pl-8 pr-3 text-sm text-slate-800 focus:outline-none focus:ring-2 transition-all ${
-                      fieldErrors.telegram_username
-                        ? 'border-rose-300 focus:ring-rose-500/20'
-                        : 'border-slate-200 focus:border-sky-500 focus:ring-sky-500/20'
-                    }`}
-                  />
-                </div>
-                <p className="mt-1 text-[11px] text-slate-500">
-                  به همکلاسی‌ها اجازه می‌دهد با یک کلیک ساده، چت تلگرامی با شما را آغاز کنند.
-                </p>
-                {fieldErrors.telegram_username && (
-                  <p className="mt-1 text-xs text-rose-600 font-semibold">{fieldErrors.telegram_username}</p>
-                )}
-              </div>
-
-              {/* LinkedIn & Portfolio */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-xs font-bold text-slate-700 mb-1">
-                    آدرس لینکدین (اختیاری)
-                  </label>
-                  <div className="relative">
-                    <LinkedInIcon className="w-4 h-4 text-slate-400 absolute left-3 top-3" />
-                    <input
-                      type="url"
                       dir="ltr"
-                      value={formData.linkedin_url || ''}
-                      onChange={(e) => setFormData({ ...formData, linkedin_url: e.target.value })}
-                      placeholder="https://linkedin.com/in/..."
-                      className={`w-full rounded-xl border py-2.5 pl-9 pr-3 text-sm text-slate-800 focus:outline-none focus:ring-2 transition-all ${
-                        fieldErrors.linkedin_url
+                      required
+                      value={formData.telegram_username || ''}
+                      onChange={(e) => setFormData({ ...formData, telegram_username: e.target.value })}
+                      placeholder="username"
+                      className={`w-full rounded-xl border py-2.5 pl-8 pr-3 text-sm text-slate-800 focus:outline-none focus:ring-2 transition-all ${
+                        fieldErrors.telegram_username
                           ? 'border-rose-300 focus:ring-rose-500/20'
                           : 'border-slate-200 focus:border-sky-500 focus:ring-sky-500/20'
                       }`}
                     />
                   </div>
-                  {fieldErrors.linkedin_url && (
-                    <p className="mt-1 text-xs text-rose-600 font-semibold">{fieldErrors.linkedin_url}</p>
+                  {fieldErrors.telegram_username ? (
+                    <p className="mt-1 text-xs text-rose-600 font-semibold">{fieldErrors.telegram_username}</p>
+                  ) : (
+                    <p className="mt-1 text-[11px] text-slate-400">
+                      دکمه شروع چت تلگرام مستقیماً به آیدی شما لینک می‌شود.
+                    </p>
                   )}
                 </div>
+              </div>
 
-                <div>
-                  <label className="block text-xs font-bold text-slate-700 mb-1">
-                    وبسایت / پورتفولیو / گیت‌هاب (اختیاری)
-                  </label>
-                  <div className="relative">
+              {/* Photo Box: Friendly & Fully Optional */}
+              <div className="p-3.5 rounded-2xl bg-slate-50/80 border border-slate-200/70 flex items-center justify-between gap-3">
+                <div className="flex items-center gap-3">
+                  <Avatar
+                    src={formData.profile_photo_url}
+                    name={formData.full_name || 'همکلاسی'}
+                    size="lg"
+                    className="ring-2 ring-white shadow-xs shrink-0"
+                  />
+                  <div className="space-y-0.5">
+                    <div className="text-xs font-bold text-slate-800 flex items-center gap-1.5">
+                      <span>تصویر پروفایل</span>
+                      <span className="text-[10px] font-semibold text-slate-500 bg-slate-200/70 px-1.5 py-0.2 rounded">
+                        اختیاری
+                      </span>
+                    </div>
+                    <p className="text-[11px] text-slate-500">
+                      {formData.profile_photo_url
+                        ? 'تصویر شما با موفقیت انتخاب شد.'
+                        : 'اگر عکس آپلود نکنید، آواتار زیبا با حروف نام شما قرار می‌گیرد.'}
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-2 shrink-0">
+                  <input
+                    type="file"
+                    ref={fileInputRef}
+                    onChange={handlePhotoSelect}
+                    accept="image/jpeg,image/png,image/webp"
+                    className="hidden"
+                  />
+                  <button
+                    type="button"
+                    disabled={isUploadingPhoto}
+                    onClick={() => fileInputRef.current?.click()}
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white border border-slate-200 text-xs font-bold text-slate-700 hover:bg-slate-100 transition-colors shadow-2xs"
+                  >
+                    <Upload className="w-3.5 h-3.5 text-slate-500" />
+                    <span>{isUploadingPhoto ? 'در حال آپلود...' : 'انتخاب عکس'}</span>
+                  </button>
+
+                  {formData.profile_photo_url && (
+                    <button
+                      type="button"
+                      onClick={handleRemovePhoto}
+                      title="حذف تصویر"
+                      className="p-1.5 text-slate-400 hover:text-rose-600 rounded-lg transition-colors"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </button>
+                  )}
+                </div>
+              </div>
+              {uploadError && (
+                <p className="text-xs text-rose-600 font-semibold">{uploadError}</p>
+              )}
+            </div>
+
+            {/* Step 2: Collapsible Optional Details (Accordion) */}
+            <div className="pt-2">
+              <button
+                type="button"
+                onClick={() => setShowAdvanced(!showAdvanced)}
+                className="w-full flex items-center justify-between p-3 rounded-xl bg-sky-50/50 hover:bg-sky-50 border border-sky-100 text-xs font-bold text-sky-800 transition-colors"
+              >
+                <span className="flex items-center gap-1.5">
+                  <Smile className="w-4 h-4 text-sky-600" />
+                  <span>{showAdvanced ? 'بستن اطلاعات تکمیلی' : 'افزودن مهارت‌ها، بیو یا لینک‌های بیشتر (کاملاً اختیاری ➕)'}</span>
+                </span>
+                {showAdvanced ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+              </button>
+
+              {showAdvanced && (
+                <div className="mt-3 p-4 rounded-2xl bg-white border border-slate-200 space-y-4 animate-in fade-in duration-200">
+                  {/* Bio */}
+                  <div>
+                    <label className="block text-xs font-bold text-slate-700 mb-1">
+                      معرفی کوتاه / بایو (اختیاری)
+                    </label>
+                    <textarea
+                      rows={2}
+                      value={formData.bio}
+                      onChange={(e) => setFormData({ ...formData, bio: e.target.value })}
+                      placeholder="یک یا دو جمله درباره زمینه کاری، تجربیات یا علایق‌تان بنویسید..."
+                      className="w-full rounded-xl border border-slate-200 py-2 px-3 text-xs sm:text-sm text-slate-800 focus:border-sky-500 focus:outline-none focus:ring-2 focus:ring-sky-500/20"
+                    />
+                  </div>
+
+                  {/* Skills quick chips */}
+                  <div>
+                    <label className="block text-xs font-bold text-slate-700 mb-1">
+                      مهارت‌ها یا ابزارهای مورد استفاده شما (اختیاری)
+                    </label>
+                    <div className="flex items-center gap-2 mb-2">
+                      <input
+                        type="text"
+                        value={skillInput}
+                        onChange={(e) => setSkillInput(e.target.value)}
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter') {
+                            e.preventDefault();
+                            handleAddSkill(skillInput);
+                          }
+                        }}
+                        placeholder="مهارت دلخواه را تایپ کنید و Enter بزنید..."
+                        className="flex-1 rounded-xl border border-slate-200 py-1.5 px-3 text-xs text-slate-800 focus:border-sky-500 focus:outline-none focus:ring-2 focus:ring-sky-500/20"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => handleAddSkill(skillInput)}
+                        className="px-3 py-1.5 rounded-xl bg-slate-100 text-slate-700 hover:bg-slate-200 text-xs font-bold transition-colors"
+                      >
+                        افزودن
+                      </button>
+                    </div>
+
+                    {formData.skills.length > 0 && (
+                      <div className="flex flex-wrap gap-1.5 mb-2">
+                        {formData.skills.map((skill) => (
+                          <span
+                            key={skill}
+                            className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-lg text-xs font-bold bg-sky-50 text-sky-800 border border-sky-200"
+                          >
+                            {skill}
+                            <button
+                              type="button"
+                              onClick={() => handleRemoveSkill(skill)}
+                              className="hover:text-rose-600 transition-colors"
+                            >
+                              <X className="w-3 h-3" />
+                            </button>
+                          </span>
+                        ))}
+                      </div>
+                    )}
+
+                    <div className="flex flex-wrap gap-1 pt-1">
+                      {POPULAR_SKILLS.slice(0, 8).map((skill) => {
+                        const isAdded = formData.skills.includes(skill);
+                        if (isAdded) return null;
+                        return (
+                          <button
+                            key={skill}
+                            type="button"
+                            onClick={() => handleAddSkill(skill)}
+                            className="text-[11px] px-2 py-0.5 rounded-md bg-slate-100 text-slate-600 hover:bg-slate-200 transition-colors font-medium"
+                          >
+                            + {skill}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+
+                  {/* Location & LinkedIn */}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div>
+                      <label className="block text-xs font-bold text-slate-700 mb-1">
+                        شهر / موقعیت مکانی (اختیاری)
+                      </label>
+                      <div className="relative">
+                        <MapPin className="w-4 h-4 text-slate-400 absolute right-3 top-2.5" />
+                        <input
+                          type="text"
+                          value={formData.location || ''}
+                          onChange={(e) => setFormData({ ...formData, location: e.target.value })}
+                          placeholder="مثال: تهران یا ریموت"
+                          className="w-full rounded-xl border border-slate-200 py-2 pr-9 pl-3 text-xs sm:text-sm text-slate-800 focus:border-sky-500 focus:outline-none focus:ring-2 focus:ring-sky-500/20"
+                        />
+                      </div>
+                    </div>
+
+                    <div>
+                      <label className="block text-xs font-bold text-slate-700 mb-1">
+                        آدرس لینکدین (اختیاری)
+                      </label>
+                      <div className="relative">
+                        <LinkedInIcon className="w-4 h-4 text-slate-400 absolute left-3 top-2.5" />
+                        <input
+                          type="url"
+                          dir="ltr"
+                          value={formData.linkedin_url || ''}
+                          onChange={(e) => setFormData({ ...formData, linkedin_url: e.target.value })}
+                          placeholder="https://linkedin.com/in/..."
+                          className="w-full rounded-xl border border-slate-200 py-2 pl-9 pr-3 text-xs sm:text-sm text-slate-800 focus:border-sky-500 focus:outline-none focus:ring-2 focus:ring-sky-500/20 text-left"
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Website / Portfolio */}
+                  <div>
+                    <label className="block text-xs font-bold text-slate-700 mb-1">
+                      وبسایت، گیت‌هاب یا نمونه کار (اختیاری)
+                    </label>
                     <input
                       type="url"
                       dir="ltr"
                       value={formData.website_url || ''}
                       onChange={(e) => setFormData({ ...formData, website_url: e.target.value })}
-                      placeholder="https://yourwebsite.ir"
-                      className={`w-full rounded-xl border py-2.5 px-3 text-sm text-slate-800 focus:outline-none focus:ring-2 transition-all ${
-                        fieldErrors.website_url
-                          ? 'border-rose-300 focus:ring-rose-500/20'
-                          : 'border-slate-200 focus:border-sky-500 focus:ring-sky-500/20'
-                      }`}
+                      placeholder="https://github.com/..."
+                      className="w-full rounded-xl border border-slate-200 py-2 px-3 text-xs sm:text-sm text-slate-800 focus:border-sky-500 focus:outline-none focus:ring-2 focus:ring-sky-500/20 text-left"
                     />
                   </div>
-                  {fieldErrors.website_url && (
-                    <p className="mt-1 text-xs text-rose-600 font-semibold">{fieldErrors.website_url}</p>
-                  )}
                 </div>
-              </div>
-
-              {/* Private Email */}
-              <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-200/80 space-y-1.5">
-                <label className="block text-xs font-bold text-slate-700">
-                  آدرس ایمیل خصوصی (اختیاری)
-                </label>
-                <div className="relative">
-                  <Mail className="w-4 h-4 text-slate-400 absolute right-3 top-3" />
-                  <input
-                    type="email"
-                    dir="ltr"
-                    value={formData.private_email || ''}
-                    onChange={(e) => setFormData({ ...formData, private_email: e.target.value })}
-                    placeholder="email@example.com"
-                    className="w-full rounded-xl border border-slate-200 bg-white py-2 pr-9 pl-3 text-sm text-slate-800 focus:border-sky-500 focus:outline-none focus:ring-2 focus:ring-sky-500/20 text-left"
-                  />
-                </div>
-                <p className="text-[11px] text-slate-500 flex items-center gap-1 font-medium">
-                  <Shield className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
-                  <span>
-                    <strong>کاملاً محرمانه:</strong> این ایمیل هرگز در دایرکتوری به عموم نمایش داده نمی‌شود و فقط برای اطلاع‌رسانی‌های ضروری ادمین دوره است.
-                  </span>
-                </p>
-                {fieldErrors.private_email && (
-                  <p className="mt-1 text-xs text-rose-600 font-semibold">{fieldErrors.private_email}</p>
-                )}
-              </div>
-            </div>
-
-            {/* Section 4: Explicit Consent Checkbox */}
-            <div className="p-4 rounded-xl bg-sky-50/70 border border-sky-100 space-y-2">
-              <label className="flex items-start gap-2.5 cursor-pointer select-none">
-                <input
-                  type="checkbox"
-                  required
-                  checked={formData.consent_to_publish}
-                  onChange={(e) => setFormData({ ...formData, consent_to_publish: e.target.checked })}
-                  className="rounded border-slate-300 text-sky-600 focus:ring-sky-500 w-4 h-4 mt-1 cursor-pointer shrink-0"
-                />
-                <span className="text-xs text-slate-700 leading-relaxed font-semibold">
-                  <strong>رضایت انتشار عمومی:</strong> اینجانب تایید می‌کنم که عضو این دوره آموزشی تلگرام هستم و رضایت کامل دارم که اطلاعات فوق جهت شبکه‌سازی و ارتباط با سایر همکلاسی‌ها در این دایرکتوری منتشر شود.
-                </span>
-              </label>
-              {fieldErrors.consent_to_publish && (
-                <p className="text-xs text-rose-600 font-bold">{fieldErrors.consent_to_publish}</p>
               )}
             </div>
 
-            {/* Actions */}
-            <div className="flex items-center justify-between pt-2 border-t border-slate-100">
-              <button
-                type="button"
-                onClick={() => setActiveTab('preview')}
-                className="inline-flex items-center gap-1.5 text-xs font-bold text-slate-600 hover:text-slate-900"
-              >
-                <Eye className="w-3.5 h-3.5" />
-                <span>مشاهده پیش‌نمایش کارت قبل از ارسال</span>
-              </button>
+            {/* Step 3: Friendly Consent & Action Button */}
+            <div className="pt-2 border-t border-slate-100 space-y-3">
+              <label className="flex items-center gap-2 cursor-pointer select-none text-xs text-slate-600 font-medium">
+                <input
+                  type="checkbox"
+                  checked={formData.consent_to_publish}
+                  onChange={(e) => setFormData({ ...formData, consent_to_publish: e.target.checked })}
+                  className="rounded border-slate-300 text-sky-600 focus:ring-sky-500 w-4 h-4 cursor-pointer"
+                />
+                <span>با نمایش کارتم در دایرکتوری همکلاسی‌های دوره موافقم.</span>
+              </label>
 
-              <div className="flex items-center gap-3">
+              <div className="flex items-center justify-between gap-3 pt-1">
                 <button
                   type="button"
-                  onClick={onClose}
-                  className="px-4 py-2 text-xs font-bold text-slate-600 hover:text-slate-800"
+                  onClick={() => setActiveTab('preview')}
+                  className="inline-flex items-center gap-1.5 text-xs font-bold text-slate-500 hover:text-slate-800 transition-colors"
                 >
-                  انصراف
+                  <Eye className="w-3.5 h-3.5 text-sky-600" />
+                  <span>پیش‌نمایش زنده کارت</span>
                 </button>
-                <button
-                  type="submit"
-                  disabled={isSubmitting}
-                  className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-l from-sky-600 to-telegram-brand px-6 py-2.5 text-xs sm:text-sm font-bold text-white shadow-md shadow-sky-500/20 hover:from-sky-500 hover:to-sky-600 active:scale-95 transition-all disabled:opacity-50"
-                >
-                  {isSubmitting ? (
-                    <span>در حال ارسال...</span>
-                  ) : (
-                    <>
-                      <span>ارسال پروفایل جهت تایید</span>
-                      <Send className="w-3.5 h-3.5 rotate-180 -translate-x-0.5" />
-                    </>
-                  )}
-                </button>
+
+                <div className="flex items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={onClose}
+                    className="px-4 py-2.5 text-xs font-bold text-slate-600 hover:text-slate-800 transition-colors"
+                  >
+                    انصراف
+                  </button>
+                  <button
+                    type="submit"
+                    disabled={isSubmitting}
+                    className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-l from-sky-600 to-indigo-600 hover:from-sky-500 hover:to-indigo-500 px-6 py-2.5 text-xs sm:text-sm font-bold text-white shadow-md shadow-sky-500/20 active:scale-95 transition-all disabled:opacity-50"
+                  >
+                    {isSubmitting ? (
+                      <span>در حال ثبت...</span>
+                    ) : (
+                      <>
+                        <span>ثبت و معرفی به کلاس 🚀</span>
+                        <Send className="w-3.5 h-3.5 rotate-180 -translate-x-0.5" />
+                      </>
+                    )}
+                  </button>
+                </div>
               </div>
             </div>
           </form>

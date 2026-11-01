@@ -179,12 +179,7 @@ export const memberService = {
       return { success: false, error: 'Spam submission detected.' };
     }
 
-    // 2. Validate mandatory consent
-    if (!formData.consent_to_publish) {
-      return { success: false, error: 'Consent to publish profile is required.' };
-    }
-
-    // 3. Clean and sanitize data
+    // 2. Clean and sanitize data
     let cleanTelegram = formData.telegram_username?.trim() || '';
     if (cleanTelegram.startsWith('@')) {
       cleanTelegram = cleanTelegram.substring(1);
@@ -197,10 +192,12 @@ export const memberService = {
       id: `mem-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`,
       full_name: formData.full_name.trim(),
       professional_title: formData.professional_title.trim(),
-      bio: formData.bio.trim(),
-      profile_photo_url: formData.profile_photo_url.trim(),
-      category: formData.category,
-      skills: formData.skills.map(s => s.trim()).filter(Boolean),
+      bio: formData.bio?.trim() || 'همکلاسی دوره آموزشی • آماده ارتباط و تبادل تجربه با دوستان',
+      profile_photo_url: formData.profile_photo_url?.trim() || '',
+      category: formData.category || 'عمومی و سایر',
+      skills: formData.skills && formData.skills.length > 0
+        ? formData.skills.map(s => s.trim()).filter(Boolean)
+        : [formData.category || 'همکلاسی'],
       interests: formData.interests || [],
       collaboration_goals: formData.collaboration_goals?.trim() || undefined,
       can_help_with: formData.can_help_with?.trim() || undefined,
