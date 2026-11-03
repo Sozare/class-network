@@ -3,7 +3,7 @@ import { Send, Globe, MapPin, Star, ArrowUpLeft } from 'lucide-react';
 import type { Member } from '../../types';
 import { Avatar } from '../common/Avatar';
 import { Badge } from '../common/Badge';
-import { LinkedInIcon } from '../common/Icons';
+import { LinkedInIcon, InstagramIcon } from '../common/Icons';
 
 interface MemberCardProps {
   member: Member;
@@ -118,6 +118,19 @@ export const MemberCard: React.FC<MemberCardProps> = ({
               onClick={(e) => e.stopPropagation()}
             >
               <Send className="w-4 h-4 rotate-180 -translate-x-0.5" />
+            </a>
+          )}
+
+          {member.instagram_username && (
+            <a
+              href={`https://instagram.com/${member.instagram_username.replace(/^@/, '')}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex h-8 w-8 items-center justify-center rounded-lg bg-rose-50 text-rose-600 hover:bg-gradient-to-tr hover:from-amber-500 hover:via-rose-500 hover:to-purple-600 hover:text-white transition-all"
+              title={`صفحه اینستاگرام @${member.instagram_username}`}
+              onClick={(e) => e.stopPropagation()}
+            >
+              <InstagramIcon className="w-4 h-4" />
             </a>
           )}
 

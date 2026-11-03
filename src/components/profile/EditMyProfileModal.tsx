@@ -5,6 +5,7 @@ import {
 import { Modal } from '../common/Modal';
 import { Avatar } from '../common/Avatar';
 import { ImageCropperModal } from '../common/ImageCropperModal';
+import { InstagramIcon } from '../common/Icons';
 import { DEFAULT_CATEGORIES } from '../../lib/constants';
 import { memberService } from '../../services/memberService';
 import type { Member } from '../../types';
@@ -43,6 +44,7 @@ export const EditMyProfileModal: React.FC<EditMyProfileModalProps> = ({
   const [category, setCategory] = useState('');
   const [location, setLocation] = useState('');
   const [telegramUsername, setTelegramUsername] = useState('');
+  const [instagramUsername, setInstagramUsername] = useState('');
   const [bio, setBio] = useState('');
   const [photoUrl, setPhotoUrl] = useState('');
 
@@ -66,6 +68,7 @@ export const EditMyProfileModal: React.FC<EditMyProfileModalProps> = ({
           setCategory(data.category || DEFAULT_CATEGORIES[1]?.name || 'مهندسی نرم‌افزار و برنامه‌نویسی');
           setLocation(data.location || 'تهران');
           setTelegramUsername(data.telegram_username || '');
+          setInstagramUsername(data.instagram_username || '');
           setBio(data.bio || '');
           setPhotoUrl(data.profile_photo_url || '');
         } else {
@@ -106,12 +109,17 @@ export const EditMyProfileModal: React.FC<EditMyProfileModalProps> = ({
     if (cleanTg.startsWith('@')) cleanTg = cleanTg.substring(1);
     if (cleanTg.includes('t.me/')) cleanTg = cleanTg.split('t.me/')[1]?.replace('/', '') || '';
 
+    let cleanIg = instagramUsername.trim();
+    if (cleanIg.startsWith('@')) cleanIg = cleanIg.substring(1);
+    if (cleanIg.includes('instagram.com/')) cleanIg = cleanIg.split('instagram.com/')[1]?.replace(/\/$/, '') || '';
+
     const success = await memberService.updateMember(memberId, {
       full_name: fullName.trim(),
       professional_title: professionalTitle.trim(),
       category: category,
       location: location.trim(),
       telegram_username: cleanTg,
+      instagram_username: cleanIg,
       bio: bio.trim(),
       profile_photo_url: photoUrl,
     });
@@ -314,23 +322,42 @@ export const EditMyProfileModal: React.FC<EditMyProfileModalProps> = ({
               </div>
             </div>
 
-            {/* Telegram ID */}
-            <div>
-              <label className="block text-xs font-bold text-slate-800 mb-1">
-                آیدی تلگرام
-              </label>
-              <div className="relative">
-                <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 text-sky-600 font-bold text-sm">
-                  @
+            {/* Row 3: Telegram ID & Instagram */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div>
+                <label className="block text-xs font-bold text-slate-800 mb-1">
+                  آیدی تلگرام <span className="text-rose-500">*</span>
+                </label>
+                <div className="relative">
+                  <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 text-sky-600 font-bold text-sm">
+                    @
+                  </div>
+                  <input
+                    type="text"
+                    dir="ltr"
+                    required
+                    value={telegramUsername}
+                    onChange={(e) => setTelegramUsername(e.target.value)}
+                    className="w-full rounded-xl border border-slate-200 py-2 pl-8 pr-3 text-sm text-slate-800 focus:border-sky-500 focus:outline-none focus:ring-2 focus:ring-sky-500/20"
+                  />
                 </div>
-                <input
-                  type="text"
-                  dir="ltr"
-                  required
-                  value={telegramUsername}
-                  onChange={(e) => setTelegramUsername(e.target.value)}
-                  className="w-full rounded-xl border border-slate-200 py-2 pl-8 pr-3 text-sm text-slate-800 focus:border-sky-500 focus:outline-none focus:ring-2 focus:ring-sky-500/20"
-                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-slate-800 mb-1">
+                  آیدی اینستاگرام (اختیاری)
+                </label>
+                <div className="relative">
+                  <InstagramIcon className="w-4 h-4 text-pink-500 absolute left-3 top-2.5" />
+                  <input
+                    type="text"
+                    dir="ltr"
+                    value={instagramUsername}
+                    onChange={(e) => setInstagramUsername(e.target.value)}
+                    placeholder="username"
+                    className="w-full rounded-xl border border-slate-200 py-2 pl-9 pr-3 text-sm text-slate-800 focus:border-pink-500 focus:outline-none focus:ring-2 focus:ring-pink-500/20"
+                  />
+                </div>
               </div>
             </div>
 

@@ -8,7 +8,7 @@ import { Modal } from '../common/Modal';
 import { Avatar } from '../common/Avatar';
 import { MemberCard } from '../directory/MemberCard';
 import { ImageCropperModal } from '../common/ImageCropperModal';
-import { LinkedInIcon } from '../common/Icons';
+import { LinkedInIcon, InstagramIcon } from '../common/Icons';
 import { DEFAULT_CATEGORIES, POPULAR_SKILLS } from '../../lib/constants';
 import { memberRegistrationSchema } from '../../lib/validation';
 import { memberService } from '../../services/memberService';
@@ -61,6 +61,7 @@ export const RegistrationModal: React.FC<RegistrationModalProps> = ({
     can_help_with: '',
     telegram_username: '',
     linkedin_url: '',
+    instagram_username: '',
     website_url: '',
     location: 'تهران',
     private_email: '',
@@ -192,8 +193,9 @@ export const RegistrationModal: React.FC<RegistrationModalProps> = ({
     onClose();
   };
 
-  // Clean Telegram ID for preview
+  // Clean Telegram & Instagram IDs for preview
   const cleanTg = (formData.telegram_username || '').replace(/^@/, '').replace(/.*t\.me\//, '').trim();
+  const cleanIg = (formData.instagram_username || '').replace(/^@/, '').replace(/.*instagram\.com\//, '').trim();
 
   // Virtual member object for the Live Card Preview
   const previewMember: Member = {
@@ -208,6 +210,7 @@ export const RegistrationModal: React.FC<RegistrationModalProps> = ({
     collaboration_goals: formData.collaboration_goals,
     can_help_with: formData.can_help_with,
     telegram_username: cleanTg || undefined,
+    instagram_username: cleanIg || undefined,
     linkedin_url: formData.linkedin_url,
     website_url: formData.website_url,
     location: formData.location || 'تهران',
@@ -543,14 +546,14 @@ export const RegistrationModal: React.FC<RegistrationModalProps> = ({
                 </div>
               </div>
 
-              {/* Collapsible Details (Bio, Skills, LinkedIn) */}
+              {/* Collapsible Details (Bio, Skills, Instagram & LinkedIn) */}
               <div className="pt-1">
                 <button
                   type="button"
                   onClick={() => setShowAdvanced(!showAdvanced)}
                   className="w-full flex items-center justify-between py-2 px-3 rounded-lg text-xs font-bold text-slate-600 hover:text-slate-900 bg-slate-100/70 hover:bg-slate-100 transition-colors"
                 >
-                  <span>{showAdvanced ? 'بستن اطلاعات تکمیلی' : '➕ افزودن معرفی، مهارت یا لینکدین (اختیاری)'}</span>
+                  <span>{showAdvanced ? 'بستن اطلاعات تکمیلی' : '➕ افزودن معرفی، مهارت، اینستاگرام یا لینکدین (اختیاری)'}</span>
                   {showAdvanced ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
                 </button>
 
@@ -636,21 +639,48 @@ export const RegistrationModal: React.FC<RegistrationModalProps> = ({
                       </div>
                     </div>
 
-                    {/* LinkedIn */}
-                    <div>
-                      <label className="block text-xs font-bold text-slate-700 mb-1">
-                        آدرس لینکدین
-                      </label>
-                      <div className="relative">
-                        <LinkedInIcon className="w-3.5 h-3.5 text-slate-400 absolute left-3 top-2.5" />
-                        <input
-                          type="url"
-                          dir="ltr"
-                          value={formData.linkedin_url || ''}
-                          onChange={(e) => setFormData({ ...formData, linkedin_url: e.target.value })}
-                          placeholder="https://linkedin.com/in/..."
-                          className="w-full rounded-xl border border-slate-200 py-1.5 pl-9 pr-3 text-xs text-slate-800 focus:border-sky-500 focus:outline-none focus:ring-2 focus:ring-sky-500/20 bg-white text-left"
-                        />
+                    {/* Socials: Instagram & LinkedIn */}
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                      {/* Instagram */}
+                      <div>
+                        <label className="block text-xs font-bold text-slate-700 mb-1">
+                          آیدی اینستاگرام
+                        </label>
+                        <div className="relative">
+                          <InstagramIcon className="w-3.5 h-3.5 text-pink-500 absolute left-3 top-2.5" />
+                          <input
+                            type="text"
+                            dir="ltr"
+                            value={formData.instagram_username || ''}
+                            onChange={(e) => setFormData({ ...formData, instagram_username: e.target.value })}
+                            placeholder="username"
+                            className="w-full rounded-xl border border-slate-200 py-1.5 pl-9 pr-3 text-xs text-slate-800 focus:border-pink-500 focus:outline-none focus:ring-2 focus:ring-pink-500/20 bg-white text-left"
+                          />
+                        </div>
+                        {fieldErrors.instagram_username && (
+                          <p className="mt-1 text-xs text-rose-600 font-semibold">{fieldErrors.instagram_username}</p>
+                        )}
+                      </div>
+
+                      {/* LinkedIn */}
+                      <div>
+                        <label className="block text-xs font-bold text-slate-700 mb-1">
+                          آدرس لینکدین
+                        </label>
+                        <div className="relative">
+                          <LinkedInIcon className="w-3.5 h-3.5 text-slate-400 absolute left-3 top-2.5" />
+                          <input
+                            type="url"
+                            dir="ltr"
+                            value={formData.linkedin_url || ''}
+                            onChange={(e) => setFormData({ ...formData, linkedin_url: e.target.value })}
+                            placeholder="https://linkedin.com/in/..."
+                            className="w-full rounded-xl border border-slate-200 py-1.5 pl-9 pr-3 text-xs text-slate-800 focus:border-sky-500 focus:outline-none focus:ring-2 focus:ring-sky-500/20 bg-white text-left"
+                          />
+                        </div>
+                        {fieldErrors.linkedin_url && (
+                          <p className="mt-1 text-xs text-rose-600 font-semibold">{fieldErrors.linkedin_url}</p>
+                        )}
                       </div>
                     </div>
                   </div>

@@ -12,6 +12,7 @@ export interface Member {
   collaboration_goals?: string;
   can_help_with?: string;
   telegram_username?: string;
+  instagram_username?: string;
   linkedin_url?: string;
   website_url?: string;
   location?: string;
@@ -50,6 +51,7 @@ export interface RegistrationFormData {
   collaboration_goals?: string;
   can_help_with?: string;
   telegram_username?: string;
+  instagram_username?: string;
   linkedin_url?: string;
   website_url?: string;
   location?: string;

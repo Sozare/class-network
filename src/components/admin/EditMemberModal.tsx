@@ -30,6 +30,7 @@ export const EditMemberModal: React.FC<EditMemberModalProps> = ({
         bio: member.bio,
         skills: [...member.skills],
         telegram_username: member.telegram_username,
+        instagram_username: member.instagram_username,
         linkedin_url: member.linkedin_url,
         website_url: member.website_url,
         location: member.location,
@@ -166,8 +167,8 @@ export const EditMemberModal: React.FC<EditMemberModalProps> = ({
           </div>
         </div>
 
-        {/* Telegram, LinkedIn, Website */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+        {/* Telegram, Instagram, LinkedIn, Website */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
           <div>
             <label className="block text-xs font-bold text-slate-700 mb-1">آیدی تلگرام</label>
             <input
@@ -175,6 +176,16 @@ export const EditMemberModal: React.FC<EditMemberModalProps> = ({
               dir="ltr"
               value={formData.telegram_username || ''}
               onChange={(e) => setFormData({ ...formData, telegram_username: e.target.value.replace('@', '') })}
+              className="w-full rounded-xl border border-slate-200 py-2 px-3 text-sm text-slate-800 text-left"
+            />
+          </div>
+          <div>
+            <label className="block text-xs font-bold text-slate-700 mb-1">آیدی اینستاگرام</label>
+            <input
+              type="text"
+              dir="ltr"
+              value={formData.instagram_username || ''}
+              onChange={(e) => setFormData({ ...formData, instagram_username: e.target.value.replace('@', '') })}
               className="w-full rounded-xl border border-slate-200 py-2 px-3 text-sm text-slate-800 text-left"
             />
           </div>

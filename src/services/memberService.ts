@@ -26,6 +26,17 @@ function saveStoredMembers(members: Member[]): void {
   }
 }
 
+function hydrateMember(m: Member): Member {
+  const igItem = m.interests?.find(i => i.startsWith('instagram:'));
+  const instagram = igItem ? igItem.replace('instagram:', '') : m.instagram_username;
+  const cleanInterests = m.interests ? m.interests.filter(i => !i.startsWith('instagram:')) : [];
+  return {
+    ...m,
+    instagram_username: instagram,
+    interests: cleanInterests,
+  };
+}
+
 export const memberService = {
   /**
    * Fetch approved members for the public directory with filtering and searching
@@ -61,7 +72,7 @@ export const memberService = {
           return this.getPublishedMembersLocal(filter);
         }
 
-        let results = (data as Member[]) || [];
+        let results = ((data as Member[]) || []).map(hydrateMember);
 
         // Apply in-memory skill filtering if array filtering in Supabase isn't indexed
         if (filter?.selectedSkills && filter.selectedSkills.length > 0) {
@@ -156,7 +167,7 @@ export const memberService = {
           console.warn('Supabase getMemberById error:', error.message);
           return this.getMemberByIdLocal(id);
         }
-        return data as Member;
+        return hydrateMember(data as Member);
       } catch (err) {
         console.warn('Error fetching member:', err);
         return this.getMemberByIdLocal(id);
@@ -188,6 +199,19 @@ export const memberService = {
       cleanTelegram = cleanTelegram.split('t.me/')[1]?.replace('/', '') || '';
     }
 
+    let cleanInstagram = formData.instagram_username?.trim() || '';
+    if (cleanInstagram.startsWith('@')) {
+      cleanInstagram = cleanInstagram.substring(1);
+    }
+    if (cleanInstagram.includes('instagram.com/')) {
+      cleanInstagram = cleanInstagram.split('instagram.com/')[1]?.replace(/\/$/, '') || '';
+    }
+
+    const interestsWithIg = [
+      ...(formData.interests || []),
+      ...(cleanInstagram ? [`instagram:${cleanInstagram}`] : [])
+    ];
+
     const newMember: Member = {
       id: `mem-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`,
       full_name: formData.full_name.trim(),
@@ -198,10 +222,11 @@ export const memberService = {
       skills: formData.skills && formData.skills.length > 0
         ? formData.skills.map(s => s.trim()).filter(Boolean)
         : [formData.category || 'همکلاسی'],
-      interests: formData.interests || [],
+      interests: interestsWithIg,
       collaboration_goals: formData.collaboration_goals?.trim() || undefined,
       can_help_with: formData.can_help_with?.trim() || undefined,
       telegram_username: cleanTelegram || undefined,
+      instagram_username: cleanInstagram || undefined,
       linkedin_url: formData.linkedin_url?.trim() || undefined,
       website_url: formData.website_url?.trim() || undefined,
       location: formData.location?.trim() || undefined,
@@ -338,11 +363,26 @@ export const memberService = {
    * Admin: edit profile information
    */
   async updateMember(id: string, updates: Partial<Member>): Promise<boolean> {
+    const { instagram_username, ...dbUpdates } = updates;
+    if (instagram_username !== undefined) {
+      let cleanIg = instagram_username.trim();
+      if (cleanIg.startsWith('@')) cleanIg = cleanIg.substring(1);
+      if (cleanIg.includes('instagram.com/')) cleanIg = cleanIg.split('instagram.com/')[1]?.replace(/\/$/, '') || '';
+
+      const current = await this.getMemberById(id);
+      const existingInterests = updates.interests || current?.interests || [];
+      const filtered = existingInterests.filter(i => !i.startsWith('instagram:'));
+      if (cleanIg) {
+        filtered.push(`instagram:${cleanIg}`);
+      }
+      dbUpdates.interests = filtered;
+    }
+
     if (isSupabaseConfigured && supabase) {
       try {
         const { error } = await supabase
           .from('members')
-          .update({ ...updates, updated_at: new Date().toISOString() })
+          .update({ ...dbUpdates, updated_at: new Date().toISOString() })
           .eq('id', id);
 
         if (!error) return true;

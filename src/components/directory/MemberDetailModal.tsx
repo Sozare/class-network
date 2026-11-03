@@ -4,7 +4,7 @@ import type { Member } from '../../types';
 import { Avatar } from '../common/Avatar';
 import { Badge } from '../common/Badge';
 import { Modal } from '../common/Modal';
-import { LinkedInIcon } from '../common/Icons';
+import { LinkedInIcon, InstagramIcon } from '../common/Icons';
 
 interface MemberDetailModalProps {
   member: Member | null;
@@ -113,6 +113,18 @@ export const MemberDetailModal: React.FC<MemberDetailModalProps> = ({
                 >
                   <Send className="w-4 h-4 rotate-180 -translate-x-0.5" />
                   <span>ارسال پیام در تلگرام ({member.telegram_username}@)</span>
+                </a>
+              )}
+
+              {member.instagram_username && (
+                <a
+                  href={`https://instagram.com/${member.instagram_username.replace(/^@/, '')}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg bg-white border border-slate-200 text-slate-700 hover:text-rose-600 hover:border-rose-300 text-xs sm:text-sm font-bold shadow-xs transition-colors"
+                >
+                  <InstagramIcon className="w-4 h-4 text-rose-600" />
+                  <span>اینستاگرام ({member.instagram_username}@)</span>
                 </a>
               )}
 

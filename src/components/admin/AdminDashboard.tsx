@@ -10,6 +10,7 @@ import { authService } from '../../services/authService';
 import { Avatar } from '../common/Avatar';
 import { Badge } from '../common/Badge';
 import { EditMemberModal } from './EditMemberModal';
+import { InstagramIcon } from '../common/Icons';
 import { isSupabaseConfigured } from '../../lib/supabase';
 
 interface AdminDashboardProps {
@@ -406,6 +407,17 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                             >
                               <Send className="w-3 h-3 rotate-180" />
                               <span dir="ltr">@{member.telegram_username}</span>
+                            </a>
+                          )}
+                          {member.instagram_username && (
+                            <a
+                              href={`https://instagram.com/${member.instagram_username}`}
+                              target="_blank"
+                              rel="noreferrer"
+                              className="inline-flex items-center gap-1 text-pink-600 hover:underline font-bold"
+                            >
+                              <InstagramIcon className="w-3 h-3" />
+                              <span dir="ltr">@{member.instagram_username}</span>
                             </a>
                           )}
                           {member.private_email && (

@@ -19,6 +19,13 @@ export const memberRegistrationSchema = z.object({
       (val) => /^[a-zA-Z0-9_]{3,32}$/.test(val.replace(/^@/, '').replace(/.*t\.me\//, '')),
       { message: 'آیدی تلگرام نامعتبر است (لطفاً به انگلیسی بنویسید، مانند: my_username)' }
     ),
+  instagram_username: z
+    .string()
+    .optional()
+    .refine(
+      (val) => !val || /^[a-zA-Z0-9._]{1,30}$/.test(val.replace(/^@/, '').replace(/.*instagram\.com\//, '').replace(/\/$/, '')),
+      { message: 'آیدی اینستاگرام نامعتبر است (شامل حروف انگلیسی، اعداد یا نقطه)' }
+    ),
   bio: z
     .string()
     .max(600, 'متن معرفی نمی‌تواند بیش از ۶۰۰ حرف باشد')
