@@ -6,6 +6,7 @@ import { DirectoryFilters } from './components/directory/DirectoryFilters';
 import { MemberGrid } from './components/directory/MemberGrid';
 import { MemberDetailModal } from './components/directory/MemberDetailModal';
 import { RegistrationModal } from './components/registration/RegistrationModal';
+import { EditMyProfileModal } from './components/profile/EditMyProfileModal';
 import { AdminLoginModal } from './components/admin/AdminLoginModal';
 import { AdminDashboard } from './components/admin/AdminDashboard';
 import { DbGuideModal } from './components/common/DbGuideModal';
@@ -33,8 +34,12 @@ export const App: React.FC = () => {
   const [isRegisterOpen, setIsRegisterOpen] = useState<boolean>(false);
   const [isAdminLoginOpen, setIsAdminLoginOpen] = useState<boolean>(false);
   const [isAdminViewOpen, setIsAdminViewOpen] = useState<boolean>(false);
-  const [isAdminLoggedIn, setIsAdminLoggedIn] = useState<boolean>(false);
   const [isDbGuideOpen, setIsDbGuideOpen] = useState<boolean>(false);
+
+  // User Self-Management state (edit/delete my profile)
+  const [myProfile, setMyProfile] = useState<{ id: string; name: string } | null>(null);
+  const [isEditProfileOpen, setIsEditProfileOpen] = useState<boolean>(false);
+  const [editMemberId, setEditMemberId] = useState<string | null>(null);
 
   // Load published members
   const loadPublishedMembers = useCallback(async () => {
@@ -53,13 +58,16 @@ export const App: React.FC = () => {
     loadPublishedMembers();
   }, [loadPublishedMembers]);
 
-  // Check auth state on mount
+  // Check auth state & user's stored profile on mount
   useEffect(() => {
-    const checkAuth = async () => {
-      const auth = await authService.isAuthenticated();
-      setIsAdminLoggedIn(auth);
-    };
-    checkAuth();
+    try {
+      const saved = localStorage.getItem('my_class_profile');
+      if (saved) {
+        setMyProfile(JSON.parse(saved));
+      }
+    } catch {
+      // ignore
+    }
   }, []);
 
   const handleOpenAdmin = async () => {
@@ -71,7 +79,7 @@ export const App: React.FC = () => {
     }
   };
 
-  // Handle URL routing (#admin, #manage, ?admin=true, #register, #member-<id>)
+  // Handle URL routing (#admin, #manage, ?admin=true, #edit=..., #register, #member-<id>)
   useEffect(() => {
     const handleHash = async () => {
       const hash = window.location.hash.toLowerCase();
@@ -84,6 +92,25 @@ export const App: React.FC = () => {
           setIsAdminViewOpen(true);
         } else {
           setIsAdminLoginOpen(true);
+        }
+      } else if (hash.startsWith('#edit=')) {
+        const targetId = window.location.hash.replace('#edit=', '');
+        if (targetId) {
+          setEditMemberId(targetId);
+          setIsEditProfileOpen(true);
+        }
+      } else if (hash === '#edit') {
+        const saved = localStorage.getItem('my_class_profile');
+        if (saved) {
+          try {
+            const parsed = JSON.parse(saved);
+            setEditMemberId(parsed.id);
+            setIsEditProfileOpen(true);
+          } catch {
+            setIsRegisterOpen(true);
+          }
+        } else {
+          setIsRegisterOpen(true);
         }
       } else if (hash === '#register') {
         setIsRegisterOpen(true);
@@ -114,13 +141,11 @@ export const App: React.FC = () => {
   }, []);
 
   const handleAdminLoginSuccess = () => {
-    setIsAdminLoggedIn(true);
     setIsAdminViewOpen(true);
   };
 
   const handleAdminLogout = async () => {
     await authService.logout();
-    setIsAdminLoggedIn(false);
     setIsAdminViewOpen(false);
     window.location.hash = '';
     loadPublishedMembers();
@@ -158,7 +183,13 @@ export const App: React.FC = () => {
       <Header
         memberCount={totalPublished}
         onOpenRegister={() => setIsRegisterOpen(true)}
-        isAdminLoggedIn={isAdminLoggedIn}
+        myProfile={myProfile}
+        onOpenMyProfile={() => {
+          if (myProfile?.id) {
+            setEditMemberId(myProfile.id);
+            setIsEditProfileOpen(true);
+          }
+        }}
       />
 
       {/* Main Content */}
@@ -226,6 +257,37 @@ export const App: React.FC = () => {
           }
         }}
         onSuccess={() => {
+          loadPublishedMembers();
+          try {
+            const saved = localStorage.getItem('my_class_profile');
+            if (saved) setMyProfile(JSON.parse(saved));
+          } catch {
+            // ignore
+          }
+        }}
+      />
+
+      {/* Self-Management: Edit/Delete My Profile Modal */}
+      <EditMyProfileModal
+        isOpen={isEditProfileOpen}
+        memberId={editMemberId || myProfile?.id || null}
+        onClose={() => {
+          setIsEditProfileOpen(false);
+          if (window.location.hash.startsWith('#edit')) {
+            window.history.pushState(null, '', window.location.pathname);
+          }
+        }}
+        onUpdated={() => {
+          loadPublishedMembers();
+          try {
+            const saved = localStorage.getItem('my_class_profile');
+            if (saved) setMyProfile(JSON.parse(saved));
+          } catch {
+            // ignore
+          }
+        }}
+        onDeleted={() => {
+          setMyProfile(null);
           loadPublishedMembers();
         }}
       />
