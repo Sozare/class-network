@@ -182,6 +182,42 @@ export const memberService = {
   },
 
   /**
+   * Find member by Telegram username or handle
+   */
+  async getMemberByTelegram(rawUsername: string): Promise<Member | null> {
+    let clean = rawUsername.trim().toLowerCase();
+    if (clean.startsWith('@')) clean = clean.substring(1);
+    if (clean.includes('t.me/')) clean = clean.split('t.me/')[1]?.replace(/\/$/, '') || '';
+    clean = clean.replace(/[^a-zA-Z0-9_]/g, '');
+    if (!clean) return null;
+
+    if (isSupabaseConfigured && supabase) {
+      try {
+        const { data, error } = await supabase
+          .from('members')
+          .select('id, full_name, professional_title, bio, profile_photo_url, category, skills, interests, collaboration_goals, can_help_with, telegram_username, linkedin_url, website_url, location, publication_status, featured, created_at, updated_at')
+          .ilike('telegram_username', clean)
+          .order('created_at', { ascending: false })
+          .limit(1)
+          .maybeSingle();
+
+        if (!error && data) {
+          return hydrateMember(data as Member);
+        }
+      } catch (err) {
+        console.warn('Error fetching member by telegram:', err);
+      }
+    }
+
+    const all = getStoredMembers();
+    const found = all.find(m => {
+      const tg = (m.telegram_username || '').replace('@', '').trim().toLowerCase();
+      return tg === clean;
+    });
+    return found ? hydrateMember(found) : null;
+  },
+
+  /**
    * Submit registration for moderation
    */
   async submitMemberRegistration(formData: RegistrationFormData): Promise<{ success: boolean; member?: Member; error?: string }> {

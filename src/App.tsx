@@ -185,10 +185,8 @@ export const App: React.FC = () => {
         onOpenRegister={() => setIsRegisterOpen(true)}
         myProfile={myProfile}
         onOpenMyProfile={() => {
-          if (myProfile?.id) {
-            setEditMemberId(myProfile.id);
-            setIsEditProfileOpen(true);
-          }
+          setEditMemberId(myProfile?.id || null);
+          setIsEditProfileOpen(true);
         }}
       />
 
@@ -200,6 +198,10 @@ export const App: React.FC = () => {
           skillsCount={totalSkills}
           onOpenRegister={() => setIsRegisterOpen(true)}
           onScrollToDirectory={handleScrollToDirectory}
+          onOpenEditProfile={() => {
+            setEditMemberId(myProfile?.id || null);
+            setIsEditProfileOpen(true);
+          }}
         />
 
         {/* Directory Explorer Section with Search & Category Filters */}
@@ -245,6 +247,10 @@ export const App: React.FC = () => {
           }
         }}
         onFilterSkill={handleFilterSkill}
+        onOpenEditProfile={(targetMemberId) => {
+          setEditMemberId(targetMemberId);
+          setIsEditProfileOpen(true);
+        }}
       />
 
       {/* Registration Modal */}
@@ -255,6 +261,11 @@ export const App: React.FC = () => {
           if (window.location.hash === '#register') {
             window.history.pushState(null, '', window.location.pathname);
           }
+        }}
+        onOpenEditProfile={() => {
+          setIsRegisterOpen(false);
+          setEditMemberId(myProfile?.id || null);
+          setIsEditProfileOpen(true);
         }}
         onSuccess={() => {
           loadPublishedMembers();
@@ -277,17 +288,28 @@ export const App: React.FC = () => {
             window.history.pushState(null, '', window.location.pathname);
           }
         }}
+        onOpenRegister={() => {
+          setIsEditProfileOpen(false);
+          setIsRegisterOpen(true);
+        }}
         onUpdated={() => {
           loadPublishedMembers();
           try {
             const saved = localStorage.getItem('my_class_profile');
-            if (saved) setMyProfile(JSON.parse(saved));
+            if (saved) {
+              const parsed = JSON.parse(saved);
+              setMyProfile(parsed);
+              setEditMemberId(parsed.id);
+            } else {
+              setMyProfile(null);
+            }
           } catch {
             // ignore
           }
         }}
         onDeleted={() => {
           setMyProfile(null);
+          setEditMemberId(null);
           loadPublishedMembers();
         }}
       />

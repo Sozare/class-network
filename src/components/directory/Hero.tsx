@@ -7,11 +7,13 @@ interface HeroProps {
   skillsCount?: number;
   onOpenRegister: () => void;
   onScrollToDirectory: () => void;
+  onOpenEditProfile?: () => void;
 }
 
 export const Hero: React.FC<HeroProps> = ({
   onOpenRegister,
   onScrollToDirectory,
+  onOpenEditProfile,
 }) => {
   return (
     <div className="relative overflow-hidden bg-gradient-to-b from-sky-50/40 via-white to-slate-50 border-b border-slate-200/80 pt-14 pb-12 sm:pt-20 sm:pb-16">
@@ -45,22 +47,34 @@ export const Hero: React.FC<HeroProps> = ({
         </p>
 
         {/* Action CTAs */}
-        <div className="mt-8 flex flex-wrap items-center justify-center gap-3 sm:gap-4">
-          <button
-            onClick={onOpenRegister}
-            className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-l from-sky-600 to-telegram-brand px-6 py-3.5 text-sm sm:text-base font-bold text-white shadow-lg shadow-sky-500/20 hover:from-sky-500 hover:to-sky-600 active:scale-95 transition-all"
-          >
-            <PlusCircle className="w-5 h-5" />
-            <span>عضویت در شبکه</span>
-          </button>
+        <div className="mt-8 flex flex-col items-center justify-center gap-3">
+          <div className="flex flex-wrap items-center justify-center gap-3 sm:gap-4">
+            <button
+              onClick={onOpenRegister}
+              className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-l from-sky-600 to-telegram-brand px-6 py-3.5 text-sm sm:text-base font-bold text-white shadow-lg shadow-sky-500/20 hover:from-sky-500 hover:to-sky-600 active:scale-95 transition-all"
+            >
+              <PlusCircle className="w-5 h-5" />
+              <span>عضویت در شبکه</span>
+            </button>
 
-          <button
-            onClick={onScrollToDirectory}
-            className="inline-flex items-center gap-2 rounded-xl bg-white border border-slate-200 px-6 py-3.5 text-sm sm:text-base font-bold text-slate-700 hover:bg-slate-50 hover:text-slate-900 hover:border-slate-300 active:scale-95 transition-all shadow-xs"
-          >
-            <Search className="w-4 h-4 text-slate-400" />
-            <span>مشاهده همکلاسی‌ها</span>
-          </button>
+            <button
+              onClick={onScrollToDirectory}
+              className="inline-flex items-center gap-2 rounded-xl bg-white border border-slate-200 px-6 py-3.5 text-sm sm:text-base font-bold text-slate-700 hover:bg-slate-50 hover:text-slate-900 hover:border-slate-300 active:scale-95 transition-all shadow-xs"
+            >
+              <Search className="w-4 h-4 text-slate-400" />
+              <span>مشاهده همکلاسی‌ها</span>
+            </button>
+          </div>
+
+          {onOpenEditProfile && (
+            <button
+              type="button"
+              onClick={onOpenEditProfile}
+              className="text-xs text-slate-500 hover:text-sky-600 transition-colors pt-1"
+            >
+              قبلاً ثبت‌نام کرده‌اید؟ <span className="font-bold underline">ویرایش یا حذف پروفایل</span>
+            </button>
+          )}
         </div>
 
         {/* 3. Sleek Visual Section Divider to Separate Hero from Classmates */}

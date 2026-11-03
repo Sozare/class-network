@@ -18,6 +18,7 @@ interface RegistrationModalProps {
   isOpen: boolean;
   onClose: () => void;
   onSuccess: () => void;
+  onOpenEditProfile?: () => void;
 }
 
 const IRAN_CITIES = [
@@ -49,6 +50,7 @@ export const RegistrationModal: React.FC<RegistrationModalProps> = ({
   isOpen,
   onClose,
   onSuccess,
+  onOpenEditProfile,
 }) => {
   const [formData, setFormData] = useState<RegistrationFormData>({
     full_name: '',
@@ -300,10 +302,23 @@ export const RegistrationModal: React.FC<RegistrationModalProps> = ({
               </div>
             </div>
 
-            <div className="pt-2 text-center">
+            <div className="pt-2 flex flex-col sm:flex-row items-center justify-center gap-2.5">
+              {onOpenEditProfile && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    resetFormAndClose();
+                    onOpenEditProfile();
+                  }}
+                  className="w-full sm:w-auto inline-flex items-center justify-center gap-1.5 px-5 py-2.5 rounded-xl bg-sky-600 hover:bg-sky-700 text-white font-bold text-xs sm:text-sm transition-colors shadow-xs"
+                >
+                  <Edit3 className="w-4 h-4" />
+                  <span>مشاهده و ویرایش کارت من</span>
+                </button>
+              )}
               <button
                 onClick={resetFormAndClose}
-                className="px-6 py-2.5 rounded-xl bg-slate-900 text-white font-bold text-xs sm:text-sm hover:bg-slate-800 transition-colors shadow-xs"
+                className="w-full sm:w-auto px-5 py-2.5 rounded-xl bg-slate-900 text-white font-bold text-xs sm:text-sm hover:bg-slate-800 transition-colors shadow-xs"
               >
                 مشاهده دایرکتوری همکلاسی‌ها
               </button>
@@ -311,7 +326,7 @@ export const RegistrationModal: React.FC<RegistrationModalProps> = ({
           </div>
         ) : (
           <div className="text-right">
-            {/* Top Preview/Form switch */}
+            {/* Top Preview/Form switch & Quick Edit Link */}
             <div className="flex items-center justify-between border-b border-slate-100 pb-2.5 mb-3.5">
               <div className="flex gap-1.5">
                 <button
@@ -340,6 +355,19 @@ export const RegistrationModal: React.FC<RegistrationModalProps> = ({
                   <span>پیش‌نمایش کارت</span>
                 </button>
               </div>
+
+              {onOpenEditProfile && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    onClose();
+                    onOpenEditProfile();
+                  }}
+                  className="text-[11px] font-bold text-sky-600 hover:text-sky-700 transition-colors"
+                >
+                  قبلاً ثبت‌نام کرده‌اید؟ ویرایش پروفایل ←
+                </button>
+              )}
             </div>
 
             {/* Form Error Banner */}

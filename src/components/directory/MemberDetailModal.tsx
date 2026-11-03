@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Send, Globe, MapPin, Calendar, Check, Copy, HeartHandshake, Lightbulb, Sparkles, ShieldCheck } from 'lucide-react';
+import { Send, Globe, MapPin, Calendar, Check, Copy, HeartHandshake, Lightbulb, Sparkles, ShieldCheck, Edit3 } from 'lucide-react';
 import type { Member } from '../../types';
 import { Avatar } from '../common/Avatar';
 import { Badge } from '../common/Badge';
@@ -11,6 +11,7 @@ interface MemberDetailModalProps {
   isOpen: boolean;
   onClose: () => void;
   onFilterSkill?: (skill: string) => void;
+  onOpenEditProfile?: (memberId: string) => void;
 }
 
 export const MemberDetailModal: React.FC<MemberDetailModalProps> = ({
@@ -18,6 +19,7 @@ export const MemberDetailModal: React.FC<MemberDetailModalProps> = ({
   isOpen,
   onClose,
   onFilterSkill,
+  onOpenEditProfile,
 }) => {
   const [copiedLink, setCopiedLink] = useState(false);
 
@@ -44,23 +46,39 @@ export const MemberDetailModal: React.FC<MemberDetailModalProps> = ({
       <div className="-m-6 text-right">
         {/* Banner header gradient */}
         <div className="h-32 bg-gradient-to-l from-sky-500 via-blue-600 to-indigo-600 relative rounded-t-2xl p-6 flex items-end justify-start">
-          <button
-            onClick={handleCopyProfile}
-            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/95 hover:bg-white text-xs font-bold text-slate-700 shadow-sm backdrop-blur-sm transition-all"
-            title="کپی لینک اختصاصی این پروفایل"
-          >
-            {copiedLink ? (
-              <>
-                <Check className="w-3.5 h-3.5 text-emerald-600" />
-                <span className="text-emerald-700 font-bold">لینک کپی شد!</span>
-              </>
-            ) : (
-              <>
-                <Copy className="w-3.5 h-3.5" />
-                <span>اشتراک‌گذاری پروفایل</span>
-              </>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={handleCopyProfile}
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/95 hover:bg-white text-xs font-bold text-slate-700 shadow-sm backdrop-blur-sm transition-all"
+              title="کپی لینک اختصاصی این پروفایل"
+            >
+              {copiedLink ? (
+                <>
+                  <Check className="w-3.5 h-3.5 text-emerald-600" />
+                  <span className="text-emerald-700 font-bold">لینک کپی شد!</span>
+                </>
+              ) : (
+                <>
+                  <Copy className="w-3.5 h-3.5" />
+                  <span>اشتراک‌گذاری پروفایل</span>
+                </>
+              )}
+            </button>
+
+            {onOpenEditProfile && (
+              <button
+                onClick={() => {
+                  onClose();
+                  onOpenEditProfile(member.id);
+                }}
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/95 hover:bg-white text-xs font-bold text-slate-700 shadow-sm backdrop-blur-sm transition-all"
+                title="ویرایش یا حذف این پروفایل"
+              >
+                <Edit3 className="w-3.5 h-3.5 text-sky-600" />
+                <span>ویرایش یا حذف</span>
+              </button>
             )}
-          </button>
+          </div>
         </div>
 
         {/* Content body */}

@@ -32,16 +32,24 @@ export const Header: React.FC<HeaderProps> = ({
 
           {/* Right Action Buttons */}
           <div className="flex items-center gap-2 sm:gap-2.5">
-            {/* If user has registered from this device, show "پروفایل من" */}
-            {myProfile && onOpenMyProfile && (
+            {/* Profile Management Button (Always accessible to edit/delete) */}
+            {onOpenMyProfile && (
               <button
                 onClick={onOpenMyProfile}
-                className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 border border-slate-200/80 text-slate-700 text-xs sm:text-sm font-bold transition-all shadow-2xs"
-                title="ویرایش یا حذف مشخصات پروفایل شما"
+                className={`inline-flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all shadow-2xs ${
+                  myProfile
+                    ? 'bg-sky-50 hover:bg-sky-100 text-sky-800 border border-sky-200/80'
+                    : 'bg-white hover:bg-slate-50 text-slate-700 border border-slate-200'
+                }`}
+                title="ویرایش مشخصات یا حذف پروفایل من"
               >
                 <Edit3 className="w-3.5 h-3.5 text-sky-600" />
-                <span className="hidden sm:inline">پروفایل من</span>
-                <span className="sm:hidden">پروفایل</span>
+                <span className="hidden sm:inline">
+                  {myProfile ? `پروفایل من (${myProfile.name.split(' ')[0]})` : 'ویرایش یا حذف پروفایل'}
+                </span>
+                <span className="sm:hidden">
+                  {myProfile ? 'پروفایل من' : 'ویرایش'}
+                </span>
               </button>
             )}
 
