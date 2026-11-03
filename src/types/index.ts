@@ -56,6 +56,7 @@ export interface RegistrationFormData {
   website_url?: string;
   location?: string;
   private_email?: string;
+  profile_password?: string;
   profile_photo_url: string;
   consent_to_publish: boolean;
   // Honeypot field for anti-spam bots

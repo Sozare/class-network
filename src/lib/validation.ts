@@ -60,11 +60,15 @@ export const memberRegistrationSchema = z.object({
     .optional(),
   private_email: z
     .string()
-    .optional()
+    .min(1, 'ایمیل برای امنیت و ورود به حساب الزامی است')
     .refine(
-      (val) => !val || val === '' || /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val),
-      { message: 'لطفاً یک ایمیل معتبر وارد کنید' }
+      (val) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val),
+      { message: 'لطفاً یک ایمیل معتبر وارد کنید (مانند: name@gmail.com)' }
     ),
+  profile_password: z
+    .string()
+    .min(4, 'رمز عبور باید حداقل ۴ کاراکتر باشد')
+    .max(50, 'رمز عبور نمی‌تواند بیش از ۵۰ کاراکتر باشد'),
   collaboration_goals: z
     .string()
     .max(500, 'توضیحات همکاری نباید بیش از ۵۰۰ حرف باشد')

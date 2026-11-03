@@ -1,8 +1,8 @@
 import React, { useState, useRef } from 'react';
 import confetti from 'canvas-confetti';
 import {
-  Upload, X, AlertCircle, Send, Eye, Edit3, Copy, Check,
-  CheckCircle2, MapPin, Trash2, ChevronDown, ChevronUp
+  Upload, X, AlertCircle, Send, Eye, EyeOff, Edit3, Copy, Check,
+  CheckCircle2, MapPin, Trash2, ChevronDown, ChevronUp, Mail, Lock
 } from 'lucide-react';
 import { Modal } from '../common/Modal';
 import { Avatar } from '../common/Avatar';
@@ -67,12 +67,14 @@ export const RegistrationModal: React.FC<RegistrationModalProps> = ({
     website_url: '',
     location: 'تهران',
     private_email: '',
+    profile_password: '',
     profile_photo_url: '',
     consent_to_publish: true,
     website_trap: '',
   });
 
   const [showAdvanced, setShowAdvanced] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
   const [skillInput, setSkillInput] = useState('');
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
   const [activeTab, setActiveTab] = useState<'form' | 'preview'>('form');
@@ -571,6 +573,69 @@ export const RegistrationModal: React.FC<RegistrationModalProps> = ({
                       )}
                     </div>
                   </div>
+                </div>
+              </div>
+
+              {/* Row 4: Private Email & Password (For secure login, editing & deleting) */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 p-3 rounded-xl bg-slate-50/80 border border-slate-200/80">
+                <div>
+                  <label className="block text-xs font-bold text-slate-800 mb-1 flex items-center justify-between">
+                    <span>ایمیل شما <span className="text-rose-500">*</span></span>
+                    <span className="text-[10px] text-slate-400 font-normal">مخفی در سایت</span>
+                  </label>
+                  <div className="relative">
+                    <Mail className="w-4 h-4 text-slate-400 absolute left-3 top-2.5" />
+                    <input
+                      type="email"
+                      dir="ltr"
+                      required
+                      value={formData.private_email || ''}
+                      onChange={(e) => setFormData({ ...formData, private_email: e.target.value })}
+                      placeholder="yourname@gmail.com"
+                      className={`w-full rounded-xl border py-2 pl-9 pr-3 text-sm text-slate-800 bg-white focus:outline-none focus:ring-2 transition-all ${
+                        fieldErrors.private_email
+                          ? 'border-rose-300 focus:ring-rose-500/20'
+                          : 'border-slate-200 focus:border-sky-500 focus:ring-sky-500/20'
+                      }`}
+                    />
+                  </div>
+                  {fieldErrors.private_email && (
+                    <p className="mt-1 text-xs text-rose-600 font-semibold">{fieldErrors.private_email}</p>
+                  )}
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold text-slate-800 mb-1 flex items-center justify-between">
+                    <span>رمز عبور ویرایش <span className="text-rose-500">*</span></span>
+                    <span className="text-[10px] text-sky-600 font-normal">به خاطر بسپارید</span>
+                  </label>
+                  <div className="relative">
+                    <Lock className="w-4 h-4 text-slate-400 absolute right-3 top-2.5" />
+                    <input
+                      type={showPassword ? 'text' : 'password'}
+                      dir="ltr"
+                      required
+                      value={formData.profile_password || ''}
+                      onChange={(e) => setFormData({ ...formData, profile_password: e.target.value })}
+                      placeholder="حداقل ۴ کاراکتر"
+                      className={`w-full rounded-xl border py-2 pl-9 pr-9 text-sm text-slate-800 bg-white focus:outline-none focus:ring-2 transition-all ${
+                        fieldErrors.profile_password
+                          ? 'border-rose-300 focus:ring-rose-500/20'
+                          : 'border-slate-200 focus:border-sky-500 focus:ring-sky-500/20'
+                      }`}
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword(!showPassword)}
+                      className="absolute left-2.5 top-2.5 text-slate-400 hover:text-slate-600"
+                      title={showPassword ? 'مخفی کردن رمز' : 'نمایش رمز'}
+                    >
+                      {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                    </button>
+                  </div>
+                  {fieldErrors.profile_password && (
+                    <p className="mt-1 text-xs text-rose-600 font-semibold">{fieldErrors.profile_password}</p>
+                  )}
                 </div>
               </div>
 

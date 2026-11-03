@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import {
   AlertCircle, Save, Trash2, Upload, MapPin, CheckCircle2,
-  RefreshCw, Search, LogOut, UserCheck, ShieldAlert
+  RefreshCw, LogOut, UserCheck, ShieldAlert, Mail, Lock, Eye, EyeOff, KeyRound
 } from 'lucide-react';
 import { Modal } from '../common/Modal';
 import { Avatar } from '../common/Avatar';
@@ -43,10 +43,12 @@ export const EditMyProfileModal: React.FC<EditMyProfileModalProps> = ({
   const [error, setError] = useState<string | null>(null);
   const [successMsg, setSuccessMsg] = useState<string | null>(null);
 
-  // Search by Telegram state
-  const [telegramQuery, setTelegramQuery] = useState('');
-  const [isSearching, setIsSearching] = useState(false);
-  const [searchError, setSearchError] = useState<string | null>(null);
+  // Auth / Login state (Email + Password)
+  const [authIdentifier, setAuthIdentifier] = useState('');
+  const [authPassword, setAuthPassword] = useState('');
+  const [showAuthPassword, setShowAuthPassword] = useState(false);
+  const [isAuthenticating, setIsAuthenticating] = useState(false);
+  const [authError, setAuthError] = useState<string | null>(null);
 
   // Form Fields
   const [fullName, setFullName] = useState('');
@@ -55,6 +57,9 @@ export const EditMyProfileModal: React.FC<EditMyProfileModalProps> = ({
   const [location, setLocation] = useState('');
   const [telegramUsername, setTelegramUsername] = useState('');
   const [instagramUsername, setInstagramUsername] = useState('');
+  const [privateEmail, setPrivateEmail] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+  const [showNewPassword, setShowNewPassword] = useState(false);
   const [bio, setBio] = useState('');
   const [photoUrl, setPhotoUrl] = useState('');
 
@@ -73,6 +78,8 @@ export const EditMyProfileModal: React.FC<EditMyProfileModalProps> = ({
     setLocation(data.location || 'تهران');
     setTelegramUsername(data.telegram_username || '');
     setInstagramUsername(data.instagram_username || '');
+    setPrivateEmail(data.private_email || '');
+    setNewPassword('');
     setBio(data.bio || '');
     setPhotoUrl(data.profile_photo_url || '');
   };
@@ -82,7 +89,7 @@ export const EditMyProfileModal: React.FC<EditMyProfileModalProps> = ({
     if (!isOpen) {
       setError(null);
       setSuccessMsg(null);
-      setSearchError(null);
+      setAuthError(null);
       setShowDeleteConfirm(false);
       return;
     }
@@ -109,7 +116,7 @@ export const EditMyProfileModal: React.FC<EditMyProfileModalProps> = ({
         if (data) {
           populateFormWithMember(data);
         } else {
-          // Profile not found (deleted or invalid id)
+          // Profile not found
           setMember(null);
           setCurrentMemberId(null);
           try {
@@ -126,45 +133,50 @@ export const EditMyProfileModal: React.FC<EditMyProfileModalProps> = ({
     }
   }, [isOpen, memberId]);
 
-  // Handle Lookup by Telegram Handle
-  const handleSearchByTelegram = async (e: React.FormEvent) => {
+  // Handle Authentication (Email or Telegram + Password)
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    const clean = telegramQuery.trim().replace('@', '');
-    if (!clean) {
-      setSearchError('لطفاً آیدی تلگرام خود را وارد کنید.');
+    if (!authIdentifier.trim() || !authPassword.trim()) {
+      setAuthError('لطفاً ایمیل و رمز عبور خود را وارد کنید.');
       return;
     }
 
-    setIsSearching(true);
-    setSearchError(null);
+    setIsAuthenticating(true);
+    setAuthError(null);
 
-    const found = await memberService.getMemberByTelegram(clean);
-    setIsSearching(false);
+    const res = await memberService.verifyMemberCredentials(authIdentifier, authPassword);
+    setIsAuthenticating(false);
 
-    if (found) {
-      populateFormWithMember(found);
+    if (res.success && res.member) {
+      populateFormWithMember(res.member);
       try {
         localStorage.setItem('my_class_profile', JSON.stringify({
-          id: found.id,
-          name: found.full_name,
-          telegram: found.telegram_username,
+          id: res.member.id,
+          name: res.member.full_name,
+          email: res.member.private_email,
+          telegram: res.member.telegram_username,
         }));
       } catch {
         // ignore
       }
       onUpdated();
+      if (res.isInitialSetup) {
+        setSuccessMsg('پروفایل شما با موفقیت شناسایی و رمز عبور جدید برای آن فعال شد.');
+      }
     } else {
-      setSearchError(`پروفایلی با آیدی تلگرام @${clean} یافت نشد. لطفاً از درستی آیدی مطمئن شوید.`);
+      setAuthError(res.error || 'اطلاعات وارد شده نامعتبر است.');
     }
   };
 
-  // Switch to another account / search
+  // Switch to another account / logout
   const handleSwitchAccount = () => {
     setMember(null);
     setCurrentMemberId(null);
     setShowDeleteConfirm(false);
     setError(null);
     setSuccessMsg(null);
+    setAuthError(null);
+    setAuthPassword('');
     try {
       localStorage.removeItem('my_class_profile');
     } catch {
@@ -208,17 +220,23 @@ export const EditMyProfileModal: React.FC<EditMyProfileModalProps> = ({
     if (cleanIg.startsWith('@')) cleanIg = cleanIg.substring(1);
     if (cleanIg.includes('instagram.com/')) cleanIg = cleanIg.split('instagram.com/')[1]?.replace(/\/$/, '') || '';
 
-    const success = await memberService.updateMember(currentMemberId, {
+    const updates: Partial<Member> & { profile_password?: string } = {
       full_name: fullName.trim(),
       professional_title: professionalTitle.trim(),
       category: category,
       location: location.trim(),
       telegram_username: cleanTg,
       instagram_username: cleanIg,
+      private_email: privateEmail.trim().toLowerCase() || undefined,
       bio: bio.trim(),
       profile_photo_url: photoUrl,
-    });
+    };
 
+    if (newPassword && newPassword.trim()) {
+      updates.profile_password = newPassword.trim();
+    }
+
+    const success = await memberService.updateMember(currentMemberId, updates);
     setIsSaving(false);
 
     if (success) {
@@ -228,6 +246,7 @@ export const EditMyProfileModal: React.FC<EditMyProfileModalProps> = ({
         localStorage.setItem('my_class_profile', JSON.stringify({
           id: currentMemberId,
           name: fullName.trim(),
+          email: privateEmail.trim().toLowerCase(),
           telegram: cleanTg,
         }));
       } catch {
@@ -284,65 +303,91 @@ export const EditMyProfileModal: React.FC<EditMyProfileModalProps> = ({
         {isLoading && (
           <div className="py-12 text-center text-xs text-slate-500 flex items-center justify-center gap-2">
             <RefreshCw className="w-4 h-4 animate-spin text-sky-600" />
-            <span>در حال فراخوانی مشخصات پروفایل شما...</span>
+            <span>در حال بررسی دسترسی به حساب...</span>
           </div>
         )}
 
-        {/* State 1: Profile Lookup Screen (when device hasn't linked a profile yet) */}
+        {/* State 1: Secure Login Screen (Email + Password) */}
         {!isLoading && !member && (
           <div className="py-2 space-y-5 text-right">
             <div className="space-y-1.5">
               <h3 className="text-sm sm:text-base font-bold text-slate-900">
-                یافتن پروفایل در دایرکتوری
+                ورود به مدیریت پروفایل 🔐
               </h3>
               <p className="text-xs text-slate-600 leading-relaxed">
-                آیدی تلگرامی که با آن در دوره ثبت‌نام کرده‌اید را وارد کنید تا اطلاعات پروفایلتان باز شود و بتوانید آن را ویرایش یا برای همیشه حذف کنید:
+                برای حفظ امنیت و جلوگیری از دسترسی دیگران، لطفاً ایمیل (یا آیدی تلگرام) و رمز عبوری که موقع ثبت‌نام تعیین کرده‌اید را وارد کنید:
               </p>
             </div>
 
-            <form onSubmit={handleSearchByTelegram} className="space-y-3.5">
+            <form onSubmit={handleLogin} className="space-y-3.5">
+              {/* Email or Telegram */}
               <div>
                 <label className="block text-xs font-bold text-slate-700 mb-1">
-                  آیدی تلگرام شما <span className="text-rose-500">*</span>
+                  ایمیل شما یا آیدی تلگرام <span className="text-rose-500">*</span>
                 </label>
                 <div className="relative">
-                  <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 text-sky-600 font-bold text-sm">
-                    @
-                  </div>
+                  <Mail className="w-4 h-4 text-slate-400 absolute left-3 top-2.5" />
                   <input
                     type="text"
                     dir="ltr"
                     required
-                    value={telegramQuery}
-                    onChange={(e) => setTelegramQuery(e.target.value)}
-                    placeholder="username"
-                    className="w-full rounded-xl border border-slate-200 py-2.5 pl-8 pr-3 text-sm text-slate-800 focus:border-sky-500 focus:outline-none focus:ring-2 focus:ring-sky-500/20"
+                    value={authIdentifier}
+                    onChange={(e) => setAuthIdentifier(e.target.value)}
+                    placeholder="name@gmail.com یا username"
+                    className="w-full rounded-xl border border-slate-200 py-2.5 pl-9 pr-3 text-sm text-slate-800 focus:border-sky-500 focus:outline-none focus:ring-2 focus:ring-sky-500/20"
                   />
                 </div>
               </div>
 
-              {searchError && (
+              {/* Password */}
+              <div>
+                <label className="block text-xs font-bold text-slate-700 mb-1">
+                  رمز عبور پروفایل <span className="text-rose-500">*</span>
+                </label>
+                <div className="relative">
+                  <Lock className="w-4 h-4 text-slate-400 absolute right-3 top-2.5" />
+                  <input
+                    type={showAuthPassword ? 'text' : 'password'}
+                    dir="ltr"
+                    required
+                    value={authPassword}
+                    onChange={(e) => setAuthPassword(e.target.value)}
+                    placeholder="رمز عبور"
+                    className="w-full rounded-xl border border-slate-200 py-2.5 pr-9 pl-9 text-sm text-slate-800 focus:border-sky-500 focus:outline-none focus:ring-2 focus:ring-sky-500/20"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowAuthPassword(!showAuthPassword)}
+                    className="absolute left-3 top-2.5 text-slate-400 hover:text-slate-600"
+                    title={showAuthPassword ? 'مخفی کردن رمز' : 'نمایش رمز'}
+                  >
+                    {showAuthPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                  </button>
+                </div>
+              </div>
+
+              {authError && (
                 <div className="p-3 rounded-xl bg-rose-50 border border-rose-200 text-xs text-rose-700 flex items-start gap-2">
                   <AlertCircle className="w-4 h-4 shrink-0 mt-0.5 text-rose-600" />
-                  <span className="leading-relaxed">{searchError}</span>
+                  <span className="leading-relaxed">{authError}</span>
                 </div>
               )}
 
               <div className="flex items-center gap-2 pt-1">
                 <button
                   type="submit"
-                  disabled={isSearching}
+                  disabled={isAuthenticating}
                   className="flex-1 inline-flex items-center justify-center gap-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs sm:text-sm py-2.5 transition-colors shadow-xs disabled:opacity-50"
                 >
-                  {isSearching ? (
+                  {isAuthenticating ? (
                     <>
                       <RefreshCw className="w-4 h-4 animate-spin" />
-                      <span>در حال جستجو...</span>
+                      <span>در حال بررسی رمز عبور...</span>
                     </>
                   ) : (
                     <>
-                      <Search className="w-4 h-4" />
-                      <span>یافتن پروفایل من</span>
+                      <Lock className="w-4 h-4" />
+                      <span>ورود و باز کردن پروفایل</span>
                     </>
                   )}
                 </button>
@@ -367,7 +412,7 @@ export const EditMyProfileModal: React.FC<EditMyProfileModalProps> = ({
           </div>
         )}
 
-        {/* State 2: Profile Edit & Delete Screen (when member is found/loaded) */}
+        {/* State 2: Profile Edit & Delete Screen (when authenticated) */}
         {!isLoading && member && (
           <form onSubmit={handleSave} className="space-y-3.5 text-right">
             {/* Top Identity & Switch Account Bar */}
@@ -379,10 +424,10 @@ export const EditMyProfileModal: React.FC<EditMyProfileModalProps> = ({
                 type="button"
                 onClick={handleSwitchAccount}
                 className="inline-flex items-center gap-1 text-[11px] font-bold text-slate-600 hover:text-rose-600 transition-colors shrink-0"
-                title="تغییر حساب یا ورود با آیدی دیگر"
+                title="خروج از این حساب و ورود با ایمیل دیگر"
               >
                 <LogOut className="w-3 h-3 rotate-180" />
-                <span>ورود با آیدی دیگر</span>
+                <span>خروج از این حساب</span>
               </button>
             </div>
 
@@ -542,6 +587,53 @@ export const EditMyProfileModal: React.FC<EditMyProfileModalProps> = ({
                     placeholder="username"
                     className="w-full rounded-xl border border-slate-200 py-2 pl-9 pr-3 text-sm text-slate-800 focus:border-pink-500 focus:outline-none focus:ring-2 focus:ring-pink-500/20"
                   />
+                </div>
+              </div>
+            </div>
+
+            {/* Row 4: Private Email & Change Password */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 p-3 rounded-xl bg-slate-50/80 border border-slate-200/80">
+              <div>
+                <label className="block text-xs font-bold text-slate-800 mb-1 flex items-center justify-between">
+                  <span>ایمیل شما</span>
+                  <span className="text-[10px] text-slate-400 font-normal">جهت ورود</span>
+                </label>
+                <div className="relative">
+                  <Mail className="w-4 h-4 text-slate-400 absolute left-3 top-2.5" />
+                  <input
+                    type="email"
+                    dir="ltr"
+                    value={privateEmail}
+                    onChange={(e) => setPrivateEmail(e.target.value)}
+                    placeholder="yourname@gmail.com"
+                    className="w-full rounded-xl border border-slate-200 py-2 pl-9 pr-3 text-sm text-slate-800 bg-white focus:border-sky-500 focus:outline-none focus:ring-2 focus:ring-sky-500/20"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-slate-800 mb-1 flex items-center justify-between">
+                  <span>تغییر رمز عبور</span>
+                  <span className="text-[10px] text-slate-400 font-normal">در صورت تمایل</span>
+                </label>
+                <div className="relative">
+                  <KeyRound className="w-4 h-4 text-slate-400 absolute right-3 top-2.5" />
+                  <input
+                    type={showNewPassword ? 'text' : 'password'}
+                    dir="ltr"
+                    value={newPassword}
+                    onChange={(e) => setNewPassword(e.target.value)}
+                    placeholder="رمز جدید (اختیاری)"
+                    className="w-full rounded-xl border border-slate-200 py-2 pr-9 pl-9 text-sm text-slate-800 bg-white focus:border-sky-500 focus:outline-none focus:ring-2 focus:ring-sky-500/20"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowNewPassword(!showNewPassword)}
+                    className="absolute left-2.5 top-2.5 text-slate-400 hover:text-slate-600"
+                    title={showNewPassword ? 'مخفی کردن' : 'نمایش'}
+                  >
+                    {showNewPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                  </button>
                 </div>
               </div>
             </div>

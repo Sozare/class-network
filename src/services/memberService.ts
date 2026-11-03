@@ -1,6 +1,7 @@
 import { supabase, isSupabaseConfigured } from '../lib/supabase';
 import type { Member, PublicationStatus, RegistrationFormData, FilterState, DirectoryStats } from '../types';
 import { DEMO_MEMBERS } from '../lib/constants';
+import { hashPassword } from '../lib/security';
 
 const LOCAL_STORAGE_KEY = 'class_network_members_fa_v1';
 
@@ -29,7 +30,9 @@ function saveStoredMembers(members: Member[]): void {
 function hydrateMember(m: Member): Member {
   const igItem = m.interests?.find(i => i.startsWith('instagram:'));
   const instagram = igItem ? igItem.replace('instagram:', '') : m.instagram_username;
-  const cleanInterests = m.interests ? m.interests.filter(i => !i.startsWith('instagram:')) : [];
+  const cleanInterests = m.interests
+    ? m.interests.filter(i => !i.startsWith('instagram:') && !i.startsWith('pass:'))
+    : [];
   return {
     ...m,
     instagram_username: instagram,
@@ -243,9 +246,15 @@ export const memberService = {
       cleanInstagram = cleanInstagram.split('instagram.com/')[1]?.replace(/\/$/, '') || '';
     }
 
-    const interestsWithIg = [
+    let passwordHash = '';
+    if (formData.profile_password && formData.profile_password.trim()) {
+      passwordHash = await hashPassword(formData.profile_password.trim());
+    }
+
+    const interestsWithMeta = [
       ...(formData.interests || []),
-      ...(cleanInstagram ? [`instagram:${cleanInstagram}`] : [])
+      ...(cleanInstagram ? [`instagram:${cleanInstagram}`] : []),
+      ...(passwordHash ? [`pass:${passwordHash}`] : [])
     ];
 
     const newMember: Member = {
@@ -258,7 +267,7 @@ export const memberService = {
       skills: formData.skills && formData.skills.length > 0
         ? formData.skills.map(s => s.trim()).filter(Boolean)
         : [formData.category || 'همکلاسی'],
-      interests: interestsWithIg,
+      interests: interestsWithMeta,
       collaboration_goals: formData.collaboration_goals?.trim() || undefined,
       can_help_with: formData.can_help_with?.trim() || undefined,
       telegram_username: cleanTelegram || undefined,
@@ -266,7 +275,7 @@ export const memberService = {
       linkedin_url: formData.linkedin_url?.trim() || undefined,
       website_url: formData.website_url?.trim() || undefined,
       location: formData.location?.trim() || undefined,
-      private_email: formData.private_email?.trim() || undefined,
+      private_email: formData.private_email?.trim().toLowerCase() || undefined,
       publication_status: 'pending', // ALWAYS pending until admin review!
       featured: false,
       consent_to_publish: true,
@@ -396,23 +405,45 @@ export const memberService = {
   },
 
   /**
-   * Admin: edit profile information
+   * Admin & Self-Management: edit profile information
    */
-  async updateMember(id: string, updates: Partial<Member>): Promise<boolean> {
-    const { instagram_username, ...dbUpdates } = updates;
+  async updateMember(id: string, updates: Partial<Member> & { profile_password?: string }): Promise<boolean> {
+    const { instagram_username, profile_password, ...dbUpdates } = updates;
+
+    // Fetch raw member from supabase to preserve internal tags (pass:, instagram:)
+    let currentInterests: string[] = [];
+    if (isSupabaseConfigured && supabase) {
+      try {
+        const { data } = await supabase.from('members').select('interests').eq('id', id).single();
+        if (data?.interests) currentInterests = data.interests;
+      } catch {
+        // ignore
+      }
+    }
+    if (!currentInterests.length) {
+      const local = getStoredMembers().find(m => m.id === id);
+      if (local?.interests) currentInterests = local.interests;
+    }
+
+    let interestsList = updates.interests ? [...updates.interests] : [...currentInterests];
+
     if (instagram_username !== undefined) {
       let cleanIg = instagram_username.trim();
       if (cleanIg.startsWith('@')) cleanIg = cleanIg.substring(1);
       if (cleanIg.includes('instagram.com/')) cleanIg = cleanIg.split('instagram.com/')[1]?.replace(/\/$/, '') || '';
-
-      const current = await this.getMemberById(id);
-      const existingInterests = updates.interests || current?.interests || [];
-      const filtered = existingInterests.filter(i => !i.startsWith('instagram:'));
+      interestsList = interestsList.filter(i => !i.startsWith('instagram:'));
       if (cleanIg) {
-        filtered.push(`instagram:${cleanIg}`);
+        interestsList.push(`instagram:${cleanIg}`);
       }
-      dbUpdates.interests = filtered;
     }
+
+    if (profile_password && profile_password.trim()) {
+      const newHash = await hashPassword(profile_password.trim());
+      interestsList = interestsList.filter(i => !i.startsWith('pass:'));
+      interestsList.push(`pass:${newHash}`);
+    }
+
+    dbUpdates.interests = interestsList;
 
     if (isSupabaseConfigured && supabase) {
       try {
@@ -434,12 +465,98 @@ export const memberService = {
       all[idx] = {
         ...all[idx],
         ...updates,
+        interests: interestsList,
         updated_at: new Date().toISOString()
       };
       saveStoredMembers(all);
       return true;
     }
     return false;
+  },
+
+  /**
+   * Authenticate a member using their Email or Telegram ID + Password
+   */
+  async verifyMemberCredentials(
+    identifier: string,
+    passwordInput: string
+  ): Promise<{ success: boolean; member?: Member; error?: string; isInitialSetup?: boolean }> {
+    const rawId = identifier.trim().toLowerCase();
+    const cleanTg = rawId.replace(/^@/, '').replace(/.*t\.me\//, '').replace(/\/$/, '');
+    const cleanPass = passwordInput.trim();
+
+    if (!rawId) {
+      return { success: false, error: 'لطفاً ایمیل یا آیدی تلگرام خود را وارد کنید.' };
+    }
+    if (!cleanPass) {
+      return { success: false, error: 'لطفاً رمز عبور خود را وارد کنید.' };
+    }
+
+    let rawMember: (Member & { interests?: string[]; private_email?: string }) | null = null;
+
+    if (isSupabaseConfigured && supabase) {
+      try {
+        let query = supabase.from('members').select('*');
+        if (rawId.includes('@')) {
+          query = query.ilike('private_email', rawId);
+        } else {
+          query = query.or(`telegram_username.ilike.${cleanTg},private_email.ilike.${rawId}`);
+        }
+
+        const { data, error } = await query.order('created_at', { ascending: false }).limit(1).maybeSingle();
+        if (!error && data) {
+          rawMember = data as (Member & { interests?: string[]; private_email?: string });
+        }
+      } catch (err) {
+        console.warn('Supabase credential query error:', err);
+      }
+    }
+
+    if (!rawMember) {
+      const all = getStoredMembers();
+      rawMember = all.find(m => {
+        const mEmail = (m.private_email || '').toLowerCase().trim();
+        const mTg = (m.telegram_username || '').replace('@', '').toLowerCase().trim();
+        return (mEmail && mEmail === rawId) || (mTg && mTg === cleanTg);
+      }) || null;
+    }
+
+    if (!rawMember) {
+      return { success: false, error: 'پروفایلی با این ایمیل یا آیدی تلگرام یافت نشد.' };
+    }
+
+    // Check stored password hash in interests array
+    const passTag = rawMember.interests?.find(i => i.startsWith('pass:'));
+    if (!passTag) {
+      // Legacy or initial profile without a password yet!
+      // Set the password now with the provided passwordInput
+      const newHash = await hashPassword(cleanPass);
+      const updatedInterests = [
+        ...(rawMember.interests || []).filter(i => !i.startsWith('pass:')),
+        `pass:${newHash}`
+      ];
+      await this.updateMember(rawMember.id, {
+        interests: updatedInterests,
+        private_email: rawMember.private_email || (rawId.includes('@') ? rawId : undefined)
+      });
+      return {
+        success: true,
+        member: hydrateMember({ ...rawMember, interests: updatedInterests }),
+        isInitialSetup: true
+      };
+    }
+
+    const storedHash = passTag.replace('pass:', '');
+    const enteredHash = await hashPassword(cleanPass);
+
+    if (storedHash !== enteredHash) {
+      return { success: false, error: 'رمز عبور وارد شده نادرست است. لطفاً رمزی که هنگام ساخت پروفایل ثبت کرده بودید را بزنید.' };
+    }
+
+    return {
+      success: true,
+      member: hydrateMember(rawMember)
+    };
   },
 
   /**
