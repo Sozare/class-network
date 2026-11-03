@@ -2,7 +2,6 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { Header } from './components/layout/Header';
 import { Footer } from './components/layout/Footer';
 import { Hero } from './components/directory/Hero';
-import { DirectoryFilters } from './components/directory/DirectoryFilters';
 import { MemberGrid } from './components/directory/MemberGrid';
 import { MemberDetailModal } from './components/directory/MemberDetailModal';
 import { RegistrationModal } from './components/registration/RegistrationModal';
@@ -145,7 +144,6 @@ export const App: React.FC = () => {
         memberCount={totalPublished}
         onOpenRegister={() => setIsRegisterOpen(true)}
         onOpenAdmin={handleOpenAdmin}
-        onOpenDbGuide={() => setIsDbGuideOpen(true)}
         isAdminLoggedIn={isAdminLoggedIn}
       />
 
@@ -160,14 +158,7 @@ export const App: React.FC = () => {
         />
 
         {/* Directory Explorer Section */}
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-10 space-y-6">
-          {/* Search, Filter Pills & Sort Controls */}
-          <DirectoryFilters
-            filters={filters}
-            onFilterChange={setFilters}
-            totalResults={members.length}
-          />
-
+        <div id="directory" className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-10 space-y-6">
           {/* Members Responsive Grid */}
           <MemberGrid
             members={members}
@@ -190,7 +181,6 @@ export const App: React.FC = () => {
       <Footer
         onOpenRegister={() => setIsRegisterOpen(true)}
         onOpenAdmin={handleOpenAdmin}
-        onOpenDbGuide={() => setIsDbGuideOpen(true)}
       />
 
       {/* Individual Member Profile Modal */}

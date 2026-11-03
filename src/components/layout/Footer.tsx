@@ -1,100 +1,72 @@
 import React from 'react';
-import { Send, Shield, Users, Heart } from 'lucide-react';
+import { Send, Users, Heart } from 'lucide-react';
+import { LinkedInIcon } from '../common/Icons';
 import { APP_CONFIG } from '../../lib/constants';
 
 interface FooterProps {
   onOpenRegister: () => void;
   onOpenAdmin: () => void;
-  onOpenDbGuide?: () => void;
 }
 
 export const Footer: React.FC<FooterProps> = ({
   onOpenRegister,
   onOpenAdmin,
-  onOpenDbGuide,
 }) => {
   return (
     <footer className="mt-auto border-t border-slate-200/80 bg-white">
-      <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
-          {/* Col 1: Brand & Purpose */}
-          <div className="md:col-span-2 space-y-4">
-            <div className="flex items-center gap-2">
-              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-telegram-brand text-white">
-                <Send className="h-4 w-4 rotate-180 -translate-x-0.5" />
-              </div>
-              <span className="font-extrabold text-slate-900 tracking-tight text-lg">
-                {APP_CONFIG.name}
-              </span>
+      <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-6 pb-8 border-b border-slate-100">
+          {/* Brand */}
+          <div className="flex items-center gap-2.5">
+            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-telegram-brand text-white shadow-xs">
+              <Send className="h-4 w-4 rotate-180 -translate-x-0.5" />
             </div>
-            <p className="text-sm text-slate-600 max-w-md leading-relaxed">
-              دایرکتوری ارتباطی و شبکه‌سازی ویژه اعضا و هم‌دوره‌ای‌های کلاس تلگرام.
-              بستری برای شناخت تخصص‌ها، شکل‌گیری همکاری‌های تیمی و ساخت پروژه‌های مشترک.
-            </p>
-            <div className="flex items-center gap-2 text-xs text-slate-500">
-              <Shield className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
-              <span>دایرکتوری مدیریت‌شده: اطلاعات تماس محرمانه هرگز بدون اجازه منتشر نمی‌شود.</span>
-            </div>
+            <span className="font-extrabold text-slate-900 tracking-tight text-lg">
+              {APP_CONFIG.name}
+            </span>
           </div>
 
-          {/* Col 2: Navigation */}
-          <div>
-            <h4 className="text-xs font-bold uppercase tracking-wider text-slate-400 mb-3">
-              دسترسی سریع
-            </h4>
-            <ul className="space-y-2 text-sm text-slate-600 font-medium">
-              <li>
-                <a href="#directory" className="hover:text-sky-600 transition-colors">
-                  مشاهده اعضای شبکه
-                </a>
-              </li>
-              <li>
-                <button onClick={onOpenRegister} className="hover:text-sky-600 transition-colors text-right">
-                  ثبت‌نام و ارسال پروفایل
-                </button>
-              </li>
-              <li>
-                <a href="#directory" className="hover:text-sky-600 transition-colors">
-                  دسته‌بندی‌های تخصصی
-                </a>
-              </li>
-            </ul>
-          </div>
-
-          {/* Col 3: Community & Admin */}
-          <div>
-            <h4 className="text-xs font-bold uppercase tracking-wider text-slate-400 mb-3">
-              مدیریت و پشتیبانی
-            </h4>
-            <ul className="space-y-2 text-sm text-slate-600 font-medium">
-              <li>
-                <button
-                  onClick={onOpenAdmin}
-                  className="hover:text-sky-600 transition-colors inline-flex items-center gap-1.5"
-                >
-                  <Users className="w-3.5 h-3.5" />
-                  <span>ورود مدیر (بررسی و تایید اعضا)</span>
-                </button>
-              </li>
-              <li>
-                <button
-                  onClick={onOpenDbGuide}
-                  className="hover:text-sky-600 transition-colors"
-                >
-                  راهنمای اتصال به دیتابیس رایگان
-                </button>
-              </li>
-            </ul>
+          {/* Quick links */}
+          <div className="flex flex-wrap items-center justify-center gap-6 text-sm text-slate-600 font-medium">
+            <a href="#directory" className="hover:text-sky-600 transition-colors">
+              مشاهده همکلاسی‌ها
+            </a>
+            <button
+              onClick={onOpenRegister}
+              className="hover:text-sky-600 transition-colors"
+            >
+              ثبت‌نام در شبکه
+            </button>
+            <button
+              onClick={onOpenAdmin}
+              className="hover:text-sky-600 transition-colors inline-flex items-center gap-1.5"
+            >
+              <Users className="w-3.5 h-3.5" />
+              <span>پنل مدیریت</span>
+            </button>
           </div>
         </div>
 
         {/* Bottom bar */}
-        <div className="border-t border-slate-100 pt-6 flex flex-col sm:flex-row items-center justify-between text-xs text-slate-500 gap-4">
-          <p>© {new Date().getFullYear()} {APP_CONFIG.name}. طراحی و آماده‌سازی شده برای اعضای دوره تلگرام.</p>
-          <p className="flex items-center gap-1">
-            <span>ساخته‌شده با عشق برای یادگیری اشتراکی</span>
+        <div className="pt-6 flex flex-col sm:flex-row items-center justify-between text-xs text-slate-500 gap-4 text-center sm:text-right">
+          <p className="flex items-center justify-center gap-1.5 text-slate-600 font-medium">
+            <span>ساخته شده با عشق برای یادگیری اشتراکی</span>
             <Heart className="w-3.5 h-3.5 text-rose-500 fill-rose-500 inline" />
           </p>
+
+          <div className="flex items-center justify-center gap-2 text-slate-600">
+            <span>نوشته شده توسط <strong>سروش</strong></span>
+            <a
+              href="https://www.linkedin.com/in/soroush-zare1993"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="پروفایل لینکدین سروش"
+              className="p-1 rounded-md text-slate-500 hover:text-[#0A66C2] hover:bg-sky-50 transition-colors inline-flex items-center gap-1"
+              title="مشاهده پروفایل لینکدین سروش"
+            >
+              <LinkedInIcon className="w-4 h-4" />
+            </a>
+          </div>
         </div>
       </div>
     </footer>
