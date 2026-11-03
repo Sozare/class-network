@@ -1,16 +1,14 @@
 import React from 'react';
-import { Send, Users, Heart } from 'lucide-react';
+import { Send, Heart } from 'lucide-react';
 import { LinkedInIcon } from '../common/Icons';
 import { APP_CONFIG } from '../../lib/constants';
 
 interface FooterProps {
   onOpenRegister: () => void;
-  onOpenAdmin: () => void;
 }
 
 export const Footer: React.FC<FooterProps> = ({
   onOpenRegister,
-  onOpenAdmin,
 }) => {
   return (
     <footer className="mt-auto border-t border-slate-200/80 bg-white">
@@ -26,7 +24,7 @@ export const Footer: React.FC<FooterProps> = ({
             </span>
           </div>
 
-          {/* Quick links */}
+          {/* Clean Public Navigation */}
           <div className="flex flex-wrap items-center justify-center gap-6 text-sm text-slate-600 font-medium">
             <a href="#directory" className="hover:text-sky-600 transition-colors">
               مشاهده همکلاسی‌ها
@@ -36,13 +34,6 @@ export const Footer: React.FC<FooterProps> = ({
               className="hover:text-sky-600 transition-colors"
             >
               ثبت‌نام در شبکه
-            </button>
-            <button
-              onClick={onOpenAdmin}
-              className="hover:text-sky-600 transition-colors inline-flex items-center gap-1.5"
-            >
-              <Users className="w-3.5 h-3.5" />
-              <span>پنل مدیریت</span>
             </button>
           </div>
         </div>

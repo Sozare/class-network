@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { Header } from './components/layout/Header';
 import { Footer } from './components/layout/Footer';
 import { Hero } from './components/directory/Hero';
+import { DirectoryFilters } from './components/directory/DirectoryFilters';
 import { MemberGrid } from './components/directory/MemberGrid';
 import { MemberDetailModal } from './components/directory/MemberDetailModal';
 import { RegistrationModal } from './components/registration/RegistrationModal';
@@ -61,11 +62,23 @@ export const App: React.FC = () => {
     checkAuth();
   }, []);
 
-  // Handle URL hash routing (e.g. #admin, #register, #member-<id>)
+  const handleOpenAdmin = async () => {
+    const isAuth = await authService.isAuthenticated();
+    if (isAuth) {
+      setIsAdminViewOpen(true);
+    } else {
+      setIsAdminLoginOpen(true);
+    }
+  };
+
+  // Handle URL routing (#admin, #manage, ?admin=true, #register, #member-<id>)
   useEffect(() => {
     const handleHash = async () => {
-      const hash = window.location.hash;
-      if (hash === '#admin') {
+      const hash = window.location.hash.toLowerCase();
+      const urlParams = new URLSearchParams(window.location.search);
+      const hasAdminParam = urlParams.has('admin');
+
+      if (hash === '#admin' || hash === '#manage' || hash === '#panel' || hasAdminParam) {
         const isAuth = await authService.isAuthenticated();
         if (isAuth) {
           setIsAdminViewOpen(true);
@@ -88,14 +101,17 @@ export const App: React.FC = () => {
     return () => window.removeEventListener('hashchange', handleHash);
   }, []);
 
-  const handleOpenAdmin = async () => {
-    const isAuth = await authService.isAuthenticated();
-    if (isAuth) {
-      setIsAdminViewOpen(true);
-    } else {
-      setIsAdminLoginOpen(true);
-    }
-  };
+  // Secret keyboard shortcut for admin (Ctrl + Shift + A or Alt + A)
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.ctrlKey && e.shiftKey && e.key.toLowerCase() === 'a') || (e.altKey && e.key.toLowerCase() === 'a')) {
+        e.preventDefault();
+        handleOpenAdmin();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, []);
 
   const handleAdminLoginSuccess = () => {
     setIsAdminLoggedIn(true);
@@ -117,7 +133,6 @@ export const App: React.FC = () => {
         selectedSkills: [...prev.selectedSkills, skill],
       }));
     }
-    // Scroll to directory
     const el = document.getElementById('directory');
     if (el) el.scrollIntoView({ behavior: 'smooth' });
   };
@@ -139,17 +154,16 @@ export const App: React.FC = () => {
 
   return (
     <div className="min-h-screen flex flex-col bg-slate-50">
-      {/* Global Navigation Header */}
+      {/* Global Navigation Header - Purely public without admin button */}
       <Header
         memberCount={totalPublished}
         onOpenRegister={() => setIsRegisterOpen(true)}
-        onOpenAdmin={handleOpenAdmin}
         isAdminLoggedIn={isAdminLoggedIn}
       />
 
       {/* Main Content */}
       <main className="flex-1">
-        {/* Hero Banner */}
+        {/* Hero Banner with Soft Networking Visual & Divider */}
         <Hero
           memberCount={totalPublished}
           skillsCount={totalSkills}
@@ -157,8 +171,15 @@ export const App: React.FC = () => {
           onScrollToDirectory={handleScrollToDirectory}
         />
 
-        {/* Directory Explorer Section */}
+        {/* Directory Explorer Section with Search & Category Filters */}
         <div id="directory" className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-10 space-y-6">
+          {/* Restored Search & Filter Bar */}
+          <DirectoryFilters
+            filters={filters}
+            onFilterChange={setFilters}
+            totalResults={members.length}
+          />
+
           {/* Members Responsive Grid */}
           <MemberGrid
             members={members}
@@ -177,10 +198,9 @@ export const App: React.FC = () => {
         </div>
       </main>
 
-      {/* Global Footer */}
+      {/* Global Footer - Purely public with Soroush LinkedIn credit */}
       <Footer
         onOpenRegister={() => setIsRegisterOpen(true)}
-        onOpenAdmin={handleOpenAdmin}
       />
 
       {/* Individual Member Profile Modal */}
@@ -210,10 +230,15 @@ export const App: React.FC = () => {
         }}
       />
 
-      {/* Admin Login Modal */}
+      {/* Admin Login Modal (Triggered by Secret URL / Shortcut) */}
       <AdminLoginModal
         isOpen={isAdminLoginOpen}
-        onClose={() => setIsAdminLoginOpen(false)}
+        onClose={() => {
+          setIsAdminLoginOpen(false);
+          if (window.location.hash.toLowerCase() === '#admin') {
+            window.history.pushState(null, '', window.location.pathname);
+          }
+        }}
         onLoginSuccess={handleAdminLoginSuccess}
       />
 

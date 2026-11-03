@@ -1,5 +1,6 @@
 import React from 'react';
-import { PlusCircle, Search } from 'lucide-react';
+import { PlusCircle, Search, Users, ChevronDown } from 'lucide-react';
+import heroNetworkingImg from '../../assets/hero.png';
 
 interface HeroProps {
   memberCount?: number;
@@ -13,11 +14,23 @@ export const Hero: React.FC<HeroProps> = ({
   onScrollToDirectory,
 }) => {
   return (
-    <div className="relative overflow-hidden bg-gradient-to-b from-sky-50/40 via-white to-slate-50 border-b border-slate-200/60 pt-12 pb-14 sm:pt-20 sm:pb-20">
-      {/* Decorative background glow */}
-      <div className="pointer-events-none absolute -top-24 left-1/2 -translate-x-1/2 w-[600px] h-[260px] bg-gradient-to-tr from-sky-200/30 via-blue-200/20 to-indigo-100/10 blur-3xl rounded-full" />
+    <div className="relative overflow-hidden bg-gradient-to-b from-sky-50/40 via-white to-slate-50 border-b border-slate-200/80 pt-14 pb-12 sm:pt-20 sm:pb-16">
+      {/* 1. Decorative Glow & Radial Light */}
+      <div className="pointer-events-none absolute -top-24 left-1/2 -translate-x-1/2 w-[700px] h-[320px] bg-gradient-to-tr from-sky-200/35 via-blue-200/25 to-indigo-100/15 blur-3xl rounded-full" />
 
-      <div className="relative mx-auto max-w-4xl px-4 sm:px-6 text-center">
+      {/* 2. Soft Faded Networking Visual Elements (Aesthetic & Subtle) */}
+      <div className="pointer-events-none absolute inset-0 flex items-center justify-center overflow-hidden opacity-15 select-none">
+        <img
+          src={heroNetworkingImg}
+          alt="شبکه ارتباطی"
+          className="w-[520px] max-w-none sm:w-[680px] object-contain filter blur-[0.4px] mix-blend-multiply"
+        />
+      </div>
+
+      {/* Subtle SVG Networking Node Grid in Background */}
+      <div className="pointer-events-none absolute inset-0 opacity-[0.07] bg-[radial-gradient(#0284c7_1px,transparent_1px)] [background-size:24px_24px]" />
+
+      <div className="relative mx-auto max-w-4xl px-4 sm:px-6 text-center z-10">
         {/* Main Headline */}
         <h1 className="text-3xl sm:text-5xl lg:text-6xl font-black tracking-tight text-slate-900 leading-[1.25]">
           فراتر از کلاس،{' '}
@@ -47,6 +60,18 @@ export const Hero: React.FC<HeroProps> = ({
           >
             <Search className="w-4 h-4 text-slate-400" />
             <span>مشاهده همکلاسی‌ها</span>
+          </button>
+        </div>
+
+        {/* 3. Sleek Visual Section Divider to Separate Hero from Classmates */}
+        <div className="mt-14 pt-6 border-t border-slate-200/60 flex items-center justify-center">
+          <button
+            onClick={onScrollToDirectory}
+            className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-slate-100/90 hover:bg-slate-200/80 border border-slate-200 text-slate-600 text-xs font-bold transition-all shadow-2xs group"
+          >
+            <Users className="w-3.5 h-3.5 text-sky-600" />
+            <span>دایرکتوری و اعضای شبکه دوره</span>
+            <ChevronDown className="w-3.5 h-3.5 text-slate-400 group-hover:translate-y-0.5 transition-transform" />
           </button>
         </div>
       </div>
