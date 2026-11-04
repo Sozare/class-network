@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
-import { RotateCw, ZoomIn, ZoomOut, Check } from 'lucide-react';
+import { RotateCw, ZoomIn, ZoomOut, Check, Maximize2 } from 'lucide-react';
 import { Modal } from './Modal';
 
 interface ImageCropperModalProps {
@@ -15,7 +15,9 @@ export const ImageCropperModal: React.FC<ImageCropperModalProps> = ({
   onClose,
   onCropComplete,
 }) => {
-  const [scale, setScale] = useState<number>(1);
+  const [naturalSize, setNaturalSize] = useState<{ width: number; height: number }>({ width: 0, height: 0 });
+  const [baseScale, setBaseScale] = useState<number>(1);
+  const [zoom, setZoom] = useState<number>(1);
   const [rotation, setRotation] = useState<number>(0);
   const [position, setPosition] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
   const [isDragging, setIsDragging] = useState<boolean>(false);
@@ -25,22 +27,42 @@ export const ImageCropperModal: React.FC<ImageCropperModalProps> = ({
   const containerRef = useRef<HTMLDivElement>(null);
   const imgRef = useRef<HTMLImageElement>(null);
 
-  const CROP_SIZE = 260; // 260x260 viewport
+  // Viewport dimensions
+  const VIEWPORT_SIZE = 300; // 300x300 container
+  const CROP_SIZE = 230;     // 230px avatar circle guide
 
-  // Reset state when a new image is loaded
+  // Reset state when a new image is provided
   useEffect(() => {
     if (isOpen && imageSrc) {
-      setScale(1);
+      setZoom(1);
       setRotation(0);
       setPosition({ x: 0, y: 0 });
       setImageLoaded(false);
+      setNaturalSize({ width: 0, height: 0 });
     }
   }, [isOpen, imageSrc]);
 
-  // Center image on load
-  const handleImageLoad = () => {
-    setImageLoaded(true);
+  // When image loads, compute base scale so the ENTIRE photo fits without being zoomed in
+  const handleImageLoad = (e: React.SyntheticEvent<HTMLImageElement>) => {
+    const img = e.currentTarget;
+    const nw = img.naturalWidth || 1;
+    const nh = img.naturalHeight || 1;
+    setNaturalSize({ width: nw, height: nh });
+
+    // Fit entire photo comfortably inside viewport
+    const scaleToFit = Math.min(VIEWPORT_SIZE / nw, VIEWPORT_SIZE / nh);
+    setBaseScale(scaleToFit);
+    setZoom(1);
+    setRotation(0);
     setPosition({ x: 0, y: 0 });
+    setImageLoaded(true);
+  };
+
+  // Reset to full view fit
+  const handleResetToFit = () => {
+    setZoom(1);
+    setPosition({ x: 0, y: 0 });
+    setRotation(0);
   };
 
   // Drag handlers
@@ -66,12 +88,19 @@ export const ImageCropperModal: React.FC<ImageCropperModalProps> = ({
     setRotation(prev => (prev + 90) % 360);
   };
 
-  // Generate cropped output canvas
+  // Mouse wheel zoom
+  const handleWheel = (e: React.WheelEvent) => {
+    e.preventDefault();
+    const delta = e.deltaY < 0 ? 0.08 : -0.08;
+    setZoom(prev => Math.min(3.5, Math.max(0.7, parseFloat((prev + delta).toFixed(2)))));
+  };
+
+  // Generate cropped output canvas (400x400 high resolution)
   const handleCrop = useCallback(() => {
-    if (!imgRef.current) return;
+    if (!imgRef.current || !naturalSize.width || !naturalSize.height) return;
 
     const img = imgRef.current;
-    const outputSize = 400; // High quality 400x400 square for avatar
+    const outputSize = 400; // 400x400 square for avatar
 
     const canvas = document.createElement('canvas');
     canvas.width = outputSize;
@@ -79,35 +108,42 @@ export const ImageCropperModal: React.FC<ImageCropperModalProps> = ({
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
-    // Smooth rendering
+    // High quality smoothing
     ctx.imageSmoothingEnabled = true;
     ctx.imageSmoothingQuality = 'high';
 
-    // Move to center of canvas
+    // 1. Move to center of output canvas
     ctx.translate(outputSize / 2, outputSize / 2);
     ctx.rotate((rotation * Math.PI) / 180);
 
-    // Calculate ratio from viewport (260px) to output canvas (400px)
+    // 2. Scale factor from viewport crop size to canvas output size
     const factor = outputSize / CROP_SIZE;
+    const totalScale = baseScale * zoom * factor;
+    ctx.scale(totalScale, totalScale);
 
-    // Apply scale and position adjusted for output size
-    ctx.scale(scale * factor, scale * factor);
-    ctx.translate(position.x / scale, position.y / scale);
+    // 3. Offset in natural image coordinates
+    const naturalOffsetX = position.x / (baseScale * zoom);
+    const naturalOffsetY = position.y / (baseScale * zoom);
+    ctx.translate(naturalOffsetX, naturalOffsetY);
 
-    // Draw image centered
+    // 4. Draw natural image centered
     ctx.drawImage(
       img,
-      -img.naturalWidth / 2,
-      -img.naturalHeight / 2,
-      img.naturalWidth,
-      img.naturalHeight
+      -naturalSize.width / 2,
+      -naturalSize.height / 2,
+      naturalSize.width,
+      naturalSize.height
     );
 
     // Export as clean JPEG data URL
-    const croppedDataUrl = canvas.toDataURL('image/jpeg', 0.88);
+    const croppedDataUrl = canvas.toDataURL('image/jpeg', 0.9);
     onCropComplete(croppedDataUrl);
     onClose();
-  }, [rotation, scale, position, onClose, onCropComplete]);
+  }, [naturalSize, baseScale, zoom, rotation, position, CROP_SIZE, onClose, onCropComplete]);
+
+  // Display dimensions of image inside viewport
+  const displayWidth = naturalSize.width ? naturalSize.width * baseScale : 0;
+  const displayHeight = naturalSize.height ? naturalSize.height * baseScale : 0;
 
   return (
     <Modal
@@ -124,8 +160,9 @@ export const ImageCropperModal: React.FC<ImageCropperModalProps> = ({
           onPointerMove={handlePointerMove}
           onPointerUp={handlePointerUp}
           onPointerLeave={handlePointerUp}
-          className="relative mx-auto overflow-hidden rounded-2xl bg-slate-900 cursor-grab active:cursor-grabbing select-none touch-none shadow-inner"
-          style={{ width: `${CROP_SIZE}px`, height: `${CROP_SIZE}px` }}
+          onWheel={handleWheel}
+          className="relative mx-auto overflow-hidden rounded-2xl bg-slate-950 cursor-grab active:cursor-grabbing select-none touch-none shadow-inner border border-slate-800"
+          style={{ width: `${VIEWPORT_SIZE}px`, height: `${VIEWPORT_SIZE}px` }}
         >
           {imageSrc && (
             <img
@@ -134,39 +171,44 @@ export const ImageCropperModal: React.FC<ImageCropperModalProps> = ({
               alt="در حال برش"
               onLoad={handleImageLoad}
               style={{
-                transform: `translate(${position.x}px, ${position.y}px) rotate(${rotation}deg) scale(${scale})`,
-                transformOrigin: 'center center',
+                width: displayWidth ? `${displayWidth}px` : 'auto',
+                height: displayHeight ? `${displayHeight}px` : 'auto',
                 maxWidth: 'none',
                 maxHeight: 'none',
                 position: 'absolute',
                 top: '50%',
                 left: '50%',
-                marginTop: imgRef.current ? -imgRef.current.naturalHeight / 2 : 0,
-                marginLeft: imgRef.current ? -imgRef.current.naturalWidth / 2 : 0,
+                transform: `translate(-50%, -50%) translate(${position.x}px, ${position.y}px) rotate(${rotation}deg) scale(${zoom})`,
+                transformOrigin: 'center center',
               }}
               className="pointer-events-none transition-transform duration-75"
             />
           )}
 
-          {/* Circular mask overlay */}
-          <div className="pointer-events-none absolute inset-0 ring-1 ring-white/30 rounded-full shadow-[0_0_0_9999px_rgba(15,23,42,0.65)]" />
-
-          {/* Grid lines guide */}
-          <div className="pointer-events-none absolute inset-0 rounded-full border border-white/20 border-dashed" />
+          {/* Semi-transparent dark overlay around the circular crop guide */}
+          <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
+            <div
+              style={{ width: `${CROP_SIZE}px`, height: `${CROP_SIZE}px` }}
+              className="rounded-full ring-2 ring-white/95 shadow-[0_0_0_9999px_rgba(15,23,42,0.6)] relative"
+            >
+              {/* Subtle guide lines */}
+              <div className="absolute inset-0 rounded-full border border-white/30 border-dashed" />
+            </div>
+          </div>
         </div>
 
         <p className="text-[11px] text-slate-500 font-medium">
-          تصویر را با ماوس یا لمس جابه‌جا کنید تا چهره در دایره تنظیم شود.
+          کل عکس نمایش داده شده است. می‌توانید عکس را بکشید یا بزرگ‌نمایی کنید تا چهره درون دایره قرار گیرد.
         </p>
 
-        {/* Zoom & Rotation Controls */}
-        <div className="p-3 rounded-xl bg-slate-50 border border-slate-200/80 space-y-3">
+        {/* Zoom & Controls Toolbar */}
+        <div className="p-3 rounded-xl bg-slate-50 border border-slate-200/80 space-y-2.5">
           {/* Zoom Slider */}
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2.5">
             <button
               type="button"
-              onClick={() => setScale(prev => Math.max(0.5, prev - 0.1))}
-              className="p-1 rounded-lg hover:bg-slate-200 text-slate-600 transition-colors"
+              onClick={() => setZoom(prev => Math.max(0.7, parseFloat((prev - 0.1).toFixed(2))))}
+              className="p-1.5 rounded-lg hover:bg-slate-200 text-slate-600 transition-colors"
               title="کوچک‌نمایی"
             >
               <ZoomOut className="w-4 h-4" />
@@ -174,31 +216,44 @@ export const ImageCropperModal: React.FC<ImageCropperModalProps> = ({
 
             <input
               type="range"
-              min="0.5"
+              min="0.7"
               max="3"
               step="0.05"
-              value={scale}
-              onChange={(e) => setScale(parseFloat(e.target.value))}
+              value={zoom}
+              onChange={(e) => setZoom(parseFloat(e.target.value))}
               className="flex-1 accent-sky-600 h-1.5 bg-slate-200 rounded-lg cursor-pointer"
             />
 
             <button
               type="button"
-              onClick={() => setScale(prev => Math.min(3, prev + 0.1))}
-              className="p-1 rounded-lg hover:bg-slate-200 text-slate-600 transition-colors"
+              onClick={() => setZoom(prev => Math.min(3, parseFloat((prev + 0.1).toFixed(2))))}
+              className="p-1.5 rounded-lg hover:bg-slate-200 text-slate-600 transition-colors"
               title="بزرگ‌نمایی"
             >
               <ZoomIn className="w-4 h-4" />
+            </button>
+          </div>
+
+          {/* Quick Helper Buttons: Reset to Fit & Rotate */}
+          <div className="flex items-center justify-center gap-2 pt-1 border-t border-slate-200/60">
+            <button
+              type="button"
+              onClick={handleResetToFit}
+              className="px-3 py-1.5 rounded-lg bg-white border border-slate-200 text-slate-700 text-xs font-bold hover:bg-slate-100 flex items-center gap-1.5 shadow-2xs transition-colors"
+              title="نمایش کل عکس در اندازه استاندارد"
+            >
+              <Maximize2 className="w-3.5 h-3.5 text-sky-600" />
+              <span>نمایش کل عکس</span>
             </button>
 
             <button
               type="button"
               onClick={handleRotate}
-              className="px-2.5 py-1 rounded-lg bg-white border border-slate-200 text-slate-700 text-xs font-bold hover:bg-slate-100 flex items-center gap-1 shrink-0"
-              title="چرخش ۹۰ درجه"
+              className="px-3 py-1.5 rounded-lg bg-white border border-slate-200 text-slate-700 text-xs font-bold hover:bg-slate-100 flex items-center gap-1.5 shadow-2xs transition-colors"
+              title="چرخش ۹۰ درجه تصویر"
             >
-              <RotateCw className="w-3.5 h-3.5" />
-              <span>چرخش</span>
+              <RotateCw className="w-3.5 h-3.5 text-slate-600" />
+              <span>چرخش ۹۰°</span>
             </button>
           </div>
         </div>
