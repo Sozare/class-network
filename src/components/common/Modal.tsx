@@ -8,6 +8,7 @@ interface ModalProps {
   subtitle?: React.ReactNode;
   children: React.ReactNode;
   maxWidth?: 'sm' | 'md' | 'lg' | 'xl' | '2xl' | '3xl' | '4xl';
+  noPadding?: boolean;
 }
 
 const maxWidthMap = {
@@ -27,6 +28,7 @@ export const Modal: React.FC<ModalProps> = ({
   subtitle,
   children,
   maxWidth = 'xl',
+  noPadding = false,
 }) => {
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -86,15 +88,15 @@ export const Modal: React.FC<ModalProps> = ({
             <button
               type="button"
               onClick={onClose}
-              className="absolute right-4 top-4 z-10 rounded-lg p-1.5 text-slate-400 bg-white/80 hover:bg-slate-100 hover:text-slate-600 transition-colors backdrop-blur-sm"
-              aria-label="Close dialog"
+              className="absolute left-4 top-4 z-20 rounded-full p-2 text-white bg-slate-900/35 hover:bg-slate-900/60 transition-colors backdrop-blur-md shadow-sm"
+              aria-label="بستن"
             >
               <X className="w-5 h-5" />
             </button>
           )}
 
           {/* Content */}
-          <div className="px-6 py-5 max-h-[85vh] overflow-y-auto">
+          <div className={`${noPadding ? '' : 'px-6 py-5'} max-h-[85vh] overflow-y-auto`}>
             {children}
           </div>
         </div>
