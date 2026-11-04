@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import type { Member } from '../../types';
 import { MemberCard } from './MemberCard';
-import { SearchX, PlusCircle, ArrowDown } from 'lucide-react';
+import { MemberListItem } from './MemberListItem';
+import { SearchX, PlusCircle, ArrowDown, LayoutGrid, List } from 'lucide-react';
 
 interface MemberGridProps {
   members: Member[];
@@ -23,6 +24,22 @@ export const MemberGrid: React.FC<MemberGridProps> = ({
   onResetFilters,
 }) => {
   const [visibleCount, setVisibleCount] = useState(ITEMS_PER_PAGE);
+  const [viewMode, setViewMode] = useState<'card' | 'list'>(() => {
+    try {
+      return (localStorage.getItem('directory_view_mode') as 'card' | 'list') || 'card';
+    } catch {
+      return 'card';
+    }
+  });
+
+  const handleViewModeChange = (mode: 'card' | 'list') => {
+    setViewMode(mode);
+    try {
+      localStorage.setItem('directory_view_mode', mode);
+    } catch {
+      // ignore
+    }
+  };
 
   const handleLoadMore = () => {
     setVisibleCount(prev => prev + ITEMS_PER_PAGE);
@@ -87,17 +104,68 @@ export const MemberGrid: React.FC<MemberGridProps> = ({
   const hasMore = visibleCount < members.length;
 
   return (
-    <div className="space-y-6 sm:space-y-8 pt-2">
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
-        {visibleMembers.map((member) => (
-          <MemberCard
-            key={member.id}
-            member={member}
-            onSelect={onSelectMember}
-            onFilterSkill={onFilterSkill}
-          />
-        ))}
+    <div className="space-y-4 sm:space-y-6 pt-1">
+      {/* View Switcher Bar */}
+      <div className="flex items-center justify-between gap-2 pb-1">
+        <div className="text-xs text-slate-500 font-medium">
+          نمایش <span className="font-bold text-slate-900">{members.length}</span> همکلاسی
+        </div>
+
+        {/* View Mode Toggle Button */}
+        <div className="inline-flex items-center p-1 rounded-xl bg-slate-100 border border-slate-200/60 shadow-2xs">
+          <button
+            type="button"
+            onClick={() => handleViewModeChange('card')}
+            className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-bold transition-all ${
+              viewMode === 'card'
+                ? 'bg-white text-slate-900 shadow-2xs'
+                : 'text-slate-500 hover:text-slate-800'
+            }`}
+            title="نمای کارتی (همراه با معرفی کامل)"
+          >
+            <LayoutGrid className="w-3.5 h-3.5" />
+            <span className="hidden xs:inline">کارتی</span>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => handleViewModeChange('list')}
+            className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-bold transition-all ${
+              viewMode === 'list'
+                ? 'bg-white text-slate-900 shadow-2xs'
+                : 'text-slate-500 hover:text-slate-800'
+            }`}
+            title="نمای لیست فشرده تلگرامی (مرور سریع و آسان)"
+          >
+            <List className="w-3.5 h-3.5" />
+            <span>فهرست فشرده</span>
+          </button>
+        </div>
       </div>
+
+      {/* Render Cards or Compact List */}
+      {viewMode === 'card' ? (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+          {visibleMembers.map((member) => (
+            <MemberCard
+              key={member.id}
+              member={member}
+              onSelect={onSelectMember}
+              onFilterSkill={onFilterSkill}
+            />
+          ))}
+        </div>
+      ) : (
+        <div className="space-y-2 sm:space-y-2.5">
+          {visibleMembers.map((member) => (
+            <MemberListItem
+              key={member.id}
+              member={member}
+              onSelect={onSelectMember}
+            />
+          ))}
+        </div>
+      )}
 
       {/* Load More Button */}
       {hasMore && (
