@@ -13,7 +13,6 @@ interface MemberCardProps {
 export const MemberCard: React.FC<MemberCardProps> = ({
   member,
   onSelect,
-  onFilterSkill,
 }) => {
   const telegramUrl = member.telegram_username
     ? `https://t.me/${member.telegram_username.replace('@', '')}`
@@ -60,7 +59,7 @@ export const MemberCard: React.FC<MemberCardProps> = ({
             >
               {member.full_name}
             </h3>
-            <p className="text-xs text-slate-500 font-normal truncate mt-0.5" title={member.professional_title}>
+            <p className="text-xs text-slate-500 font-normal leading-snug mt-1" title={member.professional_title}>
               {member.professional_title}
             </p>
           </div>
@@ -68,37 +67,16 @@ export const MemberCard: React.FC<MemberCardProps> = ({
 
         {/* Location if present */}
         {member.location && (
-          <div className="flex items-center gap-1 text-[11px] text-slate-400 font-normal mb-2">
+          <div className="flex items-center gap-1 text-[11px] text-slate-400 font-normal mb-2.5">
             <MapPin className="w-3 h-3 shrink-0" />
             <span className="truncate">{member.location}</span>
           </div>
         )}
 
-        {/* Short Bio / Introduction */}
-        <p className="text-xs text-slate-500 line-clamp-2 leading-relaxed mb-3 min-h-[2.25rem] font-normal">
+        {/* Bio / Description */}
+        <p className="text-xs text-slate-600 line-clamp-4 leading-relaxed mb-3 min-h-[3.25rem] font-normal">
           {member.bio}
         </p>
-
-        {/* Main Skills Pills */}
-        <div className="flex flex-wrap gap-1.5 mb-4">
-          {member.skills?.slice(0, 3).map((skill) => (
-            <span
-              key={skill}
-              onClick={(e) => {
-                e.stopPropagation();
-                onFilterSkill?.(skill);
-              }}
-              className="inline-flex items-center px-2 py-0.5 rounded-md text-[11px] font-medium bg-slate-50 text-slate-600 border border-slate-100 hover:bg-sky-50 hover:text-sky-700 hover:border-sky-200 cursor-pointer transition-colors"
-            >
-              {skill}
-            </span>
-          ))}
-          {member.skills && member.skills.length > 3 && (
-            <span className="inline-flex items-center px-1.5 py-0.5 rounded-md text-[10px] font-medium text-slate-400 bg-slate-50">
-              +{member.skills.length - 3}
-            </span>
-          )}
-        </div>
       </div>
 
       {/* Footer Section: Contact Links & View Profile */}
