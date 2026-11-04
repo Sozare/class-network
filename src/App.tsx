@@ -178,7 +178,7 @@ export const App: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen flex flex-col bg-slate-50">
+    <div className="min-h-screen flex flex-col bg-slate-50 w-full overflow-x-hidden">
       {/* Global Navigation Header - Purely public without admin button */}
       <Header
         memberCount={totalPublished}
@@ -191,7 +191,7 @@ export const App: React.FC = () => {
       />
 
       {/* Main Content */}
-      <main className="flex-1">
+      <main className="flex-1 w-full overflow-x-hidden">
         {/* Hero Banner with Soft Networking Visual & Divider */}
         <Hero
           memberCount={totalPublished}
@@ -205,7 +205,7 @@ export const App: React.FC = () => {
         />
 
         {/* Directory Explorer Section with Search & Category Filters */}
-        <div id="directory" className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-10 space-y-6">
+        <div id="directory" className="mx-auto max-w-7xl px-3 sm:px-6 lg:px-8 py-6 sm:py-10 space-y-5 sm:space-y-6 w-full">
           {/* Restored Search & Filter Bar */}
           <DirectoryFilters
             filters={filters}

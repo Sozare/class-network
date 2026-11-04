@@ -67,9 +67,9 @@ export const DirectoryFilters: React.FC<DirectoryFiltersProps> = ({
   return (
     <div id="directory" className="space-y-4">
       {/* Top Search & Sort Row */}
-      <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+      <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5 sm:gap-3">
         {/* Search Input */}
-        <div className="relative flex-1">
+        <div className="relative flex-1 w-full">
           <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3.5 text-slate-400">
             <Search className="h-5 w-5" />
           </div>
@@ -77,8 +77,8 @@ export const DirectoryFilters: React.FC<DirectoryFiltersProps> = ({
             type="text"
             value={filters.searchQuery}
             onChange={handleSearchChange}
-            placeholder="جستجو بر اساس نام، تخصص شغلی، مهارت، علاقه‌مندی یا شهر..."
-            className="w-full rounded-xl border border-slate-200 bg-white py-3 pr-11 pl-10 text-sm text-slate-800 placeholder-slate-400 shadow-sm focus:border-sky-500 focus:outline-none focus:ring-2 focus:ring-sky-500/20 transition-all text-right"
+            placeholder="جستجو نام، تخصص، مهارت یا شهر..."
+            className="w-full rounded-xl border border-slate-200 bg-white py-2.5 sm:py-3 pr-11 pl-10 text-xs sm:text-sm text-slate-800 placeholder-slate-400 shadow-xs focus:border-sky-500 focus:outline-none focus:ring-2 focus:ring-sky-500/20 transition-all text-right"
           />
           {filters.searchQuery && (
             <button
@@ -92,17 +92,17 @@ export const DirectoryFilters: React.FC<DirectoryFiltersProps> = ({
         </div>
 
         {/* Filter Toggle & Sort Buttons */}
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 w-full sm:w-auto">
           {/* Advanced toggle */}
           <button
             onClick={() => setShowAdvanced(!showAdvanced)}
-            className={`inline-flex items-center gap-1.5 rounded-xl border px-3.5 py-3 text-xs sm:text-sm font-bold transition-colors ${
+            className={`flex-1 sm:flex-none inline-flex items-center justify-center gap-1.5 rounded-xl border px-3 sm:px-3.5 py-2.5 sm:py-3 text-xs sm:text-sm font-bold transition-colors ${
               showAdvanced || filters.selectedSkills.length > 0 || filters.hasTelegramOnly
                 ? 'border-sky-500 bg-sky-50 text-sky-800'
                 : 'border-slate-200 bg-white text-slate-700 hover:bg-slate-50'
             }`}
           >
-            <SlidersHorizontal className="w-4 h-4" />
+            <SlidersHorizontal className="w-4 h-4 shrink-0" />
             <span>فیلترها</span>
             {(filters.selectedSkills.length > 0 || filters.hasTelegramOnly) && (
               <span className="flex h-5 w-5 items-center justify-center rounded-full bg-sky-600 text-[10px] text-white font-black">
@@ -112,11 +112,11 @@ export const DirectoryFilters: React.FC<DirectoryFiltersProps> = ({
           </button>
 
           {/* Sort Selector */}
-          <div className="relative">
+          <div className="relative flex-1 sm:flex-none">
             <select
               value={filters.sortBy}
               onChange={(e) => handleSortChange(e.target.value as FilterState['sortBy'])}
-              className="h-full rounded-xl border border-slate-200 bg-white py-3 pr-3 pl-8 text-xs sm:text-sm font-bold text-slate-700 shadow-sm focus:border-sky-500 focus:outline-none focus:ring-2 focus:ring-sky-500/20 cursor-pointer"
+              className="w-full rounded-xl border border-slate-200 bg-white py-2.5 sm:py-3 pr-3 pl-8 text-xs sm:text-sm font-bold text-slate-700 shadow-xs focus:border-sky-500 focus:outline-none focus:ring-2 focus:ring-sky-500/20 cursor-pointer"
             >
               <option value="recent">تازه‌ترین اعضا</option>
               <option value="featured">افراد منتخب</option>
@@ -127,8 +127,8 @@ export const DirectoryFilters: React.FC<DirectoryFiltersProps> = ({
       </div>
 
       {/* Category Pills (Horizontal Scroller) */}
-      <div className="overflow-x-auto pb-1 scrollbar-none">
-        <div className="flex items-center gap-2 min-w-max">
+      <div className="overflow-x-auto pb-1 scrollbar-none w-full max-w-full -mx-2 px-2 sm:mx-0 sm:px-0">
+        <div className="flex items-center gap-1.5 sm:gap-2 min-w-max">
           {DEFAULT_CATEGORIES.map((cat) => {
             const isSelected =
               filters.category === cat.name ||

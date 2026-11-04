@@ -50,35 +50,35 @@ export const MemberDetailModal: React.FC<MemberDetailModalProps> = ({
         </div>
 
         {/* Content body */}
-        <div className="px-6 pb-6 pt-0">
+        <div className="px-4 sm:px-6 pb-6 pt-0">
           {/* Avatar & Action buttons row */}
-          <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 -mt-16 sm:-mt-20 mb-5">
+          <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-3 sm:gap-4 -mt-14 sm:-mt-20 mb-5">
             {/* Avatar on the right */}
             <div className="relative shrink-0">
               <Avatar
                 src={member.profile_photo_url}
                 name={member.full_name}
                 size="2xl"
-                className="border-4 border-white shadow-xl ring-1 ring-slate-900/10 shrink-0 bg-white"
+                className="w-20 h-20 sm:w-28 sm:h-28 border-4 border-white shadow-xl ring-1 ring-slate-900/10 shrink-0 bg-white"
               />
             </div>
 
             {/* Clear Action buttons on the left */}
-            <div className="flex flex-wrap items-center gap-2 pt-2 sm:pt-0">
+            <div className="flex items-center gap-2 pt-1 sm:pt-0 w-full sm:w-auto">
               <button
                 onClick={handleCopyProfile}
-                className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs sm:text-sm font-bold border border-slate-200 transition-all shadow-xs active:scale-95"
+                className="flex-1 sm:flex-none inline-flex items-center justify-center gap-1.5 px-3 sm:px-3.5 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs sm:text-sm font-bold border border-slate-200 transition-all shadow-xs active:scale-95"
                 title="کپی لینک اختصاصی این پروفایل"
               >
                 {copiedLink ? (
                   <>
-                    <Check className="w-4 h-4 text-emerald-600" />
+                    <Check className="w-4 h-4 text-emerald-600 shrink-0" />
                     <span className="text-emerald-700 font-bold">لینک کپی شد!</span>
                   </>
                 ) : (
                   <>
-                    <Copy className="w-4 h-4 text-slate-500" />
-                    <span>اشتراک‌گذاری پروفایل</span>
+                    <Copy className="w-4 h-4 text-slate-500 shrink-0" />
+                    <span>اشتراک‌گذاری</span>
                   </>
                 )}
               </button>
@@ -89,28 +89,28 @@ export const MemberDetailModal: React.FC<MemberDetailModalProps> = ({
                     onClose();
                     onOpenEditProfile(member.id);
                   }}
-                  className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-sky-50 hover:bg-sky-100 text-sky-700 text-xs sm:text-sm font-bold border border-sky-200 transition-all shadow-xs active:scale-95"
+                  className="flex-1 sm:flex-none inline-flex items-center justify-center gap-1.5 px-3 sm:px-3.5 py-2 rounded-xl bg-sky-50 hover:bg-sky-100 text-sky-700 text-xs sm:text-sm font-bold border border-sky-200 transition-all shadow-xs active:scale-95"
                   title="ویرایش یا حذف این پروفایل توسط صاحب آن"
                 >
-                  <Edit3 className="w-4 h-4 text-sky-600" />
-                  <span>ویرایش یا حذف پروفایل</span>
+                  <Edit3 className="w-4 h-4 text-sky-600 shrink-0" />
+                  <span>ویرایش یا حذف</span>
                 </button>
               )}
             </div>
           </div>
 
           {/* Member Identity Block (Name, Title, Badges) - Fully separated from banner */}
-          <div className="mb-6 text-right">
+          <div className="mb-5 sm:mb-6 text-right">
             <div className="flex items-center gap-2">
-              <h2 className="text-2xl sm:text-3xl font-black text-slate-900 leading-tight">
+              <h2 className="text-xl sm:text-3xl font-black text-slate-900 leading-tight break-words">
                 {member.full_name}
               </h2>
               <span title="عضو تایید‌شده دوره">
-                <ShieldCheck className="w-6 h-6 text-sky-500 shrink-0" />
+                <ShieldCheck className="w-5 h-5 sm:w-6 sm:h-6 text-sky-500 shrink-0" />
               </span>
             </div>
-            <p className="text-sm sm:text-base font-bold text-slate-600 mt-1">{member.professional_title}</p>
-            <div className="flex flex-wrap items-center gap-2.5 mt-3 text-xs text-slate-500 font-semibold">
+            <p className="text-xs sm:text-base font-bold text-slate-600 mt-1 break-words">{member.professional_title}</p>
+            <div className="flex flex-wrap items-center gap-2 sm:gap-2.5 mt-2.5 sm:mt-3 text-[11px] sm:text-xs text-slate-500 font-semibold">
               <Badge variant="primary">{member.category}</Badge>
               {member.location && (
                 <span className="flex items-center gap-1">
@@ -126,16 +126,16 @@ export const MemberDetailModal: React.FC<MemberDetailModalProps> = ({
           </div>
 
           {/* Contact Action Bar */}
-          <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-200/80 flex flex-wrap items-center justify-between gap-3 mb-6">
-            <div className="flex flex-wrap items-center gap-2">
+          <div className="p-3 sm:p-3.5 rounded-xl bg-slate-50 border border-slate-200/80 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2.5 sm:gap-3 mb-6">
+            <div className="flex flex-col sm:flex-row sm:flex-wrap items-stretch sm:items-center gap-2 w-full sm:w-auto">
               {telegramUrl && (
                 <a
                   href={telegramUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-telegram-brand hover:bg-sky-600 text-white text-xs sm:text-sm font-bold shadow-sm transition-all active:scale-95"
+                  className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-4 py-2.5 sm:py-2 rounded-lg bg-telegram-brand hover:bg-sky-600 text-white text-xs sm:text-sm font-bold shadow-xs transition-all active:scale-95"
                 >
-                  <Send className="w-4 h-4 rotate-180 -translate-x-0.5" />
+                  <Send className="w-4 h-4 rotate-180 -translate-x-0.5 shrink-0" />
                   <span>ارسال پیام در تلگرام ({member.telegram_username}@)</span>
                 </a>
               )}

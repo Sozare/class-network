@@ -19,10 +19,10 @@ export const MemberCard: React.FC<MemberCardProps> = ({
     : null;
 
   return (
-    <div className="group relative flex flex-col justify-between rounded-2xl border border-slate-100 bg-white p-5 shadow-xs hover:shadow-md hover:border-slate-200 transition-all duration-200 hover:-translate-y-0.5 text-right">
+    <div className="group relative flex flex-col justify-between rounded-2xl border border-slate-100 bg-white p-4 sm:p-5 shadow-xs hover:shadow-md hover:border-slate-200 transition-all duration-200 hover:-translate-y-0.5 text-right w-full">
       {/* Featured Ribbon / Star */}
       {member.featured && (
-        <div className="absolute top-3.5 left-3.5 flex items-center gap-1 rounded-full bg-amber-50/90 border border-amber-200/70 px-2 py-0.5 text-[10px] font-bold text-amber-700">
+        <div className="absolute top-3 left-3 sm:top-3.5 sm:left-3.5 flex items-center gap-1 rounded-full bg-amber-50/90 border border-amber-200/70 px-2 py-0.5 text-[10px] font-bold text-amber-700">
           <Star className="w-3 h-3 fill-amber-400 text-amber-500" />
           <span>منتخب</span>
         </div>
@@ -30,13 +30,13 @@ export const MemberCard: React.FC<MemberCardProps> = ({
 
       {/* Top Section: Photo, Category, Name & Title */}
       <div>
-        <div className="flex items-start gap-3.5 mb-3">
+        <div className="flex items-start gap-3 sm:gap-3.5 mb-2.5 sm:mb-3">
           <div className="relative cursor-pointer shrink-0" onClick={() => onSelect(member)}>
             <Avatar
               src={member.profile_photo_url}
               name={member.full_name}
               size="lg"
-              className="ring-1 ring-slate-100 group-hover:ring-sky-200 transition-all"
+              className="ring-1 ring-slate-100 group-hover:ring-sky-200 transition-all shrink-0"
             />
             {member.is_demo && (
               <span
@@ -49,17 +49,17 @@ export const MemberCard: React.FC<MemberCardProps> = ({
           </div>
 
           <div className="flex-1 min-w-0">
-            <span className="inline-block text-[11px] font-semibold text-sky-700 bg-sky-50 px-2 py-0.5 rounded-full mb-1 max-w-full truncate">
+            <span className="inline-block text-[10px] sm:text-[11px] font-semibold text-sky-700 bg-sky-50 px-2 py-0.5 rounded-full mb-1 max-w-full truncate">
               {member.category}
             </span>
             <h3
               onClick={() => onSelect(member)}
-              className="text-base font-bold text-slate-900 truncate hover:text-sky-600 cursor-pointer transition-colors"
+              className="text-base sm:text-lg font-bold text-slate-900 break-words hover:text-sky-600 cursor-pointer transition-colors leading-snug"
               title={member.full_name}
             >
               {member.full_name}
             </h3>
-            <p className="text-xs text-slate-500 font-normal leading-snug mt-1" title={member.professional_title}>
+            <p className="text-xs text-slate-500 font-normal leading-relaxed mt-0.5 break-words" title={member.professional_title}>
               {member.professional_title}
             </p>
           </div>
@@ -67,28 +67,28 @@ export const MemberCard: React.FC<MemberCardProps> = ({
 
         {/* Location if present */}
         {member.location && (
-          <div className="flex items-center gap-1 text-[11px] text-slate-400 font-normal mb-2.5">
+          <div className="flex items-center gap-1 text-[11px] text-slate-400 font-normal mb-2">
             <MapPin className="w-3 h-3 shrink-0" />
             <span className="truncate">{member.location}</span>
           </div>
         )}
 
         {/* Bio / Description */}
-        <p className="text-xs text-slate-600 line-clamp-4 leading-relaxed mb-3 min-h-[3.25rem] font-normal">
+        <p className="text-xs text-slate-600 line-clamp-4 leading-relaxed mb-3 min-h-[3rem] font-normal break-words">
           {member.bio}
         </p>
       </div>
 
       {/* Footer Section: Contact Links & View Profile */}
-      <div className="pt-3 border-t border-slate-100 flex items-center justify-between gap-2 mt-auto">
+      <div className="pt-3 border-t border-slate-100 flex items-center justify-between gap-1.5 sm:gap-2 mt-auto">
         {/* Social / Contact Icons (Only displayed if provided) */}
-        <div className="flex items-center gap-1">
+        <div className="flex items-center gap-1 sm:gap-1.5 shrink-0">
           {telegramUrl && (
             <a
               href={telegramUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex h-7 w-7 items-center justify-center rounded-full bg-slate-50 text-slate-500 hover:bg-sky-500 hover:text-white transition-all"
+              className="flex h-7 w-7 items-center justify-center rounded-full bg-slate-50 text-slate-500 hover:bg-sky-500 hover:text-white transition-all shrink-0"
               title={`ارسال پیام در تلگرام به @${member.telegram_username}`}
               onClick={(e) => e.stopPropagation()}
             >
@@ -101,7 +101,7 @@ export const MemberCard: React.FC<MemberCardProps> = ({
               href={`https://instagram.com/${member.instagram_username.replace(/^@/, '')}`}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex h-7 w-7 items-center justify-center rounded-full bg-slate-50 text-slate-500 hover:bg-rose-500 hover:text-white transition-all"
+              className="flex h-7 w-7 items-center justify-center rounded-full bg-slate-50 text-slate-500 hover:bg-rose-500 hover:text-white transition-all shrink-0"
               title={`صفحه اینستاگرام @${member.instagram_username}`}
               onClick={(e) => e.stopPropagation()}
             >
@@ -114,7 +114,7 @@ export const MemberCard: React.FC<MemberCardProps> = ({
               href={member.linkedin_url}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex h-7 w-7 items-center justify-center rounded-full bg-slate-50 text-slate-500 hover:bg-[#0077b5] hover:text-white transition-all"
+              className="flex h-7 w-7 items-center justify-center rounded-full bg-slate-50 text-slate-500 hover:bg-[#0077b5] hover:text-white transition-all shrink-0"
               title="پروفایل لینکدین"
               onClick={(e) => e.stopPropagation()}
             >
@@ -127,7 +127,7 @@ export const MemberCard: React.FC<MemberCardProps> = ({
               href={member.website_url}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex h-7 w-7 items-center justify-center rounded-full bg-slate-50 text-slate-500 hover:bg-slate-800 hover:text-white transition-all"
+              className="flex h-7 w-7 items-center justify-center rounded-full bg-slate-50 text-slate-500 hover:bg-slate-800 hover:text-white transition-all shrink-0"
               title="وبسایت یا پورتفولیو شخصی"
               onClick={(e) => e.stopPropagation()}
             >
@@ -139,10 +139,10 @@ export const MemberCard: React.FC<MemberCardProps> = ({
         {/* View Profile Action */}
         <button
           onClick={() => onSelect(member)}
-          className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-semibold text-slate-600 hover:text-sky-600 hover:bg-sky-50 transition-colors"
+          className="inline-flex items-center gap-1 px-2 py-1 sm:px-2.5 sm:py-1.5 rounded-lg text-xs font-semibold text-slate-600 hover:text-sky-600 hover:bg-sky-50 transition-colors shrink-0"
         >
           <span>مشاهده پروفایل</span>
-          <ArrowUpLeft className="w-3.5 h-3.5" />
+          <ArrowUpLeft className="w-3.5 h-3.5 shrink-0" />
         </button>
       </div>
     </div>
