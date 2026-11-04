@@ -1,6 +1,6 @@
 import React from 'react';
 import { PlusCircle, Search, Users, ChevronDown } from 'lucide-react';
-import heroNetworkingImg from '../../assets/hero.png';
+import classmatesImg from '../../assets/classmates-discussion.jpg';
 
 interface HeroProps {
   memberCount?: number;
@@ -16,21 +16,23 @@ export const Hero: React.FC<HeroProps> = ({
   onOpenEditProfile,
 }) => {
   return (
-    <div className="relative overflow-hidden bg-gradient-to-b from-sky-50/40 via-white to-slate-50 border-b border-slate-200/80 pt-14 pb-12 sm:pt-20 sm:pb-16">
-      {/* 1. Decorative Glow & Radial Light */}
-      <div className="pointer-events-none absolute -top-24 left-1/2 -translate-x-1/2 w-[700px] h-[320px] bg-gradient-to-tr from-sky-200/35 via-blue-200/25 to-indigo-100/15 blur-3xl rounded-full" />
-
-      {/* 2. Soft Faded Networking Visual Elements (Aesthetic & Subtle) */}
-      <div className="pointer-events-none absolute inset-0 flex items-center justify-center overflow-hidden opacity-15 select-none">
+    <div className="relative overflow-hidden bg-gradient-to-b from-sky-50/40 via-white to-slate-50 border-b border-slate-200/80 pt-16 pb-12 sm:pt-24 sm:pb-16">
+      {/* 1. Blurred Classmates Networking Photo in Background (Before filters) */}
+      <div className="pointer-events-none absolute inset-0 overflow-hidden select-none">
         <img
-          src={heroNetworkingImg}
-          alt="شبکه ارتباطی"
-          className="w-[520px] max-w-none sm:w-[680px] object-contain filter blur-[0.4px] mix-blend-multiply"
+          src={classmatesImg}
+          alt="همکلاسی‌ها در حال گفتگو و همکاری"
+          className="w-full h-full object-cover object-center filter blur-[6px] scale-105 opacity-30"
         />
+        {/* Soft gradient mask for pristine text contrast and smooth transition to filters */}
+        <div className="absolute inset-0 bg-gradient-to-b from-white/90 via-white/75 to-slate-50/95" />
       </div>
 
+      {/* 2. Decorative Glow & Radial Light */}
+      <div className="pointer-events-none absolute -top-24 left-1/2 -translate-x-1/2 w-[700px] h-[320px] bg-gradient-to-tr from-sky-200/35 via-blue-200/25 to-indigo-100/15 blur-3xl rounded-full" />
+
       {/* Subtle SVG Networking Node Grid in Background */}
-      <div className="pointer-events-none absolute inset-0 opacity-[0.07] bg-[radial-gradient(#0284c7_1px,transparent_1px)] [background-size:24px_24px]" />
+      <div className="pointer-events-none absolute inset-0 opacity-[0.05] bg-[radial-gradient(#0284c7_1px,transparent_1px)] [background-size:24px_24px]" />
 
       <div className="relative mx-auto max-w-4xl px-4 sm:px-6 text-center z-10">
         {/* Main Headline */}
