@@ -11,12 +11,12 @@ export const Footer: React.FC<FooterProps> = ({
   onOpenRegister,
 }) => {
   return (
-    <footer className="mt-auto border-t border-slate-200/80 bg-white">
+    <footer className="mt-14 sm:mt-24 border-t border-slate-200/90 bg-slate-100/85">
       <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
-        <div className="flex flex-col sm:flex-row items-center justify-between gap-6 pb-8 border-b border-slate-100">
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-6 pb-8 border-b border-slate-200/80">
           {/* Brand */}
           <div className="flex items-center gap-2.5">
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-telegram-brand text-white shadow-xs">
+            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-telegram-brand text-white shadow-xs">
               <Send className="h-4 w-4 rotate-180 -translate-x-0.5" />
             </div>
             <span className="font-extrabold text-slate-900 tracking-tight text-lg">
@@ -26,12 +26,12 @@ export const Footer: React.FC<FooterProps> = ({
 
           {/* Clean Public Navigation */}
           <div className="flex flex-wrap items-center justify-center gap-6 text-sm text-slate-600 font-medium">
-            <a href="#directory" className="hover:text-sky-600 transition-colors">
-              مشاهده همکلاسی‌ها
+            <a href="#directory" className="hover:text-sky-700 transition-colors">
+              مشاهده هم‌دوره‌ای‌ها
             </a>
             <button
               onClick={onOpenRegister}
-              className="hover:text-sky-600 transition-colors"
+              className="hover:text-sky-700 transition-colors"
             >
               ثبت‌نام در شبکه
             </button>
@@ -52,7 +52,7 @@ export const Footer: React.FC<FooterProps> = ({
               target="_blank"
               rel="noopener noreferrer"
               aria-label="پروفایل لینکدین سروش"
-              className="p-1 rounded-md text-slate-500 hover:text-[#0A66C2] hover:bg-sky-50 transition-colors inline-flex items-center gap-1"
+              className="p-1 rounded-md text-slate-500 hover:text-[#0A66C2] hover:bg-slate-200/80 transition-colors inline-flex items-center gap-1"
               title="مشاهده پروفایل لینکدین سروش"
             >
               <LinkedInIcon className="w-4 h-4" />
