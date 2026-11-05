@@ -240,7 +240,7 @@ export const RegistrationModal: React.FC<RegistrationModalProps> = ({
             </span>
           ) : (
             <span className="font-bold text-slate-900 text-base sm:text-lg">
-              عضویت در دایرکتوری همکلاسی‌ها
+              عضویت در شبکه هم‌دوره‌ای‌ها
             </span>
           )
         }
@@ -322,7 +322,7 @@ export const RegistrationModal: React.FC<RegistrationModalProps> = ({
                 onClick={resetFormAndClose}
                 className="w-full sm:w-auto px-5 py-2.5 rounded-xl bg-slate-900 text-white font-bold text-xs sm:text-sm hover:bg-slate-800 transition-colors shadow-xs"
               >
-                مشاهده دایرکتوری همکلاسی‌ها
+                مشاهده شبکه هم‌دوره‌ای‌ها
               </button>
             </div>
           </div>

@@ -1,11 +1,11 @@
 import type { Category, Member } from '../types';
 
 export const APP_CONFIG = {
-  name: 'شبکه همکلاسی‌ها',
+  name: 'شبکه هم‌دوره‌ای‌ها',
   tagline: 'آشنایی با چهره‌های پشت یادگیری',
   headline: 'با هم یاد بگیریم. فراتر از کلاس متصل شویم.',
-  subtitle: 'همکلاسی‌های خود را پیدا کنید، با مهارت‌ها و تجربیات آن‌ها آشنا شوید و همکاری‌های حرفه‌ای ارزشمند بسازید.',
-  courseName: 'دوره آنلاین تلگرام',
+  subtitle: 'هم‌دوره‌ای‌های خود را پیدا کنید، با مهارت‌ها و تجربیات آن‌ها آشنا شوید و همکاری‌های ارزشمند بسازید.',
+  courseName: 'دوره صداسازی',
   telegramChannelUrl: 'https://t.me/',
   maxPhotoSizeBytes: 2 * 1024 * 1024, // 2MB max
   allowedImageTypes: ['image/jpeg', 'image/png', 'image/webp'],

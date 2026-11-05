@@ -395,7 +395,7 @@ export const EditMyProfileModal: React.FC<EditMyProfileModalProps> = ({
             </form>
 
             <div className="pt-3 border-t border-slate-100 flex flex-col sm:flex-row items-center justify-between gap-2.5 text-xs text-slate-500">
-              <span>هنوز در شبکه همکلاسی‌ها ثبت‌نام نکرده‌اید؟</span>
+              <span>هنوز در شبکه هم‌دوره‌ای‌ها ثبت‌نام نکرده‌اید؟</span>
               {onOpenRegister && (
                 <button
                   type="button"
@@ -405,7 +405,7 @@ export const EditMyProfileModal: React.FC<EditMyProfileModalProps> = ({
                   }}
                   className="text-sky-600 hover:text-sky-700 font-bold hover:underline"
                 >
-                  عضویت جدید در شبکه همکلاسی‌ها ←
+                  عضویت جدید در شبکه هم‌دوره‌ای‌ها ←
                 </button>
               )}
             </div>
@@ -659,7 +659,7 @@ export const EditMyProfileModal: React.FC<EditMyProfileModalProps> = ({
                   <span>آیا از حذف دائمی پروفایل خود مطمئن هستید؟</span>
                 </div>
                 <p className="text-[11px] text-rose-700 leading-relaxed">
-                  با این کار کارت شما برای همیشه از دایرکتوری و شبکه همکلاسی‌ها پاک می‌شود و این عمل غیرقابل بازگشت است.
+                  با این کار کارت شما برای همیشه از دایرکتوری و شبکه هم‌دوره‌ای‌ها پاک می‌شود و این عمل غیرقابل بازگشت است.
                 </p>
                 <div className="flex items-center gap-2 pt-1">
                   <button
