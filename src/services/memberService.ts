@@ -77,30 +77,6 @@ export const memberService = {
 
         let results = ((data as Member[]) || []).map(hydrateMember);
 
-        // Include sample demo members so directory has diverse profiles for testing
-        const existingIds = new Set(results.map(r => r.id));
-        const demoToAdd = DEMO_MEMBERS.filter(d => !existingIds.has(d.id));
-
-        let filteredDemos = demoToAdd;
-        if (filter?.category && filter.category !== 'all') {
-          const target = filter.category.toLowerCase().replace(/[-\s]/g, '');
-          filteredDemos = filteredDemos.filter(m => {
-            const itemCat = m.category.toLowerCase().replace(/[-\s]/g, '');
-            return itemCat.includes(target) || target.includes(itemCat);
-          });
-        }
-        if (filter?.searchQuery && filter.searchQuery.trim().length > 0) {
-          const q = filter.searchQuery.trim().toLowerCase();
-          filteredDemos = filteredDemos.filter(m =>
-            m.full_name.toLowerCase().includes(q) ||
-            m.professional_title.toLowerCase().includes(q) ||
-            m.bio.toLowerCase().includes(q) ||
-            m.category.toLowerCase().includes(q)
-          );
-        }
-
-        results = [...results, ...filteredDemos];
-
         // Apply in-memory skill filtering if array filtering in Supabase isn't indexed
         if (filter?.selectedSkills && filter.selectedSkills.length > 0) {
           results = results.filter(m =>
@@ -126,7 +102,7 @@ export const memberService = {
 
   getPublishedMembersLocal(filter?: Partial<FilterState>): Member[] {
     const all = getStoredMembers();
-    let approved = all.filter(m => m.publication_status === 'approved');
+    let approved = all.filter(m => m.publication_status === 'approved' && !m.is_demo);
 
     if (filter?.category && filter.category !== 'all') {
       const target = filter.category.toLowerCase().replace(/[-\s]/g, '');
@@ -205,7 +181,7 @@ export const memberService = {
 
   getMemberByIdLocal(id: string): Member | null {
     const all = getStoredMembers();
-    return all.find(m => m.id === id) || DEMO_MEMBERS.find(m => m.id === id) || null;
+    return all.find(m => m.id === id) || null;
   },
 
   /**
@@ -622,26 +598,21 @@ export const memberService = {
       ? await this.getAllSubmissions()
       : getStoredMembers();
 
-    const published = all.filter(m => m.publication_status === 'approved');
+    const published = all.filter(m => m.publication_status === 'approved' && !m.is_demo);
     const pending = all.filter(m => m.publication_status === 'pending');
     const rejected = all.filter(m => m.publication_status === 'rejected');
-
-    // Merge demo members
-    const realIds = new Set(published.map(r => r.id));
-    const demoToAdd = DEMO_MEMBERS.filter(d => !realIds.has(d.id));
-    const allPublished = [...published, ...demoToAdd];
 
     const skillsSet = new Set<string>();
     const categoriesCount: Record<string, number> = {};
 
-    allPublished.forEach(m => {
+    published.forEach(m => {
       m.skills.forEach(s => skillsSet.add(s.toLowerCase()));
       const cat = m.category || 'Other';
       categoriesCount[cat] = (categoriesCount[cat] || 0) + 1;
     });
 
     return {
-      totalPublished: allPublished.length,
+      totalPublished: published.length,
       totalPending: pending.length,
       totalRejected: rejected.length,
       totalSkillsCount: skillsSet.size,
