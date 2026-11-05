@@ -176,10 +176,6 @@ export const MemberDetailModal: React.FC<MemberDetailModalProps> = ({
                 </a>
               )}
             </div>
-
-            <div className="text-[11px] text-emerald-700 font-bold bg-emerald-50 border border-emerald-200 px-2.5 py-1 rounded-md">
-              عضو رسمی دوره
-            </div>
           </div>
 
           {/* Profile Sections */}
