@@ -139,10 +139,10 @@ export const MemberCard: React.FC<MemberCardProps> = ({
         {/* View Profile Action */}
         <button
           onClick={() => onSelect(member)}
-          className="inline-flex items-center gap-1 px-2 py-1 sm:px-2.5 sm:py-1.5 rounded-lg text-xs font-semibold text-slate-600 hover:text-sky-600 hover:bg-sky-50 transition-colors shrink-0"
+          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold text-white bg-slate-900 hover:bg-slate-800 active:scale-95 shadow-xs transition-all shrink-0"
         >
           <span>مشاهده پروفایل</span>
-          <ArrowUpLeft className="w-3.5 h-3.5 shrink-0" />
+          <ArrowUpLeft className="w-3.5 h-3.5 text-slate-300" />
         </button>
       </div>
     </div>
