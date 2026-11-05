@@ -205,7 +205,7 @@ export const App: React.FC = () => {
         />
 
         {/* Directory Explorer Section with Search & Category Filters */}
-        <div id="directory" className="mx-auto max-w-7xl px-3 sm:px-6 lg:px-8 py-6 sm:py-10 space-y-5 sm:space-y-6 w-full">
+        <div id="directory" className="mx-auto max-w-7xl px-3 sm:px-6 lg:px-8 pt-10 sm:pt-14 pb-14 sm:pb-16 space-y-6 sm:space-y-8 w-full">
           {/* Restored Search & Filter Bar */}
           <DirectoryFilters
             filters={filters}
